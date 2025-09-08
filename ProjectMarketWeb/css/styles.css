@@ -1,0 +1,48 @@
+header {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  margin: -10px;
+  position: relative;
+  height: 100px;
+}
+.h1 {
+  color: white;
+  font-size: 0.9em;
+  position: absolute;
+  left: var(--h1-left);
+  top: var(--h1-top);
+  font-size: var(--h1-size);
+  font-family: "Poppins", sans-serif;
+}
+.search-container {
+  display: flex;
+  align-items: center;
+  width: 550px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  position: absolute;
+  top: var(--search-top);
+  left: var(--search-left);
+}
+
+.search-container input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.search-container button {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.search-container button:hover {
+  color: #000;
+}
