@@ -17,7 +17,7 @@ h1 {
 .search-container {
   display: flex;
   align-items: center;
-  width: 550px;
+  width: 600px;
   border: 1px solid #ddd;
   border-radius: 5px;
   overflow: hidden;
@@ -33,7 +33,6 @@ h1 {
   outline: none;
   font-size: 14px;
 }
-
 .search-container button {
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   border: none;
