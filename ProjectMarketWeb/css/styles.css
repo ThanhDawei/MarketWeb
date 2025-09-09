@@ -14,6 +14,18 @@ h1 {
   font-size: var(--h1-size);
   font-family: "Poppins", sans-serif;
 }
+.circle {
+  height: 12.5px;
+  width: 12.5px;
+  padding: 5px;
+  border-radius: 50%;
+  display: inline-block;
+  color: #fff;
+  font-size: 0.9em;
+  font-weight: 0;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
 .search-container {
   display: flex;
   align-items: center;
