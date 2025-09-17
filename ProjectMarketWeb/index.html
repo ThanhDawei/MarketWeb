@@ -12,7 +12,6 @@
     <title>DMarket</title>
   </head>
   <body>
-    <script></script>
     <header>
       <h1 style="--h1-left: 200px; --h1-top: 5px">
         <i class="fa-solid fa-phone"></i>
@@ -27,12 +26,23 @@
           </div>
         </button>
       </h1>
-      <button type="button" style="background: none; border: none">
+      <button
+        id="notification-btn"
+        type="button"
+        style="background: none; border: none"
+      >
         <h1 style="--h1-left: 775px; --h1-top: 5px">
           <i class="fa-solid fa-bell"></i>
           Thông báo
         </h1>
       </button>
+      <div id="notification-popup" class="popup" style="display: none">
+        <div class="popup-content">
+          <span id="close-popup" class="close">&times;</span>
+          <h2>Thông báo</h2>
+          <p>Chưa có thông báo mới.</p>
+        </div>
+      </div>
       <button type="button" style="background: none; border: none">
         <h1 style="--h1-left: 905px; --h1-top: 5px">
           <i class="fa-solid fa-circle-question"></i>
@@ -75,6 +85,20 @@
           <i class="fa-solid fa-cart-shopping"></i>
         </h1>
       </button>
+      <script>
+        document.getElementById("notification-btn").onclick = function () {
+          document.getElementById("notification-popup").style.display = "flex";
+        };
+        document.getElementById("close-popup").onclick = function () {
+          document.getElementById("notification-popup").style.display = "none";
+        };
+        window.onclick = function (event) {
+          var popup = document.getElementById("notification-popup");
+          if (event.target == popup) {
+            popup.style.display = "none";
+          }
+        };
+      </script>
     </header>
   </body>
 </html>
