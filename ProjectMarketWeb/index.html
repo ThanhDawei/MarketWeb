@@ -36,25 +36,35 @@
           Thông báo
         </h1>
       </button>
-      <div id="notification-popup" class="popup" style="display: none">
-        <div class="popup-content">
-          <span id="close-popup" class="close">&times;</span>
-          <h2>Thông báo</h2>
-          <p>Chưa có thông báo mới.</p>
-        </div>
-      </div>
       <button type="button" style="background: none; border: none">
         <h1 style="--h1-left: 905px; --h1-top: 5px">
           <i class="fa-solid fa-circle-question"></i>
           Hỗ trợ
         </h1>
       </button>
-      <button type="button" style="background: none; border: none">
+      <button
+        id="login-btn"
+        type="button"
+        style="background: none; border: none"
+      >
         <h1 style="--h1-left: 1000px; --h1-top: 5px">
           <i class="fa-solid fa-circle-user"></i>
           Đăng nhập
         </h1>
       </button>
+      <div id="login-popup" class="popup" style="display: none">
+        <div class="popup-content">
+          <span id="close-login-popup" class="close">&times;</span>
+          <h2>Đăng nhập</h2>
+          <form>
+            <label for="username">Tên đăng nhập:</label>
+            <input type="text" id="username" name="username" required />
+            <label for="password">Mật khẩu:</label>
+            <input type="password" id="password" name="password" required />
+            <button type="submit">Đăng nhập</button>
+          </form>
+        </div>
+      </div>
       <h1 style="--h1-left: 190px; --h1-top: 17px; --h1-size: 30px">
         <button
           type="button"
@@ -86,14 +96,14 @@
         </h1>
       </button>
       <script>
-        document.getElementById("notification-btn").onclick = function () {
-          document.getElementById("notification-popup").style.display = "flex";
+        document.getElementById("login-btn").onclick = function () {
+          document.getElementById("login-popup").style.display = "flex";
         };
-        document.getElementById("close-popup").onclick = function () {
-          document.getElementById("notification-popup").style.display = "none";
+        document.getElementById("close-login-popup").onclick = function () {
+          document.getElementById("login-popup")  .style.display = "none";
         };
         window.onclick = function (event) {
-          var popup = document.getElementById("notification-popup");
+          var popup = document.getElementById("login-popup");
           if (event.target == popup) {
             popup.style.display = "none";
           }
