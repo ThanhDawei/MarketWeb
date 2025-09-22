@@ -14,30 +14,35 @@
   <body>
     <header>
       <!-- Nút thông báo -->
-      <h1 style="--h1-left: 775px; --h1-top: 3px; font-size: 0.9em;">
-    <div class="notification-container">
-        <!-- Checkbox tàng hình để điều khiển -->
-        <input type="checkbox" id="notification-toggle" class="notification-toggle">
-        
-        <!-- Cái nút cũ của bạn bây giờ biến thành label để bấm được -->
-        <label for="notification-toggle" class="notification-bell">
+      <h1 style="--h1-left: 775px; --h1-top: 3px; font-size: 0.9em">
+        <div class="notification-container">
+          <!-- Checkbox tàng hình để điều khiển -->
+          <input
+            type="checkbox"
+            id="notification-toggle"
+            class="notification-toggle"
+          />
+
+          <!-- Cái nút cũ của bạn bây giờ biến thành label để bấm được -->
+          <label for="notification-toggle" class="notification-bell">
             <!-- Giữ lại nội dung y hệt nút cũ của bạn -->
             <i class="fa-solid fa-bell"></i>
             Thông báo
-            <span class="notification-badge">3</span> <!-- Thêm chấm đỏ báo số -->
-        </label>
-        
-        <!-- Cái hộp chứa thông báo (lấy từ file test) -->
-        <div class="notification-box">
+            <span class="notification-badge">3</span>
+            <!-- Thêm chấm đỏ báo số -->
+          </label>
+
+          <!-- Cái hộp chứa thông báo (lấy từ file test) -->
+          <div class="notification-box">
             <h3>Thông Báo Mới</h3>
             <ul>
-                <li>Đơn hàng #123 của bạn đã được giao thành công.</li>
-                <li>Chào bạn mới! Cảm ơn bạn đã đăng ký tài khoản.</li>
-                <li>Khuyến mãi khủng 50% chỉ trong hôm nay!</li>
+              <li>Đơn hàng #123 của bạn đã được giao thành công.</li>
+              <li>Chào bạn mới! Cảm ơn bạn đã đăng ký tài khoản.</li>
+              <li>Khuyến mãi khủng 50% chỉ trong hôm nay!</li>
             </ul>
+          </div>
         </div>
-    </div>
-</h1>
+      </h1>
 
       <h1 style="--h1-left: 200px; --h1-top: 5px">
         <i class="fa-solid fa-phone"></i>
@@ -59,12 +64,29 @@
           Hỗ trợ
         </h1>
       </button>
-      <button type="button" style="background: none; border: none">
+      <button
+        id="login-btn"
+        type="button"
+        style="background: none; border: none"
+      >
         <h1 style="--h1-left: 1000px; --h1-top: 5px">
           <i class="fa-solid fa-circle-user"></i>
           Đăng nhập
         </h1>
       </button>
+      <div id="login-popup" class="popup" style="display: none">
+        <div class="popup-content">
+          <span id="close-login-popup" class="close">&times;</span>
+          <h2>Đăng nhập</h2>
+          <form>
+            <label for="username">Tên đăng nhập:</label>
+            <input type="text" id="username" name="username" required />
+            <label for="password">Mật khẩu:</label>
+            <input type="password" id="password" name="password" required />
+            <button type="submit">Đăng nhập</button>
+          </form>
+        </div>
+      </div>
       <h1 style="--h1-left: 190px; --h1-top: 17px; --h1-size: 30px">
         <button
           type="button"
@@ -95,6 +117,20 @@
           <i class="fa-solid fa-cart-shopping"></i>
         </h1>
       </button>
+      <script>
+        document.getElementById("login-btn").onclick = function () {
+          document.getElementById("login-popup").style.display = "flex";
+        };
+        document.getElementById("close-login-popup").onclick = function () {
+          document.getElementById("login-popup").style.display = "none";
+        };
+        window.onclick = function (event) {
+          var popup = document.getElementById("login-popup");
+          if (event.target == popup) {
+            popup.style.display = "none";
+          }
+        };
+      </script>
     </header>
   </body>
 </html>
