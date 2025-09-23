@@ -177,37 +177,7 @@ h1 {
   font-size: 24px;
   cursor: pointer;
 }
-.popup {
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.popup-content {
-  background: #fff;
-  padding: 24px 32px;
-  border-radius: 8px;
-  min-width: 300px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
-  position: relative;
-}
-.close {
-  position: absolute;
-  right: 12px;
-  top: 8px;
-  font-size: 24px;
-  cursor: pointer;
-}
 
-/* --- BẮT ĐẦU ĐOẠN CSS MỚI CỦA TÔI --- */
-
-/* General Popup Styling - Điều chỉnh lại một chút cho đẹp hơn */
 .popup {
   position: fixed;
   top: 0;
@@ -359,4 +329,7 @@ h1 {
 .login-button:active {
   transform: translateY(0); /* Trở về vị trí ban đầu khi click */
 }
-/* --- KẾT THÚC ĐOẠN CSS MỚI CỦA TÔI --- */
+
+#login-btn {
+  cursor: pointer;
+}
