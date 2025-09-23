@@ -13,6 +13,9 @@ h1 {
   top: var(--h1-top);
   font-size: var(--h1-size);
   font-family: "Poppins", sans-serif;
+
+  /* Dấu chấm đỏ */
+  
 }
 .circle {
   height: 12.5px;
@@ -57,98 +60,33 @@ h1 {
   color: #000;
 }
 
-/* Style cho cái chuông (bây giờ là cả nút bấm) */
-.notification-bell {
-  color: white; /* Giữ màu chữ trắng */
-  cursor: pointer; /* Biến chuột thành hình bàn tay khi di vào */
-  position: relative;
-  display: inline-flex; /* Dùng flex để icon và chữ xếp hàng ngang đẹp */
-  align-items: center; /* Căn thẳng hàng icon và chữ */
-}
-
-/* Style riêng cho icon chuông bên trong nút */
-.notification-bell .fa-bell {
-  font-size: 1em; /* Kích thước icon bằng kích thước chữ */
-  margin-right: 5px; /* Tạo khoảng cách giữa chuông và chữ "Thông báo" */
-}
-
-/* === PHẦN CSS CÒN THIẾU CHO CHỨC NĂNG THÔNG BÁO === */
-
-/* Hộp to nhất chứa mọi thứ */
-.notification-container {
-  position: relative; /* Rất quan trọng! Để làm "mỏ neo" cho hộp thông báo */
-}
-
-/* Checkbox tàng hình (công tắc ma thuật) */
-.notification-toggle {
-  display: none; /* Ẩn cái checkbox xấu xí đi */
-}
-
-/* Chấm đỏ báo số thông báo mới */
+/* Style cho phần thông báo */
+/* CHẤM ĐỎ BÁO SỐ LƯỢNG - ĐÃ SỬA LỖI */
 .notification-badge {
-  position: absolute; /* Thả nổi nó trên cái chuông */
-  top: -2px; /* Chỉnh vị trí của chấm đỏ (lên/xuống) */
-  right: -8px; /* Chỉnh vị trí của chấm đỏ (trái/phải) */
-  background-color: red;
-  color: white;
-  border-radius: 50%; /* Biến nó thành hình tròn */
-  padding: 1px 5px;
-  font-size: 10px; /* Cỡ chữ của số bên trong */
-  font-weight: bold;
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+    border: 1px solid white;
+
+    /* Đây là phần sửa lỗi quan trọng nhất */
+    min-width: 16px;      /* Chiều rộng tối thiểu là 16px */
+    height: 16px;         /* Chiều cao cố định là 16px */
+    display: flex;        /* Dùng flexbox để... */
+    align-items: center;  /* ...căn số vào giữa theo chiều dọc */
+    justify-content: center; /* ...và căn vào giữa theo chiều ngang */
+    box-sizing: border-box; /* Đảm bảo padding và border không làm thay đổi kích thước */
 }
 
-/* Hộp chứa thông báo */
-.notification-box {
-  display: none; /* QUAN TRỌNG: Mặc định, hộp này sẽ bị ẨN */
-  position: absolute; /* Thả nổi nó, định vị theo cái .notification-container */
-  top: 35px; /* Khoảng cách từ chuông xuống hộp. */
-  right: 0;
-  width: 300px;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  color: #333; /* Chữ bên trong màu đen cho dễ đọc */
-  z-index: 1000; /* Đảm bảo nó nổi lên trên mọi thứ khác */
-  text-align: left; /* Căn chữ trong hộp về bên trái */
+/* Khi chấm đỏ không có nội dung (rỗng) thì ẩn nó đi */
+.notification-badge:empty {
+    display: none;
 }
 
-/* === DÒNG CODE PHÉP THUẬT === */
-/* Khi checkbox được tick (checked), thì tìm cái hộp thông báo và bật nó lên */
-.notification-toggle:checked ~ .notification-box {
-  display: block; /* Hiện nó ra! */
-}
-
-/* Style cho nội dung bên trong hộp thông báo */
-.notification-box h3 {
-  padding: 10px 15px;
-  margin: 0;
-  border-bottom: 1px solid #eee;
-  font-size: 16px;
-  font-weight: 600; /* Chữ đậm hơn một chút */
-  color: #333;
-}
-
-.notification-box ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.notification-box ul li {
-  padding: 12px 15px;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-  color: #555;
-}
-
-.notification-box ul li:hover {
-  background-color: #f5f5f5;
-}
-
-.notification-box ul li:last-child {
-  border-bottom: none;
-}
 
 .popup {
   position: fixed;
