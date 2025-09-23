@@ -177,3 +177,186 @@ h1 {
   font-size: 24px;
   cursor: pointer;
 }
+.popup {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.popup-content {
+  background: #fff;
+  padding: 24px 32px;
+  border-radius: 8px;
+  min-width: 300px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+.close {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* --- BẮT ĐẦU ĐOẠN CSS MỚI CỦA TÔI --- */
+
+/* General Popup Styling - Điều chỉnh lại một chút cho đẹp hơn */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Nền mờ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px); /* Hiệu ứng làm mờ nền phía sau */
+}
+
+.popup-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 15px; /* Bo tròn góc */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Đổ bóng mạnh hơn */
+  width: 100%;
+  max-width: 400px; /* Chiều rộng tối đa */
+  position: relative;
+  text-align: center; /* Căn giữa nội dung */
+  font-family: "Poppins", sans-serif; /* Sử dụng font đã import */
+  animation: fadeIn 0.3s ease-out; /* Animation khi hiện popup */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-content h2 {
+  font-size: 2em; /* Tiêu đề lớn hơn */
+  margin-bottom: 25px;
+  color: #333;
+  font-weight: 600;
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 2em;
+  font-weight: bold;
+  cursor: pointer;
+  color: #aaa;
+  transition: color 0.3s ease;
+}
+
+.close:hover,
+.close:focus {
+  color: #333;
+}
+
+/* Login Form Styling */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Khoảng cách giữa các nhóm input */
+}
+
+.input-group {
+  text-align: left; /* Căn trái label và input */
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.95em;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 15px; /* Padding bên trong input */
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+}
+
+.input-with-icon:focus-within {
+  border-color: #6a0dad; /* Màu viền khi focus */
+  box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.2); /* Đổ bóng nhẹ khi focus */
+  background-color: #fff;
+}
+
+.input-with-icon i {
+  color: #888;
+  margin-right: 12px;
+  font-size: 1.1em;
+}
+
+.input-with-icon input {
+  flex-grow: 1; /* Cho phép input lấp đầy không gian còn lại */
+  border: none;
+  outline: none;
+  padding: 5px 0; /* Giảm padding ngang để input không bị quá to */
+  font-size: 1em;
+  color: #333;
+  background-color: transparent; /* Nền input trong suốt */
+}
+
+.input-with-icon input::placeholder {
+  color: #bbb;
+  font-style: italic;
+}
+
+.toggle-password {
+  cursor: pointer;
+  margin-left: 10px;
+  color: #888;
+  transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+  color: #6a0dad;
+}
+
+.login-button {
+  background-color: #6a0dad; /* Màu tím đậm */
+  color: white;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 15px;
+  letter-spacing: 0.5px;
+}
+
+.login-button:hover {
+  background-color: #5a0ca0; /* Màu tím nhạt hơn khi hover */
+  transform: translateY(-2px); /* Hiệu ứng nhấc nhẹ lên */
+}
+
+.login-button:active {
+  transform: translateY(0); /* Trở về vị trí ban đầu khi click */
+}
+/* --- KẾT THÚC ĐOẠN CSS MỚI CỦA TÔI --- */
