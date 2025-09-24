@@ -12,10 +12,7 @@ h1 {
   left: var(--h1-left);
   top: var(--h1-top);
   font-size: var(--h1-size);
-  font-family: "Poppins", sans-serif;
-
-  /* Dấu chấm đỏ */
-  
+  font-family: "Poppins", sans-serif;  
 }
 .circle {
   height: 12.5px;
@@ -60,8 +57,12 @@ h1 {
   color: #000;
 }
 
-/* Style cho phần thông báo */
-/* CHẤM ĐỎ BÁO SỐ LƯỢNG - ĐÃ SỬA LỖI */
+#notification-btn {
+  cursor: pointer;
+}
+
+/* Style cho nút thông báo */
+/* CHẤM ĐỎ BÁO SỐ LƯỢNG */
 .notification-badge {
     position: absolute;
     top: -5px;
@@ -72,8 +73,6 @@ h1 {
     font-size: 10px;
     font-weight: bold;
     border: 1px solid white;
-
-    /* Đây là phần sửa lỗi quan trọng nhất */
     min-width: 16px;      /* Chiều rộng tối thiểu là 16px */
     height: 16px;         /* Chiều cao cố định là 16px */
     display: flex;        /* Dùng flexbox để... */
@@ -87,6 +86,71 @@ h1 {
     display: none;
 }
 
+/* === STYLE RIÊNG CHO DROPDOWN THÔNG BÁO === */
+/* Đây là cái hộp vô hình để định vị dropdown */
+.notification-dropdown {
+    position: absolute; /* Thả nổi nó */
+    top: 45px;          /* Vị trí cách đỉnh của header */
+    left: 700px;        /* Vị trí cách lề trái của header (bạn có thể chỉnh số này) */
+    z-index: 1000;      /* Đảm bảo nó nổi lên trên */
+    display: none;      /* Mặc định vẫn ẩn đi */
+}
+
+/* Đây là cái hộp màu trắng chứa nội dung */
+.notification-content {
+  width: 300px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  color: #333;
+}
+
+/* Style cho nút X của dropdown */
+.close-dropdown {
+  position: absolute;
+  right: 12px;
+  top: 5px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #aaa;
+}
+.close-dropdown:hover {
+  color: #333;
+}
+
+/* Style cho nội dung bên trong (lấy lại từ code cũ) */
+.notification-content h3 {
+  padding: 10px 15px;
+  margin: 0;
+  border-bottom: 1px solid #eee;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.notification-content ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification-content ul li {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
+.notification-content ul li:hover {
+    background-color: #f5f5f5;
+}
+
+.notification-content ul li:last-child {
+  border-bottom: none;
+  border-radius: 0px 0px 5px 5px;
+}
 
 .popup {
   position: fixed;
