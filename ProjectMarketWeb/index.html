@@ -14,35 +14,26 @@
   <body>
     <header>
       <!-- Nút thông báo -->
-      <h1 style="--h1-left: 775px; --h1-top: 3px; font-size: 0.9em">
-        <div class="notification-container">
-          <!-- Checkbox tàng hình để điều khiển -->
-          <input
-            type="checkbox"
-            id="notification-toggle"
-            class="notification-toggle"
-          />
+      <button id="notification-btn" type="button" style="background: none; border: none;">
+        <h1 style="--h1-left: 775px; --h1-top: 5px;">
+          <i class="fa-solid fa-bell"></i>
+          Thông báo
+          <span class="notification-badge">3</span>
+        </h1>
+      </button>
 
-          <!-- Cái nút cũ của bạn bây giờ biến thành label để bấm được -->
-          <label for="notification-toggle" class="notification-bell">
-            <!-- Giữ lại nội dung y hệt nút cũ của bạn -->
-            <i class="fa-solid fa-bell"></i>
-            Thông báo
-            <span class="notification-badge">3</span>
-            <!-- Thêm chấm đỏ báo số -->
-          </label>
-
-          <!-- Cái hộp chứa thông báo (lấy từ file test) -->
-          <div class="notification-box">
-            <h3>Thông Báo Mới</h3>
-            <ul>
-              <li>Đơn hàng #123 của bạn đã được giao thành công.</li>
-              <li>Chào bạn mới! Cảm ơn bạn đã đăng ký tài khoản.</li>
-              <li>Khuyến mãi khủng 50% chỉ trong hôm nay!</li>
-            </ul>
-          </div>
+      <!-- Popup thông báo -->
+      <div id="notification-popup" class="popup" style="display:none">
+        <div class="popup-content">
+          <span id="close-notification-popup" class="close">&times;</span>
+          <h3>Thông báo mới</h3>
+          <ul>
+            <li>Đơn hàng #123 của bạn đã được giao thành công.</li>
+            <li>Chào bạn mới! Cảm ơn bạn đã đăng ký tài khoản.</li>
+            <li>Khuyến mãi khủng 50% chỉ trong hôm nay!</li>
+          </ul>
         </div>
-      </h1>
+      </div>
 
       <h1 style="--h1-left: 200px; --h1-top: 5px">
         <i class="fa-solid fa-phone"></i>
@@ -141,6 +132,28 @@
         </h1>
       </button>
       <script>
+        // Thông báo
+        const notificationBtn = document.getElementById("notification-btn");
+        const notificationPopup = document.getElementById("notification-popup");
+        const closeNotificationPopupBtn = document.getElementById("close-notification-popup");
+
+        notificationBtn.onclick = function() {
+          notificationPopup.style.display = "flex";
+        }
+
+        closeNotificationPopupBtn.onclick = function() {
+          notificationPopup.style.display = "none";
+        }
+
+        // Nếu bấm ra ngoài màn hình cũng sẽ tắt thông báo
+        window.addEventListener("click", function(event) {
+          if (event.target == notificationPopup) {
+            notificationPopup.style.display = "none";
+          }
+        });
+
+        
+        // Đăng nhập
         document.getElementById("login-btn").onclick = function () {
           document.getElementById("login-popup").style.display = "flex";
         };
