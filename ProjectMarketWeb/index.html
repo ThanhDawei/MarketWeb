@@ -14,26 +14,35 @@
   <body>
     <header>
       <!-- Nút thông báo -->
-      <button id="notification-btn" type="button" style="background: none; border: none;">
-        <h1 style="--h1-left: 775px; --h1-top: 5px;">
-          <i class="fa-solid fa-bell"></i>
-          Thông báo
-          <span class="notification-badge">3</span>
-        </h1>
-      </button>
+      <h1 style="--h1-left: 775px; --h1-top: 3px; font-size: 0.9em">
+        <div class="notification-container">
+          <!-- Checkbox tàng hình để điều khiển -->
+          <input
+            type="checkbox"
+            id="notification-toggle"
+            class="notification-toggle"
+          />
 
-      <!-- Hộp dropdown thông báo -->
-      <div id="notification-popup" class="notification-dropdown" style="display: none;">
-          <div class="notification-content">
-              <span id="close-notification-popup" class="close-dropdown">&times;</span>
-              <h3>Thông báo mới</h3>
-              <ul>
-                  <li>Đơn hàng #123 của bạn đã được giao thành công.</li>
-                  <li>Chào bạn mới! Cảm ơn bạn đã đăng ký tài khoản.</li>
-                  <li>Khuyến mãi khủng 50% chỉ trong hôm nay!</li>
-              </ul>
+          <!-- Cái nút cũ của bạn bây giờ biến thành label để bấm được -->
+          <label for="notification-toggle" class="notification-bell">
+            <!-- Giữ lại nội dung y hệt nút cũ của bạn -->
+            <i class="fa-solid fa-bell"></i>
+            Thông báo
+            <span class="notification-badge">3</span>
+            <!-- Thêm chấm đỏ báo số -->
+          </label>
+
+          <!-- Cái hộp chứa thông báo (lấy từ file test) -->
+          <div class="notification-box">
+            <h3>Thông Báo Mới</h3>
+            <ul>
+              <li>Đơn hàng #123 của bạn đã được giao thành công.</li>
+              <li>Chào bạn mới! Cảm ơn bạn đã đăng ký tài khoản.</li>
+              <li>Khuyến mãi khủng 50% chỉ trong hôm nay!</li>
+            </ul>
           </div>
-      </div>
+        </div>
+      </h1>
 
       <h1 style="--h1-left: 200px; --h1-top: 5px">
         <i class="fa-solid fa-phone"></i>
@@ -65,6 +74,15 @@
           Đăng nhập
         </h1>
       </button>
+      <div
+        id="username-display"
+        style="--h1-left: 1000px; --h1-top: 5px; --h1-size: 14px; display: none"
+      >
+        <h1>
+          <i class="fa-solid fa-circle-user"></i>
+          <span id="displayed-username"></span>
+        </h1>
+      </div>
       <div id="login-popup" class="popup" style="display: none">
         <div class="popup-content">
           <span id="close-login-popup" class="close">&times;</span>
@@ -121,8 +139,8 @@
         class="search-container"
         style="--search-left: 425px; --search-top: 40px"
       >
-        <input type="text" placeholder="Search..." />
-        <button type="submit">
+        <input type="text" id="searchInput" placeholder="Search..." />
+        <button type="submit" id="searchBtn">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
       </div>
@@ -131,43 +149,117 @@
           <i class="fa-solid fa-cart-shopping"></i>
         </h1>
       </button>
-      <script>
-        // --- BỘ NÃO ĐIỀU KHIỂN POPUP ĐĂNG NHẬP ---
-        const loginBtn = document.getElementById("login-btn");
-        const loginPopup = document.getElementById("login-popup");
-        const closeLoginPopupBtn = document.getElementById("close-login-popup");
-
-        loginBtn.onclick = function () { loginPopup.style.display = "flex"; };
-        closeLoginPopupBtn.onclick = function () { loginPopup.style.display = "none"; };
-
-        // --- BỘ NÃO ĐIỀU KHIỂN DROPDOWN THÔNG BÁO ---
-        const notificationBtn = document.getElementById("notification-btn");
-        const notificationPopup = document.getElementById("notification-popup");
-        const closeNotificationPopupBtn = document.getElementById("close-notification-popup");
-
-        notificationBtn.onclick = function() { 
-          // Logic nhỏ: Nếu popup đang hiện thì ẩn đi, nếu đang ẩn thì hiện lên
-          if (notificationPopup.style.display === "block") {
-              notificationPopup.style.display = "none";
-          } else {
-              notificationPopup.style.display = "block";
-          }
-        };
-        closeNotificationPopupBtn.onclick = function() { notificationPopup.style.display = "none"; };
-
-        // --- BỘ NÃO CHUNG DUY NHẤT: BẤM RA NGOÀI ĐỂ TẮT ---
-        window.addEventListener("click", function (event) {
-          // Logic cho popup đăng nhập: Nếu bấm vào nền mờ thì tắt
-          if (event.target == loginPopup) {
-            loginPopup.style.display = "none";
-          }
-
-          // Logic cho dropdown thông báo: Nếu bấm ra ngoài cả nút và cả hộp thì tắt
-          if (!notificationBtn.contains(event.target) && !notificationPopup.contains(event.target)) {
-            notificationPopup.style.display = "none";
-          }
-        });
-      </script>
     </header>
+    <form id="productForm">
+      <input type="text" id="name" placeholder="Tên sản phẩm" required />
+      <input type="text" id="color" placeholder="Màu" required />
+      <input type="number" id="quantity" placeholder="Số lượng" required />
+      <input type="file" id="image" accept="image/*" required />
+      <button type="submit">Thêm</button>
+    </form>
+    <div id="productList" class="product-list"></div>
+    <script>
+      document.getElementById("login-btn").onclick = function () {
+        document.getElementById("login-popup").style.display = "flex";
+      };
+      document.getElementById("close-login-popup").onclick = function () {
+        document.getElementById("login-popup").style.display = "none";
+      };
+      window.onclick = function (event) {
+        var popup = document.getElementById("login-popup");
+        if (event.target == popup) {
+          popup.style.display = "none";
+        }
+      };
+      document.querySelector(".login-form").onsubmit = function (e) {
+        e.preventDefault();
+        var usernameInput = document.getElementById("username").value;
+        var passwordInput = document.getElementById("password").value;
+        if (usernameInput === "admin1" && passwordInput === "admin1") {
+          document.getElementById("login-popup").style.display = "none";
+          document.getElementById("login-btn").style.display = "none";
+          document.getElementById("username-display").style.display = "block";
+          document.getElementById("displayed-username").innerText =
+            usernameInput;
+        } else {
+          alert("Sai tên đăng nhập hoặc mật khẩu!");
+        }
+      };
+      let products = [];
+
+      const form = document.getElementById("productForm");
+      const productList = document.getElementById("productList");
+
+      // Lấy sản phẩm từ localStorage (nếu có)
+      let storedProducts = localStorage.getItem("products");
+      if (storedProducts) {
+        products = JSON.parse(storedProducts);
+      }
+
+      function renderProducts(list = products) {
+        productList.innerHTML = "";
+        list.forEach((product, index) => {
+          let card = `
+        <div class="product-card">
+          <img src="${product.image}" alt="${product.name}">
+          <h3>${product.name}</h3>
+          <p>Màu: ${product.color}</p>
+          <p>Số lượng: ${product.quantity}</p>
+          <button onclick="deleteProduct(${index})">Xóa</button>
+        </div>
+      `;
+          productList.innerHTML += card;
+        });
+      }
+
+      //Hàm xóa sản phẩm
+      function deleteProduct(index) {
+        products.splice(index, 1);
+        localStorage.setItem("products", JSON.stringify(products));
+        renderProducts();
+      }
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        let name = document.getElementById("name").value;
+        let color = document.getElementById("color").value;
+        let quantity = document.getElementById("quantity").value;
+        let file = document.getElementById("image").files[0];
+
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            let imageData = event.target.result;
+            products.push({ name, color, quantity, image: imageData });
+            localStorage.setItem("products", JSON.stringify(products));
+            renderProducts();
+            form.reset();
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // --------- Search sản phẩm ----------
+      const searchInput = document.getElementById("searchInput");
+      const searchBtn = document.getElementById("searchBtn");
+
+      searchBtn.addEventListener("click", () => {
+        const keyword = searchInput.value.toLowerCase().trim();
+        const filtered = products.filter((product) =>
+          product.name.toLowerCase().includes(keyword)
+        );
+        renderProducts(filtered);
+
+        // Lưu từ khóa search vào localStorage để index.html có thể dùng
+        localStorage.setItem("searchKeyword", keyword);
+      });
+
+      searchInput.addEventListener("keyup", (e) => {
+        if (e.key === "Enter") searchBtn.click();
+      });
+
+      // Hiển thị sản phẩm khi load trang
+      renderProducts();
+    </script>
   </body>
 </html>
