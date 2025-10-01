@@ -1,172 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/styles.css" />
-    <link rel="stylesheet" href="css/all.min.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <title>DMarket</title>
-  </head>
-  <body>
-    <header>
-      <!-- Nút thông báo -->
-      <button id="notification-btn" type="button" style="background: none; border: none;">
-        <h1 style="--h1-left: 775px; --h1-top: 5px;">
-          <i class="fa-solid fa-bell"></i>
-          Thông báo
-          <span class="notification-badge">3</span>
-        </h1>
-      </button>
 
-      <!-- Popup thông báo -->
-      <div id="notification-popup" class="popup" style="display:none">
-        <div class="popup-content">
-          <span id="close-notification-popup" class="close">&times;</span>
-          <h3>Thông báo mới</h3>
-          <ul>
-            <li>Đơn hàng #123 của bạn đã được giao thành công.</li>
-            <li>Chào bạn mới! Cảm ơn bạn đã đăng ký tài khoản.</li>
-            <li>Khuyến mãi khủng 50% chỉ trong hôm nay!</li>
-          </ul>
-        </div>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <title>DMarket</title>
+</head>
 
-      <h1 style="--h1-left: 200px; --h1-top: 5px">
-        <i class="fa-solid fa-phone"></i>
-        Liên hệ:
-        <button
-          type="button"
-          style="background: none; border: none"
-          onclick="location.href='https://www.facebook.com/thanh.huynhtuan.1840'"
-        >
-          <div class="circle">
-            <i class="fa-solid fa-f"></i>
-          </div>
-        </button>
+<body>
+  <header>
+    <!-- Nút thông báo -->
+    <button id="notification-btn" type="button" style="background: none; border: none;">
+      <h1 style="--h1-left: 775px; --h1-top: 5px;">
+        <i class="fa-solid fa-bell"></i>
+        Thông báo
+        <span class="notification-badge">3</span>
       </h1>
+    </button>
 
-      <button type="button" style="background: none; border: none">
-        <h1 style="--h1-left: 905px; --h1-top: 5px">
-          <i class="fa-solid fa-circle-question"></i>
-          Hỗ trợ
-        </h1>
-      </button>
-      <button
-        id="login-btn"
-        type="button"
-        style="background: none; border: none"
-      >
-        <h1 style="--h1-left: 1000px; --h1-top: 5px">
-          <i class="fa-solid fa-circle-user"></i>
-          Đăng nhập
-        </h1>
-      </button>
-      <div id="login-popup" class="popup" style="display: none">
-        <div class="popup-content">
-          <span id="close-login-popup" class="close">&times;</span>
-          <h2>Đăng nhập</h2>
-          <form class="login-form">
-            <div class="input-group">
-              <label for="username">Tên đăng nhập:</label>
-              <div class="input-with-icon">
-                <i class="fa-solid fa-user"></i>
-                <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  placeholder="Nhập tên đăng nhập"
-                  required
-                />
-              </div>
-            </div>
-            <div class="input-group">
-              <label for="password">Mật khẩu:</label>
-              <div class="input-with-icon">
-                <i class="fa-solid fa-lock"></i>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  placeholder="Nhập mật khẩu"
-                  required
-                />
-                <i class="fa-solid fa-eye-slash toggle-password"></i>
-              </div>
-            </div>
-            <button type="submit" class="login-button">Đăng nhập</button>
-          </form>
-        </div>
+    <!-- Popup thông báo -->
+    <div id="notification-popup" class="popup" style="display:none">
+      <div class="popup-content">
+        <span id="close-notification-popup" class="close">&times;</span>
+        <h3>Thông báo mới</h3>
+        <ul>
+          <li>Đơn hàng #123 của bạn đã được giao thành công.</li>
+          <li>Chào bạn mới! Cảm ơn bạn đã đăng ký tài khoản.</li>
+          <li>Khuyến mãi khủng 50% chỉ trong hôm nay!</li>
+        </ul>
       </div>
-      <h1 style="--h1-left: 190px; --h1-top: 17px; --h1-size: 30px">
-        <button
-          type="button"
-          oneclick="location.href='index.html';"
-          style="
+    </div>
+
+    <h1 style="--h1-left: 200px; --h1-top: 5px">
+      <i class="fa-solid fa-phone"></i>
+      Liên hệ:
+      <button type="button" style="background: none; border: none"
+        onclick="location.href='https://www.facebook.com/thanh.huynhtuan.1840'">
+        <div class="circle">
+          <i class="fa-solid fa-f"></i>
+        </div>
+      </button>
+    </h1>
+
+    <button type="button" style="background: none; border: none">
+      <h1 style="--h1-left: 905px; --h1-top: 5px">
+        <i class="fa-solid fa-circle-question"></i>
+        Hỗ trợ
+      </h1>
+    </button>
+    <button id="login-btn" type="button" style="background: none; border: none">
+      <h1 style="--h1-left: 1000px; --h1-top: 5px">
+        <i class="fa-solid fa-circle-user"></i>
+        Đăng nhập
+      </h1>
+    </button>
+    <div id="login-popup" class="popup" style="display: none">
+      <div class="popup-content">
+        <span id="close-login-popup" class="close">&times;</span>
+        <h2>Đăng nhập</h2>
+        <form class="login-form">
+          <div class="input-group">
+            <label for="username">Tên đăng nhập:</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-user"></i>
+              <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập" required />
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="password">Mật khẩu:</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-lock"></i>
+              <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required />
+              <i class="fa-solid fa-eye-slash toggle-password"></i>
+            </div>
+          </div>
+          <button type="submit" class="login-button">Đăng nhập</button>
+        </form>
+      </div>
+    </div>
+    <h1 style="--h1-left: 190px; --h1-top: 17px; --h1-size: 30px">
+      <button type="button" oneclick="location.href='index.html';" style="
             background: none;
             border: none;
             color: white;
             cursor: pointer;
             font-size: 1.2em;
             font-weight: bold;
-          "
-        >
-          <i class="fa-solid fa-store"></i>DMarket
-        </button>
-      </h1>
-      <div
-        class="search-container"
-        style="--search-left: 425px; --search-top: 40px"
-      >
-        <input type="text" placeholder="Search..." />
-        <button type="submit">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-      </div>
-      <button type="button" style="background: none; border: none">
-        <h1 style="--h1-left: 1040px; --h1-top: 17px; --h1-size: 30px">
-          <i class="fa-solid fa-cart-shopping"></i>
-        </h1>
+          ">
+        <i class="fa-solid fa-store"></i>DMarket
       </button>
-      <script>
-        // Thông báo
-        const notificationBtn = document.getElementById("notification-btn");
-        const notificationPopup = document.getElementById("notification-popup");
-        const closeNotificationPopupBtn = document.getElementById("close-notification-popup");
+    </h1>
+    <div class="search-container" style="--search-left: 425px; --search-top: 40px">
+      <input type="text" placeholder="Search..." />
+      <button type="submit">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </div>
+    <button id="cartShop" type="button" style="background: none; border: none">
+      <h1 style="--h1-left: 1040px; --h1-top: 17px; --h1-size: 30px">
+        <i class="fa-solid fa-cart-shopping"></i>
+      </h1>
+    </button>
+    <!-- Menu giỏ hàng -->
+    <div id="cartMenu" class="cart-dropdown">
+      <h3>Giỏ hàng</h3>
+      <hr>
+      <ul id="cartItems">
+        <li data-price="100000">
+          Sản phẩm 1 - 100.000đ
+          <div class="quantity">
+            <button class="minus">-</button>
+            <span class="count">1</span>
+            <button class="plus">+</button>
+          </div>
+        </li>
+        <li data-price="200000">
+          Sản phẩm 2 - 200.000đ
+          <div class="quantity">
+            <button class="minus">-</button>
+            <span class="count">2</span>
+            <button class="plus">+</button>
+          </div>
+        </li>
+      </ul>
+      <hr>
+      <!-- Tổng tiền -->
+      <div class="total">
+        Tổng: <span id="totalPrice">0</span> đ
+      </div>
+    </div>
 
-        notificationBtn.onclick = function() {
-          notificationPopup.style.display = "flex";
-        }
+    <script>
+      // Thông báo
+      const notificationBtn = document.getElementById("notification-btn");
+      const notificationPopup = document.getElementById("notification-popup");
+      const closeNotificationPopupBtn = document.getElementById("close-notification-popup");
 
-        closeNotificationPopupBtn.onclick = function() {
+      notificationBtn.onclick = function () {
+        notificationPopup.style.display = "flex";
+      }
+
+      closeNotificationPopupBtn.onclick = function () {
+        notificationPopup.style.display = "none";
+      }
+
+      // Nếu bấm ra ngoài màn hình cũng sẽ tắt thông báo
+      window.addEventListener("click", function (event) {
+        if (event.target == notificationPopup) {
           notificationPopup.style.display = "none";
         }
+      });
 
-        // Nếu bấm ra ngoài màn hình cũng sẽ tắt thông báo
-        window.addEventListener("click", function(event) {
-          if (event.target == notificationPopup) {
-            notificationPopup.style.display = "none";
-          }
+
+      // Đăng nhập
+      document.getElementById("login-btn").onclick = function () {
+        document.getElementById("login-popup").style.display = "flex";
+      };
+      document.getElementById("close-login-popup").onclick = function () {
+        document.getElementById("login-popup").style.display = "none";
+      };
+      window.onclick = function (event) {
+        var popup = document.getElementById("login-popup");
+        if (event.target == popup) {
+          popup.style.display = "none";
+        }
+      };
+
+      //thiết kế cartshop
+      let btn = document.getElementById("cartShop");
+      let menu = document.getElementById("cartMenu");
+
+      // Toggle bật/tắt menu khi bấm nút giỏ hàng
+      btn.onclick = () => {
+        menu.style.display = (menu.style.display === "block") ? "none" : "block";
+      };
+
+      // Ấn ra ngoài thì tự đóng menu
+      window.onclick = (e) => {
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+          menu.style.display = "none";
+        }
+      };
+      // Hàm tinh tổng tiền
+      function updateTotal() {
+        let items = document.querySelectorAll("#cartItems li");
+        let total = 0;
+        items.forEach(item => {
+          let price = parseInt(item.getAttribute("data-price"));
+          let qty = parseInt(item.querySelector(".count").textContent);
+          total += price * qty;
         });
+        document.getElementById("totalPrice").textContent = total.toLocaleString();
+      }
 
-        
-        // Đăng nhập
-        document.getElementById("login-btn").onclick = function () {
-          document.getElementById("login-popup").style.display = "flex";
+      // Gắn sự kiện cho nút + và -
+      document.querySelectorAll(".plus").forEach(plusBtn => {
+        plusBtn.onclick = () => {
+          let count = plusBtn.previousElementSibling;
+          count.textContent = parseInt(count.textContent) + 1;
+          updateTotal();
         };
-        document.getElementById("close-login-popup").onclick = function () {
-          document.getElementById("login-popup").style.display = "none";
-        };
-        window.onclick = function (event) {
-          var popup = document.getElementById("login-popup");
-          if (event.target == popup) {
-            popup.style.display = "none";
+      });
+
+      document.querySelectorAll(".minus").forEach(minusBtn => {
+        minusBtn.onclick = () => {
+          let count = minusBtn.nextElementSibling;
+          let newVal = parseInt(count.textContent) - 1;
+          if (newVal > 0) {
+            count.textContent = newVal;
+            updateTotal();
           }
         };
-      </script>
-    </header>
-  </body>
+      });
+
+      // Tính tổng ban đầu
+      updateTotal();
+    </script>
+  </header>
+</body>
+
 </html>

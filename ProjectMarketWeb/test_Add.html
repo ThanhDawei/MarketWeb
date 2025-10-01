@@ -1,158 +1,174 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Form + Card sản phẩm</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-      }
-      form {
-        margin-bottom: 20px;
-      }
-      input {
-        margin: 5px;
-        padding: 5px;
-        display: block;
-      }
-      .product-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-      }
-      .product-card {
-        width: 200px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 10px;
-        text-align: center;
-        background: #fafafa;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      }
-      .product-card img {
-        width: 100%;
-        height: auto;
-        border-radius: 6px;
-        margin-bottom: 10px;
-      }
-      .product-card h3 {
-        margin: 5px 0;
-        font-size: 18px;
-        color: #333;
-      }
-      .product-card p {
-        margin: 3px 0;
-        font-size: 14px;
-        color: #555;
-      }
-      .search-container {
-        margin-bottom: 20px;
-      }
-      .search-container input {
-        display: inline-block;
-        width: 200px;
-      }
-      .search-container button {
-        padding: 5px 10px;
-        cursor: pointer;
-      }
-    </style>
-  </head>
-  <body>
-    <h2>Thêm Sản Phẩm</h2>
-    <form id="productForm">
-      <input type="text" id="name" placeholder="Tên sản phẩm" required />
-      <input type="text" id="color" placeholder="Màu" required />
-      <input type="number" id="quantity" placeholder="Số lượng" required />
-      <input type="file" id="image" accept="image/*" required />
-      <button type="submit">Thêm</button>
-    </form>
 
-    <div class="search-container">
-      <input type="text" id="searchInput" placeholder="Search sản phẩm..." />
-      <button id="searchBtn">Search</button>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <title>Form + Card sản phẩm</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
 
-    <h2>Danh sách Sản Phẩm</h2>
-    <div id="productList" class="product-list"></div>
+    form {
+      margin-bottom: 20px;
+    }
 
-    <script>
-      let products = [];
+    input {
+      margin: 5px;
+      padding: 5px;
+      display: block;
+    }
 
-      const form = document.getElementById("productForm");
-      const productList = document.getElementById("productList");
+    .product-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
 
-      // Lấy sản phẩm từ localStorage (nếu có)
-      let storedProducts = localStorage.getItem("products");
-      if (storedProducts) {
-        products = JSON.parse(storedProducts);
-      }
+    .product-card {
+      width: 200px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      background: #fafafa;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
 
-      function renderProducts(list = products) {
-        productList.innerHTML = "";
-        list.forEach((product, index) => {
-          let card = `
+    .product-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .product-card h3 {
+      margin: 5px 0;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .product-card p {
+      margin: 3px 0;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .search-container {
+      margin-bottom: 20px;
+    }
+
+    .search-container input {
+      display: inline-block;
+      width: 200px;
+    }
+
+    .search-container button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Thêm Sản Phẩm</h2>
+  <form id="productForm">
+    <input type="text" id="name" placeholder="Tên sản phẩm" required />
+    <input type="text" id="color" placeholder="Màu" required />
+    <input type="number" id="quantity" placeholder="Số lượng" required />
+    <input type="number" id="price" placeholder="Giá tiền" required />
+    <input type="file" id="image" accept="image/*" required />
+    <button type="submit">Thêm</button>
+  </form>
+
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search sản phẩm..." />
+    <button id="searchBtn">Search</button>
+  </div>
+
+  <h2>Danh sách Sản Phẩm</h2>
+  <div id="productList" class="product-list"></div>
+
+  <script>
+    let products = [];
+
+    const form = document.getElementById("productForm");
+    const productList = document.getElementById("productList");
+
+    // Lấy sản phẩm từ localStorage (nếu có)
+    let storedProducts = localStorage.getItem("products");
+    if (storedProducts) {
+      products = JSON.parse(storedProducts);
+    }
+
+    function renderProducts(list = products) {
+      productList.innerHTML = "";
+      list.forEach((product, index) => {
+        let card = `
         <div class="product-card">
           <img src="${product.image}" alt="${product.name}">
           <h3>${product.name}</h3>
           <p>Màu: ${product.color}</p>
           <p>Số lượng: ${product.quantity}</p>
+          <p>Giá sản phẩm:${product.price} VND</p>
           <button onclick="deleteProduct(${index})">Xóa</button>
         </div>
       `;
-          productList.innerHTML += card;
-        });
-      }
-
-      //Hàm xóa sản phẩm
-      function deleteProduct(index) {
-        products.splice(index, 1);
-        localStorage.setItem("products", JSON.stringify(products));
-        renderProducts();
-      }
-
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        let name = document.getElementById("name").value;
-        let color = document.getElementById("color").value;
-        let quantity = document.getElementById("quantity").value;
-        let file = document.getElementById("image").files[0];
-
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function (event) {
-            let imageData = event.target.result;
-            products.push({ name, color, quantity, image: imageData });
-            localStorage.setItem("products", JSON.stringify(products));
-            renderProducts();
-            form.reset();
-          };
-          reader.readAsDataURL(file);
-        }
+        productList.innerHTML += card;
       });
+    }
 
-      // --------- Search sản phẩm ----------
-      const searchInput = document.getElementById("searchInput");
-      const searchBtn = document.getElementById("searchBtn");
-
-      searchBtn.addEventListener("click", () => {
-        const keyword = searchInput.value.toLowerCase().trim();
-        const filtered = products.filter((product) =>
-          product.name.toLowerCase().includes(keyword)
-        );
-        renderProducts(filtered);
-
-        // Lưu từ khóa search vào localStorage để index.html có thể dùng
-        localStorage.setItem("searchKeyword", keyword);
-      });
-
-      searchInput.addEventListener("keyup", (e) => {
-        if (e.key === "Enter") searchBtn.click();
-      });
-
-      // Hiển thị sản phẩm khi load trang
+    //Hàm xóa sản phẩm
+    function deleteProduct(index) {
+      products.splice(index, 1);
+      localStorage.setItem("products", JSON.stringify(products));
       renderProducts();
-    </script>
-  </body>
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      let name = document.getElementById("name").value;
+      let color = document.getElementById("color").value;
+      let quantity = document.getElementById("quantity").value;
+      let price = document.getElementById("price").value;
+      let file = document.getElementById("image").files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          let imageData = event.target.result;
+          products.push({ name, color, quantity, price, image: imageData });
+          localStorage.setItem("products", JSON.stringify(products));
+          renderProducts();
+          form.reset();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // --------- Search sản phẩm ----------
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+
+    searchBtn.addEventListener("click", () => {
+      const keyword = searchInput.value.toLowerCase().trim();
+      const filtered = products.filter((product) =>
+        product.name.toLowerCase().includes(keyword)
+      );
+      renderProducts(filtered);
+
+      // Lưu từ khóa search vào localStorage để index.html có thể dùng
+      localStorage.setItem("searchKeyword", keyword);
+    });
+
+    searchInput.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") searchBtn.click();
+    });
+
+    // Hiển thị sản phẩm khi load trang
+    renderProducts();
+  </script>
+</body>
+
 </html>

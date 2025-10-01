@@ -5,6 +5,7 @@ header {
   position: relative;
   height: 100px;
 }
+
 h1 {
   color: white;
   font-size: 0.9em;
@@ -14,6 +15,7 @@ h1 {
   font-size: var(--h1-size);
   font-family: "Poppins", sans-serif;
 }
+
 .circle {
   height: 12.5px;
   width: 12.5px;
@@ -26,6 +28,7 @@ h1 {
   background-color: rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
+
 .search-container {
   display: flex;
   align-items: center;
@@ -45,6 +48,7 @@ h1 {
   outline: none;
   font-size: 14px;
 }
+
 .search-container button {
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   border: none;
@@ -53,70 +57,91 @@ h1 {
   cursor: pointer;
   transition: color 0.3s ease;
 }
+
 .search-container button:hover {
   color: #000;
 }
 
 /* Style cho cái chuông (bây giờ là cả nút bấm) */
 .notification-bell {
-  color: white; /* Giữ màu chữ trắng */
-  cursor: pointer; /* Biến chuột thành hình bàn tay khi di vào */
+  color: white;
+  /* Giữ màu chữ trắng */
+  cursor: pointer;
+  /* Biến chuột thành hình bàn tay khi di vào */
   position: relative;
-  display: inline-flex; /* Dùng flex để icon và chữ xếp hàng ngang đẹp */
-  align-items: center; /* Căn thẳng hàng icon và chữ */
+  display: inline-flex;
+  /* Dùng flex để icon và chữ xếp hàng ngang đẹp */
+  align-items: center;
+  /* Căn thẳng hàng icon và chữ */
 }
 
 /* Style riêng cho icon chuông bên trong nút */
 .notification-bell .fa-bell {
-  font-size: 1em; /* Kích thước icon bằng kích thước chữ */
-  margin-right: 5px; /* Tạo khoảng cách giữa chuông và chữ "Thông báo" */
+  font-size: 1em;
+  /* Kích thước icon bằng kích thước chữ */
+  margin-right: 5px;
+  /* Tạo khoảng cách giữa chuông và chữ "Thông báo" */
 }
 
 /* === PHẦN CSS CÒN THIẾU CHO CHỨC NĂNG THÔNG BÁO === */
 
 /* Hộp to nhất chứa mọi thứ */
 .notification-container {
-  position: relative; /* Rất quan trọng! Để làm "mỏ neo" cho hộp thông báo */
+  position: relative;
+  /* Rất quan trọng! Để làm "mỏ neo" cho hộp thông báo */
 }
 
 /* Checkbox tàng hình (công tắc ma thuật) */
 .notification-toggle {
-  display: none; /* Ẩn cái checkbox xấu xí đi */
+  display: none;
+  /* Ẩn cái checkbox xấu xí đi */
 }
 
 /* Chấm đỏ báo số thông báo mới */
 .notification-badge {
-  position: absolute; /* Thả nổi nó trên cái chuông */
-  top: -2px; /* Chỉnh vị trí của chấm đỏ (lên/xuống) */
-  right: -8px; /* Chỉnh vị trí của chấm đỏ (trái/phải) */
+  position: absolute;
+  /* Thả nổi nó trên cái chuông */
+  top: -2px;
+  /* Chỉnh vị trí của chấm đỏ (lên/xuống) */
+  right: -8px;
+  /* Chỉnh vị trí của chấm đỏ (trái/phải) */
   background-color: red;
   color: white;
-  border-radius: 50%; /* Biến nó thành hình tròn */
+  border-radius: 50%;
+  /* Biến nó thành hình tròn */
   padding: 1px 5px;
-  font-size: 10px; /* Cỡ chữ của số bên trong */
+  font-size: 10px;
+  /* Cỡ chữ của số bên trong */
   font-weight: bold;
 }
 
 /* Hộp chứa thông báo */
 .notification-box {
-  display: none; /* QUAN TRỌNG: Mặc định, hộp này sẽ bị ẨN */
-  position: absolute; /* Thả nổi nó, định vị theo cái .notification-container */
-  top: 35px; /* Khoảng cách từ chuông xuống hộp. */
+  display: none;
+  /* QUAN TRỌNG: Mặc định, hộp này sẽ bị ẨN */
+  position: absolute;
+  /* Thả nổi nó, định vị theo cái .notification-container */
+  top: 35px;
+  /* Khoảng cách từ chuông xuống hộp. */
   right: 0;
   width: 300px;
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  color: #333; /* Chữ bên trong màu đen cho dễ đọc */
-  z-index: 1000; /* Đảm bảo nó nổi lên trên mọi thứ khác */
-  text-align: left; /* Căn chữ trong hộp về bên trái */
+  color: #333;
+  /* Chữ bên trong màu đen cho dễ đọc */
+  z-index: 1000;
+  /* Đảm bảo nó nổi lên trên mọi thứ khác */
+  text-align: left;
+  /* Căn chữ trong hộp về bên trái */
 }
 
 /* === DÒNG CODE PHÉP THUẬT === */
 /* Khi checkbox được tick (checked), thì tìm cái hộp thông báo và bật nó lên */
-.notification-toggle:checked ~ .notification-box {
-  display: block; /* Hiện nó ra! */
+.notification-toggle:checked~.notification-box {
+  display: block;
+  /* Hiện nó ra! */
 }
 
 /* Style cho nội dung bên trong hộp thông báo */
@@ -125,7 +150,8 @@ h1 {
   margin: 0;
   border-bottom: 1px solid #eee;
   font-size: 16px;
-  font-weight: 600; /* Chữ đậm hơn một chút */
+  font-weight: 600;
+  /* Chữ đậm hơn một chút */
   color: #333;
 }
 
@@ -162,6 +188,7 @@ h1 {
   align-items: center;
   justify-content: center;
 }
+
 .popup-content {
   background: #fff;
   padding: 24px 32px;
@@ -170,6 +197,7 @@ h1 {
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
   position: relative;
 }
+
 .close {
   position: absolute;
   right: 12px;
@@ -184,25 +212,33 @@ h1 {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Nền mờ */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Nền mờ */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(5px); /* Hiệu ứng làm mờ nền phía sau */
+  backdrop-filter: blur(5px);
+  /* Hiệu ứng làm mờ nền phía sau */
 }
 
 .popup-content {
   background-color: #fff;
   padding: 30px;
-  border-radius: 15px; /* Bo tròn góc */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Đổ bóng mạnh hơn */
+  border-radius: 15px;
+  /* Bo tròn góc */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  /* Đổ bóng mạnh hơn */
   width: 100%;
-  max-width: 400px; /* Chiều rộng tối đa */
+  max-width: 400px;
+  /* Chiều rộng tối đa */
   position: relative;
-  text-align: center; /* Căn giữa nội dung */
-  font-family: "Poppins", sans-serif; /* Sử dụng font đã import */
-  animation: fadeIn 0.3s ease-out; /* Animation khi hiện popup */
+  text-align: center;
+  /* Căn giữa nội dung */
+  font-family: "Poppins", sans-serif;
+  /* Sử dụng font đã import */
+  animation: fadeIn 0.3s ease-out;
+  /* Animation khi hiện popup */
 }
 
 @keyframes fadeIn {
@@ -210,6 +246,7 @@ h1 {
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -217,7 +254,8 @@ h1 {
 }
 
 .popup-content h2 {
-  font-size: 2em; /* Tiêu đề lớn hơn */
+  font-size: 2em;
+  /* Tiêu đề lớn hơn */
   margin-bottom: 25px;
   color: #333;
   font-weight: 600;
@@ -243,11 +281,13 @@ h1 {
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Khoảng cách giữa các nhóm input */
+  gap: 20px;
+  /* Khoảng cách giữa các nhóm input */
 }
 
 .input-group {
-  text-align: left; /* Căn trái label và input */
+  text-align: left;
+  /* Căn trái label và input */
 }
 
 .input-group label {
@@ -264,14 +304,17 @@ h1 {
   align-items: center;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 8px 15px; /* Padding bên trong input */
+  padding: 8px 15px;
+  /* Padding bên trong input */
   transition: all 0.3s ease;
   background-color: #f9f9f9;
 }
 
 .input-with-icon:focus-within {
-  border-color: #6a0dad; /* Màu viền khi focus */
-  box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.2); /* Đổ bóng nhẹ khi focus */
+  border-color: #6a0dad;
+  /* Màu viền khi focus */
+  box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.2);
+  /* Đổ bóng nhẹ khi focus */
   background-color: #fff;
 }
 
@@ -282,13 +325,16 @@ h1 {
 }
 
 .input-with-icon input {
-  flex-grow: 1; /* Cho phép input lấp đầy không gian còn lại */
+  flex-grow: 1;
+  /* Cho phép input lấp đầy không gian còn lại */
   border: none;
   outline: none;
-  padding: 5px 0; /* Giảm padding ngang để input không bị quá to */
+  padding: 5px 0;
+  /* Giảm padding ngang để input không bị quá to */
   font-size: 1em;
   color: #333;
-  background-color: transparent; /* Nền input trong suốt */
+  background-color: transparent;
+  /* Nền input trong suốt */
 }
 
 .input-with-icon input::placeholder {
@@ -308,7 +354,8 @@ h1 {
 }
 
 .login-button {
-  background-color: #6a0dad; /* Màu tím đậm */
+  background-color: #6a0dad;
+  /* Màu tím đậm */
   color: white;
   padding: 15px 25px;
   border: none;
@@ -322,22 +369,27 @@ h1 {
 }
 
 .login-button:hover {
-  background-color: #5a0ca0; /* Màu tím nhạt hơn khi hover */
-  transform: translateY(-2px); /* Hiệu ứng nhấc nhẹ lên */
+  background-color: #5a0ca0;
+  /* Màu tím nhạt hơn khi hover */
+  transform: translateY(-2px);
+  /* Hiệu ứng nhấc nhẹ lên */
 }
 
 .login-button:active {
-  transform: translateY(0); /* Trở về vị trí ban đầu khi click */
+  transform: translateY(0);
+  /* Trở về vị trí ban đầu khi click */
 }
 
 #login-btn {
   cursor: pointer;
 }
+
 .product-list {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
 }
+
 .product-card {
   width: 200px;
   border: 1px solid #ddd;
@@ -347,35 +399,108 @@ h1 {
   background: #fafafa;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
+
 .product-card img {
   width: 100%;
   height: auto;
   border-radius: 6px;
   margin-bottom: 10px;
 }
+
 .product-card h3 {
   margin: 5px 0;
   font-size: 18px;
   color: #333;
 }
+
 .product-card p {
   margin: 3px 0;
   font-size: 14px;
   color: #555;
 }
+
 .search-container {
   margin-bottom: 20px;
 }
+
 .search-container input {
   display: inline-block;
   width: 200px;
 }
+
 .search-container button {
   padding: 5px 10px;
   cursor: pointer;
 }
+
 input {
   margin: 5px;
   padding: 5px;
   display: block;
+}
+
+/* Ẩn menu ban đầu */
+.cart-dropdown {
+  display: inline-block;
+  position: absolute;
+  top: 60px;
+  /* cách icon 1 chút */
+  right: 60px;
+  width: 250px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  z-index: 100;
+}
+
+/* Khi hover vào wrapper thì menu hiện ra */
+#cartWrapper:hover .cart-dropdown {
+  display: block;
+}
+
+.cart-dropdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cart-dropdown li {
+  padding: 8px 5px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-dropdown li:last-child {
+  border-bottom: none;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.quantity button {
+  width: 25px;
+  height: 25px;
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.quantity span {
+  min-width: 20px;
+  text-align: center;
+  display: inline-block;
+}
+
+.total {
+  text-align: right;
+  font-weight: bold;
+  padding: 5px 0;
 }
