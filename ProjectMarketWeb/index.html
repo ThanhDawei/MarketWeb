@@ -243,15 +243,14 @@
       </h1>
       <div
         class="search-container"
-        style="--search-left: 425px; --search-top: 40px"
-      >
-        <input type="text" id="searchInput" placeholder="Search..." />
-        <button type="submit" id="searchBtn">
+        style="--search-top: 40px">
+        <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." />
+        <button type="button" id="searchBtn">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
       </div>
       <button type="button" style="background: none; border: none">
-        <h1 style="--h1-left: 1040px; --h1-top: 17px; --h1-size: 30px">
+        <h1 style="--h1-left: 1100px; --h1-top: 20px; --h1-size: 30px">
           <i class="fa-solid fa-cart-shopping"></i>
         </h1>
       </button>
@@ -367,19 +366,16 @@
       const searchInput = document.getElementById("searchInput");
       const searchBtn = document.getElementById("searchBtn");
 
-      searchBtn.addEventListener("click", () => {
-        const keyword = searchInput.value.toLowerCase().trim();
-        const filtered = products.filter((product) =>
-          product.name.toLowerCase().includes(keyword)
-        );
-        renderProducts(filtered);
+      if (searchInput && searchBtn) {
+        searchBtn.addEventListener("click", () => {
+          const keyword = searchInput.value.trim(); // FIX
+          localStorage.setItem("searchKeyword", keyword);
+        });
 
-        localStorage.setItem("searchKeyword", keyword);
-      });
-
-      searchInput.addEventListener("keyup", (e) => {
-        if (e.key === "Enter") searchBtn.click();
-      });
+        searchInput.addEventListener("keyup", (e) => {
+          if (e.key === "Enter") searchBtn.click();
+        });
+      }
 
       renderProducts();
 
