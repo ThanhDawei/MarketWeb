@@ -10,6 +10,112 @@
       rel="stylesheet"
     />
     <title>DMarket</title>
+    <style>
+     
+      .popup {
+        display: none; 
+        position: fixed;
+        z-index: 1000; 
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4); 
+        justify-content: center;
+        align-items: center;
+      }
+
+      .popup-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 8px;
+        position: relative;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+          0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        animation-name: animatetop;
+        animation-duration: 0.4s;
+      }
+
+      @keyframes animatetop {
+        from {
+          top: -300px;
+          opacity: 0;
+        }
+        to {
+          top: 0;
+          opacity: 1;
+        }
+      }
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        right: 10px;
+        top: 5px;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      #productForm {
+        display: flex; 
+        flex-direction: column;
+        gap: 15px; 
+        margin-top: 20px;
+      }
+
+      #productForm input[type="text"],
+      #productForm input[type="number"],
+      #productForm input[type="file"] {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: calc(100% - 22px); 
+      }
+
+      #productForm button[type="submit"] {
+        background-color: #8a2be2;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      #productForm button[type="submit"]:hover {
+        background-color: #7b1edc;
+      }
+
+    
+      #open-product-form-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px; 
+        margin-left: 20px;
+        font-size: 16px;
+      }
+
+      #open-product-form-btn:hover {
+        background-color: #0056b3;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -150,27 +256,46 @@
         </h1>
       </button>
     </header>
-    <form id="productForm">
-      <input type="text" id="name" placeholder="Tên sản phẩm" required />
-      <input type="text" id="color" placeholder="Màu" required />
-      <input type="number" id="quantity" placeholder="Số lượng" required />
-      <input type="file" id="image" accept="image/*" required />
-      <button type="submit">Thêm</button>
-    </form>
+
+
+    <button id="open-product-form-btn">Thêm sản phẩm mới</button>
+
+
+    <div id="product-form-popup" class="popup">
+      <div class="popup-content">
+        <span id="close-product-form-popup" class="close">&times;</span>
+        <h2>Thêm sản phẩm mới</h2>
+        <form id="productForm">
+          <input type="text" id="name" placeholder="Tên sản phẩm" required />
+          <input type="text" id="color" placeholder="Màu" required />
+          <input type="number" id="quantity" placeholder="Số lượng" required />
+          <input type="file" id="image" accept="image/*" required />
+          <button type="submit">Thêm</button>
+        </form>
+      </div>
+    </div>
+
     <div id="productList" class="product-list"></div>
     <script>
+
       document.getElementById("login-btn").onclick = function () {
         document.getElementById("login-popup").style.display = "flex";
       };
       document.getElementById("close-login-popup").onclick = function () {
         document.getElementById("login-popup").style.display = "none";
       };
-      window.onclick = function (event) {
-        var popup = document.getElementById("login-popup");
-        if (event.target == popup) {
-          popup.style.display = "none";
+
+      window.addEventListener("click", function (event) {
+        var loginPopup = document.getElementById("login-popup");
+        if (event.target == loginPopup) {
+          loginPopup.style.display = "none";
         }
-      };
+
+        var productFormPopup = document.getElementById("product-form-popup");
+        if (event.target == productFormPopup) {
+          productFormPopup.style.display = "none";
+        }
+      });
       document.querySelector(".login-form").onsubmit = function (e) {
         e.preventDefault();
         var usernameInput = document.getElementById("username").value;
@@ -190,7 +315,6 @@
       const form = document.getElementById("productForm");
       const productList = document.getElementById("productList");
 
-      // Lấy sản phẩm từ localStorage (nếu có)
       let storedProducts = localStorage.getItem("products");
       if (storedProducts) {
         products = JSON.parse(storedProducts);
@@ -212,7 +336,6 @@
         });
       }
 
-      //Hàm xóa sản phẩm
       function deleteProduct(index) {
         products.splice(index, 1);
         localStorage.setItem("products", JSON.stringify(products));
@@ -234,12 +357,13 @@
             localStorage.setItem("products", JSON.stringify(products));
             renderProducts();
             form.reset();
+            document.getElementById("product-form-popup").style.display =
+              "none"; 
           };
           reader.readAsDataURL(file);
         }
       });
 
-      // --------- Search sản phẩm ----------
       const searchInput = document.getElementById("searchInput");
       const searchBtn = document.getElementById("searchBtn");
 
@@ -250,7 +374,6 @@
         );
         renderProducts(filtered);
 
-        // Lưu từ khóa search vào localStorage để index.html có thể dùng
         localStorage.setItem("searchKeyword", keyword);
       });
 
@@ -258,8 +381,15 @@
         if (e.key === "Enter") searchBtn.click();
       });
 
-      // Hiển thị sản phẩm khi load trang
       renderProducts();
+
+      document.getElementById("open-product-form-btn").onclick = function () {
+        document.getElementById("product-form-popup").style.display = "flex";
+      };
+      document.getElementById("close-product-form-popup").onclick =
+        function () {
+          document.getElementById("product-form-popup").style.display = "none";
+        };
     </script>
   </body>
 </html>
