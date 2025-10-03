@@ -38,8 +38,7 @@ h1 {
   overflow: hidden;
   position: absolute;
   top: var(--search-top);
-  left: 50%;
-  transform: translateX(-50%);
+  left: 450px;
   border: 2px solid #ddd;
   background: #fff;
 }
