@@ -15,25 +15,18 @@
   <body>
     <header>
       <!-- Nút thông báo -->
-      <h1 style="--h1-left: 775px; --h1-top: 3px; font-size: 0.9em">
+      <h1 style="--h1-left: 61%; --h1-top: 2%; font-size: 0.9em">
         <div class="notification-container">
-          <!-- Checkbox tàng hình để điều khiển -->
           <input
             type="checkbox"
             id="notification-toggle"
             class="notification-toggle"
           />
-
-          <!-- Cái nút cũ của bạn bây giờ biến thành label để bấm được -->
           <label for="notification-toggle" class="notification-bell">
-            <!-- Giữ lại nội dung y hệt nút cũ của bạn -->
             <i class="fa-solid fa-bell"></i>
             Thông báo
             <span class="notification-badge">3</span>
-            <!-- Thêm chấm đỏ báo số -->
           </label>
-
-          <!-- Cái hộp chứa thông báo (lấy từ file test) -->
           <div class="notification-box">
             <h3>Thông Báo Mới</h3>
             <ul>
@@ -45,7 +38,7 @@
         </div>
       </h1>
 
-      <h1 style="--h1-left: 200px; --h1-top: 5px">
+      <h1 style="--h1-left: 15%; --h1-top: 4%">
         <i class="fa-solid fa-phone"></i>
         Liên hệ:
         <button
@@ -60,7 +53,7 @@
       </h1>
 
       <button type="button" style="background: none; border: none">
-        <h1 style="--h1-left: 905px; --h1-top: 5px">
+        <h1 style="--h1-left: 72%; --h1-top: 4%">
           <i class="fa-solid fa-circle-question"></i>
           Hỗ trợ
         </h1>
@@ -70,14 +63,14 @@
         type="button"
         style="background: none; border: none"
       >
-        <h1 style="--h1-left: 1000px; --h1-top: 5px">
+        <h1 style="--h1-left: 80%; --h1-top: 4%">
           <i class="fa-solid fa-circle-user"></i>
           Đăng nhập
         </h1>
       </button>
       <div
         id="username-display"
-        style="--h1-left: 1000px; --h1-top: 5px; --h1-size: 14px; display: none"
+        style="--h1-left: 80%; --h1-top: 4%; --h1-size: 14px; display: none"
       >
         <h1>
           <i class="fa-solid fa-circle-user"></i>
@@ -120,7 +113,7 @@
           </form>
         </div>
       </div>
-      <h1 style="--h1-left: 190px; --h1-top: 17px; --h1-size: 30px">
+      <h1 style="--h1-left: 14%; --h1-top: 20%; --h1-size: 30px">
         <button
           type="button"
           oneclick="location.href='index.html';"
@@ -137,18 +130,48 @@
         </button>
       </h1>
       <div
-        class="search-container" style="--search-left: 450px;
-        --search-top: 40px">
-        <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." />
-        <button type="button" id="searchBtn">
+        class="search-container"
+        style="--search-left: 31%; --search-top: 40%"
+      >
+        <input type="text" id="searchInput" placeholder="Search..." />
+        <button type="submit" id="searchBtn">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
       </div>
-      <button type="button" style="background: none; border: none">
-        <h1 style="--h1-left: 1100px; --h1-top: 20px; --h1-size: 30px">
+      <button
+        id="cartShop"
+        type="button"
+        style="background: none; border: none"
+      >
+        <h1 style="--h1-left: 80%; --h1-top: 20%; --h1-size: 30px">
           <i class="fa-solid fa-cart-shopping"></i>
         </h1>
       </button>
+      <div id="cartMenu" class="cart-dropdown" style="display: none">
+        <h3>Giỏ hàng</h3>
+        <hr />
+        <ul id="cartItems">
+          <li data-price="100000">
+            Sản phẩm 1 - 100.000đ
+            <div class="quantity">
+              <button class="minus">-</button>
+              <span class="count">1</span>
+              <button class="plus">+</button>
+            </div>
+          </li>
+          <li data-price="200000">
+            Sản phẩm 2 - 200.000đ
+            <div class="quantity">
+              <button class="minus">-</button>
+              <span class="count">2</span>
+              <button class="plus">+</button>
+            </div>
+          </li>
+        </ul>
+        <hr />
+        <!-- Tổng tiền -->
+        <div class="total">Tổng: <span id="totalPrice">0</span> đ</div>
+      </div>
     </header>
 
     <!-- Nút thêm sp mới -->
