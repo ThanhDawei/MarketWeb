@@ -38,7 +38,7 @@ h1 {
   overflow: hidden;
   position: absolute;
   top: var(--search-top);
-  left: 450px;
+  left: var(--search-left);
   border: 2px solid #ddd;
   background: #fff;
 }
@@ -178,28 +178,6 @@ h1 {
 
 .notification-box ul li:last-child {
   border-bottom: none;
-}
-
-.popup {
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.popup-content {
-  background: #fff;
-  padding: 24px 32px;
-  border-radius: 8px;
-  min-width: 300px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
-  position: relative;
 }
 
 .close {
@@ -395,6 +373,8 @@ h1 {
 }
 
 .product-card {
+  margin-top: 20px;
+  margin-left: 20px;
   width: 200px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -505,106 +485,106 @@ input {
 }
 
 
-      .popup {
-        display: none; 
-        position: fixed;
-        z-index: 1000; 
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.4); 
-        justify-content: center;
-        align-items: center;
-      }
+.popup {
+  display: none; 
+  position: fixed;
+  z-index: 1000; 
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4); 
+  justify-content: center;
+  align-items: center;
+}
 
-      .popup-content {
-        background-color: #fefefe;
-        margin: auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        max-width: 500px;
-        border-radius: 8px;
-        position: relative;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-          0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        animation-name: animatetop;
-        animation-duration: 0.4s;
-      }
+.popup-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+}
 
-      @keyframes animatetop {
-        from {
-          top: -300px;
-          opacity: 0;
-        }
-        to {
-          top: 0;
-          opacity: 1;
-        }
-      }
+@keyframes animatetop {
+  from {
+    top: -300px;
+    opacity: 0;
+  }
+  to {
+    top: 0;
+    opacity: 1;
+  }
+}
 
-      .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        position: absolute;
-        right: 10px;
-        top: 5px;
-      }
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  position: absolute;
+  right: 10px;
+  top: 5px;
+}
 
-      .close:hover,
-      .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-      }
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
 
-      #productForm {
-        display: flex; 
-        flex-direction: column;
-        gap: 15px; 
-        margin-top: 20px;
-      }
+#productForm {
+  display: flex; 
+  flex-direction: column;
+  gap: 15px; 
+  margin-top: 20px;
+}
 
-      #productForm input[type="text"],
-      #productForm input[type="number"],
-      #productForm input[type="file"] {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        width: calc(100% - 22px); 
-      }
+#productForm input[type="text"],
+#productForm input[type="number"],
+#productForm input[type="file"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: calc(100% - 22px); 
+}
 
-      #productForm button[type="submit"] {
-        background-color: #8a2be2;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-      }
+#productForm button[type="submit"] {
+  background-color: #8a2be2;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
 
-      #productForm button[type="submit"]:hover {
-        background-color: #7b1edc;
-      }
+#productForm button[type="submit"]:hover {
+  background-color: #7b1edc;
+}
 
-    
-      #open-product-form-btn {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 20px; 
-        margin-left: 20px;
-        font-size: 16px;
-      }
 
-      #open-product-form-btn:hover {
-        background-color: #0056b3;
-      }
+#open-product-form-btn {
+  background-color: #8a2be2;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px; 
+  margin-left: 20px;
+  font-size: 16px;
+}
+
+#open-product-form-btn:hover {
+  background-color: #7b1edc;
+}
