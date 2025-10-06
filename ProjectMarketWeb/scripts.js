@@ -42,16 +42,45 @@ if (storedProducts) {
 function renderProducts(list = products) {
   productList.innerHTML = "";
   list.forEach((product, index) => {
-    let card = `
-        <div class="product-card">
-          <img src="${product.image}" alt="${product.name}">
-          <h3>${product.name}</h3>
-          <p>Màu: ${product.color}</p>
-          <p>Số lượng: ${product.quantity}</p>
-          <button onclick="deleteProduct(${index})">Xóa</button>
-        </div>
-      `;
-    productList.innerHTML += card;
+    const productHTML = `
+      <div class="grid__column-2-4">
+        <a class="home-product-item" href="#">
+          <div class="home-product-item__img" style="background-image: url(${product.image})"></div>
+          <h4 class="home-product-item__name">${product.name}</h4>
+          <div class="home-product-item__price">
+            <span class="home-product-item__price-old">999.000đ</span>
+            <span class="home-product-item__price-current">200.000đ</span>
+          </div>
+          <div class="home-product-item__action">
+            <span class="home-product-item__like home-product-item__like--liked">
+              <i class="home-product-item__like-icon-empty fa-regular fa-heart"></i>
+              <i class="home-product-item__like-icon-fill fa-solid fa-heart"></i>
+            </span>
+            <div class="home-product-item__rating">
+              <i class="home-product-item__star--gold fa-solid fa-star"></i>
+              <i class="home-product-item__star--gold fa-solid fa-star"></i>
+              <i class="home-product-item__star--gold fa-solid fa-star"></i>
+              <i class="home-product-item__star--gold fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <span class="home-product-item__sold">${product.quantity} đã bán</span>
+          </div>
+          <div class="home-product-item__origin">
+            <span class="home-product-item__brand">${product.color}</span>
+            <span class="home-product-item__origin-name">Việt Nam</span>
+          </div>
+          <div class="home-product-item__favourite">
+            <i class="fa-solid fa-check"></i>
+            <span>Yêu thích</span>
+          </div>
+          <div class="home-product-item__sale-off">
+            <span class="home-product-item__sale-off-percent">10%</span>
+            <span class="home-product-item__sale-off-label">Giảm</span>
+          </div>
+        </a>
+        <button class="delete-btn" onclick="deleteProduct(${index})">Xóa</button>
+      </div>`;
+    productList.insertAdjacentHTML("beforeend", productHTML);
   });
 }
 
@@ -64,7 +93,7 @@ function deleteProduct(index) {
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   let name = document.getElementById("name").value;
-  let color = document.getElementById("color").value;
+  let color = document.getElementById("value").value;
   let quantity = document.getElementById("quantity").value;
   let file = document.getElementById("image").files[0];
 
