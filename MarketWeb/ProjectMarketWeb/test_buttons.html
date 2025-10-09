@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Nút Bấm</title>
+    <!-- Thêm font cho đẹp, giống dự án thật -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Đây là nơi bạn sẽ "des styles" -->
+    <style>
+        /* Cái nền tối màu để bạn dễ nhìn các nút màu trắng */
+        body {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            font-family: 'Poppins', sans-serif;
+            padding: 50px;
+        }
+
+        /* --- BẮT ĐẦU CODE CỦA BẠN TỪ ĐÂY --- */
+
+        /* Style chung cho cả 3 nút */
+        .header-button {
+            color: white;           /* Chữ màu trắng */
+            text-decoration: none;  /* Bỏ gạch chân của link */
+            
+            border: 3px solid white;/* Vẽ viền trắng, dày 1px, nét liền */
+            border-radius: 20px;     /* Bo tròn các góc một chút (5px) */
+            
+            padding: 12px 25px;      /* Tạo khoảng trống bên trong nút */
+            margin-left: 10px;      /* Tạo khoảng cách bên trái để các nút không dính nhau */
+            
+            font-weight: bold;      /* In đậm chữ */
+            
+            /* Hiệu ứng chuyển động mượt mà trong 0.3 giây */
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Style đặc biệt khi bạn di chuột vào nút */
+        .header-button:hover {
+            background-color: white; /* Nền sẽ đổi thành màu trắng */
+            color: black;          /* Chữ sẽ đổi thành màu xanh */
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Đây là "khung xương" HTML cho các nút của bạn -->
+    <a href="#" class="header-button">Đăng Nhập</a>
+    <a href="#" class="header-button">Đăng Ký</a>
+    <a href="#" class="header-button">Giỏ Hàng</a>
+
+</body>
+</html>

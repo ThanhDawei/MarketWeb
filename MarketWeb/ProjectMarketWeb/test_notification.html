@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sandbox - Chức Năng Thông Báo</title>
+    
+    <!-- Bước 1: Nhập khẩu thư viện icon Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    
+    <!-- Bước 3: Nơi bạn sẽ "des styles" và nghịch phá -->
+    <style>
+        /* --- PHẦN SETUP SÂN CHƠI (Không cần sửa) --- */
+        body {
+            /* Nền tối màu để icon và chữ trắng nổi bật */
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            font-family: sans-serif;
+            /* Đẩy cái chuông ra giữa để dễ nhìn */
+            display: flex;
+            justify-content: center;
+            padding-top: 100px;
+        }
+
+        /* --- BẠN CÓ THỂ BẮT ĐẦU SỬA VÀ TEST TỪ ĐÂY --- */
+
+        /* Hộp to nhất chứa mọi thứ */
+        .notification-container {
+          position: relative; /* Rất quan trọng! Để làm "mỏ neo" cho hộp thông báo */
+        }
+
+        /* Checkbox tàng hình (công tắc ma thuật) */
+        .notification-toggle {
+          display: none; /* Ẩn cái checkbox xấu xí đi */
+        }
+
+        /* Style cho cái chuông */
+        .notification-bell {
+          color: white;
+          font-size: 30px; /* Thử sửa số này thành 40px xem sao? */
+          cursor: pointer; /* Biến chuột thành hình bàn tay khi di vào */
+          position: relative; 
+          display: block;
+        }
+
+        /* Chấm đỏ báo số thông báo mới */
+        .notification-badge {
+          position: absolute;
+          top: -5px;
+          right: -8px;
+          background-color: red; /* Thử đổi thành "orange" xem */
+          color: white;
+          border-radius: 50%; /* 50% để tạo hình tròn hoàn hảo */
+          padding: 3px 7px;
+          font-size: 13px;
+          font-weight: bold;
+          border: 2px solid #6a11cb; /* Thêm viền cho chấm đỏ */
+        }
+
+        /* Hộp chứa thông báo */
+        .notification-box {
+          display: none; /* QUAN TRỌNG: Mặc định, hộp này sẽ bị ẨN */
+          position: absolute;
+          top: 55px; /* Khoảng cách từ chuông xuống hộp. Thử tăng lên 70px? */
+          right: -140px; /* Dịch chuyển hộp sang trái/phải */
+          width: 300px;
+          background-color: white;
+          border: 1px solid #ddd;
+          border-radius: 10px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Tăng độ đậm của bóng */
+          color: #333;
+          z-index: 1000;
+        }
+
+        /* === DÒNG CODE PHÉP THUẬT === */
+        /* Khi checkbox được tick (checked), thì tìm cái hộp thông báo và bật nó lên */
+        .notification-toggle:checked ~ .notification-box {
+          display: block; /* Hiện nó ra! */
+        }
+
+
+        /* Style cho nội dung bên trong hộp thông báo */
+        .notification-box h3 {
+          padding: 10px 15px;
+          margin: 0;
+          border-bottom: 1px solid #eee;
+          font-size: 16px;
+        }
+
+        .notification-box ul {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+
+        .notification-box ul li {
+          padding: 12px 15px;
+          border-bottom: 1px solid #eee;
+          font-size: 14px;
+        }
+        
+        /* Thêm hiệu ứng khi di chuột vào từng thông báo */
+        .notification-box ul li:hover {
+            background-color: #f5f5f5;
+        }
+
+        .notification-box ul li:last-child {
+          border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bước 2: "Khung xương" HTML của chức năng thông báo -->
+    <div class="notification-container">
+    
+        <!-- Checkbox tàng hình để điều khiển -->
+        <input type="checkbox" id="notification-toggle" class="notification-toggle">
+        
+        <!-- Cái chuông (bọc trong label để bấm được) -->
+        <label for="notification-toggle" class="notification-bell">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notification-badge">3</span> <!-- Số thông báo mới -->
+        </label>
+        
+        <!-- Cái hộp chứa thông báo (mặc định sẽ bị ẩn) -->
+        <div class="notification-box">
+            <h3>Thông Báo Mới</h3>
+            <ul>
+                <li>Đơn hàng #123 của bạn đã được giao thành công.</li>
+                <li>Chào bạn mới! Cảm ơn bạn đã đăng ký tài khoản.</li>
+                <li>Khuyến mãi khủng 50% chỉ trong hôm nay!</li>
+            </ul>
+        </div>
+        
+    </div>
+
+</body>
+</html>
