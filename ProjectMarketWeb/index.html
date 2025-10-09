@@ -169,14 +169,44 @@
         <form id="productForm">
           <input type="text" id="name" placeholder="Tên sản phẩm" required />
           <input type="text" id="color" placeholder="Màu" required />
-          <input type="text" id="price" placeholder="Giá" required />
+          <input type="number" id="price" placeholder="Giá" required />
           <input type="number" id="quantity" placeholder="Số lượng" required />
-          <input type="file" id="image" accept="image/*" required />
+          <input type="file" id="image" accept="image/*" />
           <button type="submit">Thêm</button>
         </form>
       </div>
     </div>
 
-    <div id="productList" class="product-list"></div>
+    <div class="main-content">
+      <div class="filter-section">
+        <h3><i class="fa-solid fa-filter"></i> Lọc sản phẩm</h3>
+        <div class="filter-group">
+            <label for="filterProductName">Tên sản phẩm:</label>
+            <input type="text" id="filterProductName" placeholder="Ví dụ: Chuột, bàn phím..." />
+        </div>
+        <div class="filter-group">
+            <label for="filterProductColor">Màu sắc:</label>
+            <input type="text" id="filterProductColor" placeholder="Ví dụ: Trắng, đen..." />
+        </div>
+        <div class="filter-group">
+            <label>Khoảng giá:</label>
+            <div class="price-range">
+                <input type="number" id="filterPriceMin" placeholder="Từ" min="0">
+                <span>-</span>
+                <input type="number" id="filterPriceMax" placeholder="Đến" min="0">
+            </div>
+        </div>
+        <button id="applyFilterBtn" class="filter-btn primary-btn">
+            <i class="fa-solid fa-magnifying-glass"></i> Áp dụng lọc
+        </button>
+        <button id="clearFilterBtn" class="filter-btn secondary-btn">
+            <i class="fa-solid fa-eraser"></i> Xóa lọc
+        </button>
+      </div>
+
+      <div id="productList" class="product-grid">
+      </div>
+    </div>
+
   </body>
 </html>
