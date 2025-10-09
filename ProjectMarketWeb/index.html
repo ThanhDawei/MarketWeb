@@ -151,24 +151,7 @@
       <div id="cartMenu" class="cart-dropdown" style="display: none">
         <h3>Giỏ hàng</h3>
         <hr />
-        <ul id="cartItems">
-          <li data-price="100000">
-            Sản phẩm 1 - 100.000đ
-            <div class="quantity">
-              <button class="minus">-</button>
-              <span class="count">1</span>
-              <button class="plus">+</button>
-            </div>
-          </li>
-          <li data-price="200000">
-            Sản phẩm 2 - 200.000đ
-            <div class="quantity">
-              <button class="minus">-</button>
-              <span class="count">2</span>
-              <button class="plus">+</button>
-            </div>
-          </li>
-        </ul>
+        <ul id="cartItems"></ul>
         <hr />
         <!-- Tổng tiền -->
         <div class="total">Tổng: <span id="totalPrice">0</span> đ</div>
@@ -185,7 +168,8 @@
         <h2>Thêm sản phẩm mới</h2>
         <form id="productForm">
           <input type="text" id="name" placeholder="Tên sản phẩm" required />
-          <input type="text" id="value" placeholder="Giá" required />
+          <input type="text" id="color" placeholder="Màu" required />
+          <input type="text" id="price" placeholder="Giá" required />
           <input type="number" id="quantity" placeholder="Số lượng" required />
           <input type="file" id="image" accept="image/*" required />
           <button type="submit">Thêm</button>

@@ -29,7 +29,25 @@ document.querySelector(".login-form").onsubmit = function (e) {
     alert("Sai tên đăng nhập hoặc mật khẩu!");
   }
 };
+
+//thêm sản phẩm
 let products = [];
+
+function parsePrice(value) {//format giá
+  if (typeof value === "number") return value;
+  if (!value) return 0;
+  const digits = String(value).replace(/[^0-9]/g, "");
+  return digits ? parseInt(digits, 10) : 0;
+}
+
+function escapeHtml(str) {//kiểm tra có kí tự đặc biệt
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 const form = document.getElementById("productForm");
 const productList = document.getElementById("productList");
@@ -46,10 +64,10 @@ function renderProducts(list = products) {
       <div class="grid__column-2-4">
         <a class="home-product-item" href="#">
           <div class="home-product-item__img" style="background-image: url(${product.image})"></div>
-          <h4 class="home-product-item__name">${product.name}</h4>
+          <h4 class="home-product-item__name">${escapeHtml(product.name)}</h4>
           <div class="home-product-item__price">
             <span class="home-product-item__price-old">999.000đ</span>
-            <span class="home-product-item__price-current">200.000đ</span>
+            <span class="home-product-item__price-current">${Number(product.price).toLocaleString()}đ</span>
           </div>
           <div class="home-product-item__action">
             <span class="home-product-item__like home-product-item__like--liked">
@@ -79,6 +97,7 @@ function renderProducts(list = products) {
           </div>
         </a>
         <button class="delete-btn" onclick="deleteProduct(${index})">Xóa</button>
+        <button class="add-to-cart" onclick="addToCart('${escapeHtml(product.name)}', ${product.price})">Thêm vào giỏ</button>
       </div>`;
     productList.insertAdjacentHTML("beforeend", productHTML);
   });
@@ -89,19 +108,19 @@ function deleteProduct(index) {
   localStorage.setItem("products", JSON.stringify(products));
   renderProducts();
 }
-
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   let name = document.getElementById("name").value;
-  let color = document.getElementById("value").value;
+  let color = document.getElementById("color").value;
   let quantity = document.getElementById("quantity").value;
+  let price = document.getElementById("price").value;
   let file = document.getElementById("image").files[0];
 
   if (file) {
     const reader = new FileReader();
     reader.onload = function (event) {
       let imageData = event.target.result;
-      products.push({ name, color, quantity, image: imageData });
+      products.push({ name, color, quantity,price: parsePrice(price), image: imageData });
       localStorage.setItem("products", JSON.stringify(products));
       renderProducts();
       form.reset();
@@ -133,8 +152,14 @@ document.getElementById("open-product-form-btn").onclick = function () {
 document.getElementById("close-product-form-popup").onclick = function () {
   document.getElementById("product-form-popup").style.display = "none";
 };
+
+// Giỏ hàng
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let btn = document.getElementById("cartShop");
 let menu = document.getElementById("cartMenu");
+let cartItems = document.getElementById("cartItems");
+let totalPriceEl = document.getElementById("totalPrice");
+
 
 // Toggle bật/tắt menu khi bấm nút giỏ hàng
 btn.onclick = () => {
@@ -146,6 +171,9 @@ window.onclick = (e) => {
   if (!btn.contains(e.target) && !menu.contains(e.target)) {
     menu.style.display = "none";
   }
+};
+menu.onclick = (e) => {
+  e.stopPropagation(); 
 };
 // Hàm tinh tổng tiền
 function updateTotal() {
@@ -159,25 +187,52 @@ function updateTotal() {
   document.getElementById("totalPrice").textContent = total.toLocaleString();
 }
 
-// Gắn sự kiện cho nút + và -
-document.querySelectorAll(".plus").forEach((plusBtn) => {
-  plusBtn.onclick = () => {
-    let count = plusBtn.previousElementSibling;
-    count.textContent = parseInt(count.textContent) + 1;
-    updateTotal();
-  };
-});
 
-document.querySelectorAll(".minus").forEach((minusBtn) => {
-  minusBtn.onclick = () => {
-    let count = minusBtn.nextElementSibling;
-    let newVal = parseInt(count.textContent) - 1;
-    if (newVal > 0) {
-      count.textContent = newVal;
-      updateTotal();
-    }
-  };
-});
+// Thêm vào giỏ hàng
+function addToCart(name, price) {
+  const numericPrice = parsePrice(price);
+  let item = cart.find((p) => p.name === name);
+  if (item) {
+    item.quantity++;
+  } else {
+    cart.push({ name, price: numericPrice, quantity: 1 });
+  }
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
+// Cập nhật số lượng
+function changeQty(name, delta) {
+  let item = cart.find((p) => p.name === name);
+  if (!item) return;
+  item.quantity += delta;
+  if (item.quantity <= 0) {
+    cart = cart.filter((p) => p.name !== name);
+  }
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
 
-// Tính tổng ban đầu
-updateTotal();
+// Hiển thị giỏ hàng
+function renderCart() {
+  cartItems.innerHTML = "";
+  let total = 0;
+
+  cart.forEach((p) => {
+    const li = document.createElement("li");
+    li.setAttribute("data-price", p.price);
+    li.innerHTML = `
+      ${escapeHtml(p.name)} - ${Number(p.price).toLocaleString()}đ
+      <div class="quantity">
+        <button onclick="changeQty('${escapeHtml(p.name)}', -1)">-</button>
+        <span class="count">${p.quantity}</span>
+        <button onclick="changeQty('${escapeHtml(p.name)}', 1)">+</button>
+      </div>
+    `;
+    total += p.price * p.quantity;
+    cartItems.appendChild(li);
+  });
+  totalPriceEl.textContent = total.toLocaleString();
+};
+
+
+
