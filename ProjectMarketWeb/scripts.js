@@ -246,3 +246,54 @@ function renderCart() {
   });
   totalPriceEl.textContent = total.toLocaleString();
 }
+
+// Logic của lọc sản phẩm
+// === CÁC BỘ PHẬN CỦA BỘ LỌC ===
+const filterProductName = document.getElementById('filterProductName');
+const filterProductCategory = document.getElementById('filterProductCategory');
+const filterPriceMin = document.getElementById('filterPriceMin');
+const filterPriceMax = document.getElementById('filterPriceMax');
+const applyFilterBtn = document.getElementById('applyFilterBtn');
+const clearFilterBtn = document.getElementById('clearFilterBtn');
+
+function applyFilters() {
+  // gán giá trị input từ filterProductName và filterProductCategory cho nameFilter categoryFilter
+  const nameFilter = filterProductName.value.toLowerCase().trim();
+  const categoryFilter = filterProductCategory.value.toLowerCase().trim();
+
+  // gán giá trị là 0 hoặc một giá trị cho minPriceFilter và vô cực hoặc một giá trị cho maxPriceFilter
+  const minPriceFilter = parseFloat(filterPriceMin.value) || 0;
+  const maxPriceFilter = parseFloat(filterPriceMax.value) || Infinity;
+
+  // filter cho từng adj trong mảng products
+  const filteredProducts = products.filter(product => {
+    const productName = product.name.toLowerCase();
+    const productCategory = (product.category || '').toLowerCase();
+    const productPrice = parsePrice(product.value);
+
+    const nameMatch = productName.includes(nameFilter);
+    const categoryMatch = productCategory.includes(categoryFilter);
+    const priceMatch = productPrice >= minPriceFilter && productPrice <= maxPriceFilter;
+
+    // return khớp tất cả điều kiện
+    return nameMatch && categoryMatch && priceMatch;
+  });
+
+  // renderProducts danh sách sản phẩm đã lọc
+  renderProducts(filteredProducts);
+}
+
+// hàm xóa filter
+function clearFilters() {
+  // gán hết 4 filter.value  = ''
+  filterProductName.value = '';
+  filterProductCategory.value = '';
+  filterPriceMin.value = '';
+  filterPriceMax.value = '';
+  // renderProducts products lại
+  renderProducts(products);
+}
+
+// gán click cho applyFilterBtn và clearFilterBtn
+applyFilterBtn.addEventListener('click', applyFilters);
+clearFilterBtn.addEventListener('click', clearFilters);
