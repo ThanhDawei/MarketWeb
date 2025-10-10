@@ -752,6 +752,26 @@ input {
 }
 
 
+
+.home-product-item__action {
+  margin-left: 0px;
+  margin-right: 120px;
+}
+
+.home-product-item__price {
+  margin-left: 0px;
+}
+
+.home-product-item__sold {
+  color: #888;
+  font-size: 0.9em;
+}
+.home-product-item__price-current {
+  color: #d0021b;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
 @media (max-width: 1200px) {
 .product-grid {
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

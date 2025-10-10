@@ -1,4 +1,4 @@
-localStorage.removeItem("products");
+
 document.getElementById("login-btn").onclick = function () {
   document.getElementById("login-popup").style.display = "flex";
 };
@@ -41,6 +41,11 @@ function parsePrice(value) {
   const digits = String(value).replace(/[^0-9]/g, "");
   return digits ? parseInt(digits, 10) : 0;
 }
+
+function formatPrice(value) {
+  return parsePrice(value).toLocaleString("vi-VN");
+}
+
 
 function escapeHtml(str) {
   //kiểm tra có kí tự đặc biệt
@@ -96,21 +101,21 @@ function renderProducts(list = products) {
   productList.innerHTML = "";
   list.forEach((product, index) => {
     const productHTML = `
-      <div class="grid__column-2-4">
+      <div class="product-card">
         <a class="home-product-item" href="#">
           <div class="home-product-item__img" style="background-image: url(${
             product.image
           })"></div>
           <h4 class="home-product-item__name">${product.name}</h4>
           <div class="home-product-item__price">
-            <span class="home-product-item__price-current">${
+            <span class="home-product-item__price-current">${formatPrice(
               product.value
-            }đ</span>
+            )}đ</span>
           </div>
-          <div class="home-product-item__action">
+          <div class="home-product-item__action">Số lượng:
             <span class="home-product-item__sold">${
               product.quantity
-            } Số lượng</span>
+            }</span>
           </div>
         </a>
         <button class="delete-btn" onclick="deleteProduct(${index})">Xóa</button>
