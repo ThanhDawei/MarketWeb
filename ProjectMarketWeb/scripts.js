@@ -1,3 +1,4 @@
+localStorage.removeItem("products");
 document.getElementById("login-btn").onclick = function () {
   document.getElementById("login-popup").style.display = "flex";
 };
@@ -33,14 +34,16 @@ document.querySelector(".login-form").onsubmit = function (e) {
 //thêm sản phẩm
 let products = [];
 
-function parsePrice(value) {//format giá
+function parsePrice(value) {
+  //format giá
   if (typeof value === "number") return value;
   if (!value) return 0;
   const digits = String(value).replace(/[^0-9]/g, "");
   return digits ? parseInt(digits, 10) : 0;
 }
 
-function escapeHtml(str) {//kiểm tra có kí tự đặc biệt
+function escapeHtml(str) {
+  //kiểm tra có kí tự đặc biệt
   return String(str)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -48,7 +51,39 @@ function escapeHtml(str) {//kiểm tra có kí tự đặc biệt
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+function resizeImage(file, maxWidth, maxHeight, quality, callback) {
+  const reader = new FileReader();
+  reader.onload = function (event) {
+    const img = new Image();
+    img.onload = function () {
+      let width = img.width;
+      let height = img.height;
 
+      // Tính toán lại kích thước
+      if (width > maxWidth) {
+        height = Math.round((maxWidth / width) * height);
+        width = maxWidth;
+      }
+      if (height > maxHeight) {
+        width = Math.round((maxHeight / height) * width);
+        height = maxHeight;
+      }
+
+      // Vẽ lại ảnh lên canvas
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Lấy base64 với chất lượng nén
+      const dataUrl = canvas.toDataURL("image/jpeg", quality); // quality: 0.7 = 70%
+      callback(dataUrl);
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+}
 const form = document.getElementById("productForm");
 const productList = document.getElementById("productList");
 
@@ -63,41 +98,25 @@ function renderProducts(list = products) {
     const productHTML = `
       <div class="grid__column-2-4">
         <a class="home-product-item" href="#">
-          <div class="home-product-item__img" style="background-image: url(${product.image})"></div>
-          <h4 class="home-product-item__name">${escapeHtml(product.name)}</h4>
+          <div class="home-product-item__img" style="background-image: url(${
+            product.image
+          })"></div>
+          <h4 class="home-product-item__name">${product.name}</h4>
           <div class="home-product-item__price">
-            <span class="home-product-item__price-old">999.000đ</span>
-            <span class="home-product-item__price-current">${Number(product.price).toLocaleString()}đ</span>
+            <span class="home-product-item__price-current">${
+              product.value
+            }đ</span>
           </div>
           <div class="home-product-item__action">
-            <span class="home-product-item__like home-product-item__like--liked">
-              <i class="home-product-item__like-icon-empty fa-regular fa-heart"></i>
-              <i class="home-product-item__like-icon-fill fa-solid fa-heart"></i>
-            </span>
-            <div class="home-product-item__rating">
-              <i class="home-product-item__star--gold fa-solid fa-star"></i>
-              <i class="home-product-item__star--gold fa-solid fa-star"></i>
-              <i class="home-product-item__star--gold fa-solid fa-star"></i>
-              <i class="home-product-item__star--gold fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-            </div>
-            <span class="home-product-item__sold">${product.quantity} đã bán</span>
-          </div>
-          <div class="home-product-item__origin">
-            <span class="home-product-item__brand">${product.color}</span>
-            <span class="home-product-item__origin-name">Việt Nam</span>
-          </div>
-          <div class="home-product-item__favourite">
-            <i class="fa-solid fa-check"></i>
-            <span>Yêu thích</span>
-          </div>
-          <div class="home-product-item__sale-off">
-            <span class="home-product-item__sale-off-percent">10%</span>
-            <span class="home-product-item__sale-off-label">Giảm</span>
+            <span class="home-product-item__sold">${
+              product.quantity
+            } Số lượng</span>
           </div>
         </a>
         <button class="delete-btn" onclick="deleteProduct(${index})">Xóa</button>
-        <button class="add-to-cart" onclick="addToCart('${escapeHtml(product.name)}', ${product.price})">Thêm vào giỏ</button>
+        <button class="add-to-cart" onclick="addToCart('${escapeHtml(
+          product.name
+        )}', ${product.value})">Thêm vào giỏ</button>
       </div>`;
     productList.insertAdjacentHTML("beforeend", productHTML);
   });
@@ -111,38 +130,36 @@ function deleteProduct(index) {
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   let name = document.getElementById("name").value;
-  let color = document.getElementById("color").value;
+  let value = document.getElementById("value").value;
   let quantity = document.getElementById("quantity").value;
-  let price = document.getElementById("price").value;
+  let category = document.getElementById("category").value;
   let file = document.getElementById("image").files[0];
 
   if (file) {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      let imageData = event.target.result;
-      products.push({ name, color, quantity,price: parsePrice(price), image: imageData });
+    // Resize và nén ảnh trước khi lưu
+    resizeImage(file, 400, 400, 0.7, function (imageData) {
+      products.push({ name, value, quantity, category, image: imageData });
       localStorage.setItem("products", JSON.stringify(products));
       renderProducts();
       form.reset();
       document.getElementById("product-form-popup").style.display = "none";
-    };
-    reader.readAsDataURL(file);
+    });
   }
 });
-
 const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
 
-if (searchInput && searchBtn) {
-  searchBtn.addEventListener("click", () => {
-    const keyword = searchInput.value.trim(); // FIX
-    localStorage.setItem("searchKeyword", keyword);
-  });
-
-  searchInput.addEventListener("keyup", (e) => {
-    if (e.key === "Enter") searchBtn.click();
-  });
-}
+searchBtn.addEventListener("click", () => {
+  const keyword = searchInput.value.toLowerCase().trim();
+  const filtered = products.filter((product) =>
+    product.name.toLowerCase().includes(keyword)
+  );
+  renderProducts(filtered);
+  localStorage.setItem("searchKeyword", keyword);
+});
+searchInput.addEventListener("keyup", (e) => {
+  if (e.key === "Enter") searchBtn.click();
+});
 
 renderProducts();
 
@@ -160,7 +177,6 @@ let menu = document.getElementById("cartMenu");
 let cartItems = document.getElementById("cartItems");
 let totalPriceEl = document.getElementById("totalPrice");
 
-
 // Toggle bật/tắt menu khi bấm nút giỏ hàng
 btn.onclick = () => {
   menu.style.display = menu.style.display === "block" ? "none" : "block";
@@ -173,7 +189,7 @@ window.onclick = (e) => {
   }
 };
 menu.onclick = (e) => {
-  e.stopPropagation(); 
+  e.stopPropagation();
 };
 // Hàm tinh tổng tiền
 function updateTotal() {
@@ -187,15 +203,13 @@ function updateTotal() {
   document.getElementById("totalPrice").textContent = total.toLocaleString();
 }
 
-
 // Thêm vào giỏ hàng
-function addToCart(name, price) {
-  const numericPrice = parsePrice(price);
+function addToCart(name, value) {
   let item = cart.find((p) => p.name === name);
   if (item) {
     item.quantity++;
   } else {
-    cart.push({ name, price: numericPrice, quantity: 1 });
+    cart.push({ name, value, quantity: 1 });
   }
   localStorage.setItem("cart", JSON.stringify(cart));
   renderCart();
@@ -211,7 +225,6 @@ function changeQty(name, delta) {
   localStorage.setItem("cart", JSON.stringify(cart));
   renderCart();
 }
-
 // Hiển thị giỏ hàng
 function renderCart() {
   cartItems.innerHTML = "";
@@ -219,20 +232,17 @@ function renderCart() {
 
   cart.forEach((p) => {
     const li = document.createElement("li");
-    li.setAttribute("data-price", p.price);
+    li.setAttribute("data-price", p.value);
     li.innerHTML = `
-      ${escapeHtml(p.name)} - ${Number(p.price).toLocaleString()}đ
+      ${escapeHtml(p.name)} - ${Number(p.value).toLocaleString()}đ
       <div class="quantity">
         <button onclick="changeQty('${escapeHtml(p.name)}', -1)">-</button>
         <span class="count">${p.quantity}</span>
         <button onclick="changeQty('${escapeHtml(p.name)}', 1)">+</button>
       </div>
     `;
-    total += p.price * p.quantity;
+    total += p.value * p.quantity;
     cartItems.appendChild(li);
   });
   totalPriceEl.textContent = total.toLocaleString();
-};
-
-
-
+}
