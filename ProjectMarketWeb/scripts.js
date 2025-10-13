@@ -1,4 +1,3 @@
-
 document.getElementById("login-btn").onclick = function () {
   document.getElementById("login-popup").style.display = "flex";
 };
@@ -26,6 +25,10 @@ document.querySelector(".login-form").onsubmit = function (e) {
     document.getElementById("login-btn").style.display = "none";
     document.getElementById("username-display").style.display = "block";
     document.getElementById("displayed-username").innerText = usernameInput;
+    document.getElementById("deleteBtn").style.display = "block";
+    document.getElementById("addcartBtn").style.display = "none";
+    document.getElementById("buyBtn").style.display = "none";
+    document.getElementById("editBtn").style.display = "block";
   } else {
     alert("Sai tên đăng nhập hoặc mật khẩu!");
   }
@@ -45,7 +48,6 @@ function parsePrice(value) {
 function formatPrice(value) {
   return parsePrice(value).toLocaleString("vi-VN");
 }
-
 
 function escapeHtml(str) {
   //kiểm tra có kí tự đặc biệt
@@ -113,20 +115,19 @@ function renderProducts(list = products) {
             )}đ</span>
           </div>
           <div class="home-product-item__action">Số lượng:
-            <span class="home-product-item__sold">${
-              product.quantity
-            }</span>
+            <span class="home-product-item__sold">${product.quantity}</span>
           </div>
         </a>
-        <button class="delete-btn" onclick="deleteProduct(${index})">Xóa</button>
-        <button class="add-to-cart" onclick="addToCart('${escapeHtml(
+        <button class ="edit-btn" id="editBtn" style="display: none">Chỉnh sửa sản phẩm</button>
+        <button class ="buy-btn" id="buyBtn" style="display: block">Mua</button>
+        <button class="delete-btn" id="deleteBtn" style="display: none" onclick="deleteProduct(${index})">Xóa</button>
+        <button class="add-to-cart" id="addcartBtn" style="display: block" onclick="addToCart('${escapeHtml(
           product.name
         )}', ${product.value})">Thêm vào giỏ</button>
       </div>`;
     productList.insertAdjacentHTML("beforeend", productHTML);
   });
 }
-
 function deleteProduct(index) {
   products.splice(index, 1);
   localStorage.setItem("products", JSON.stringify(products));
@@ -254,12 +255,12 @@ function renderCart() {
 
 // Logic của lọc sản phẩm
 // === CÁC BỘ PHẬN CỦA BỘ LỌC ===
-const filterProductName = document.getElementById('filterProductName');
-const filterProductCategory = document.getElementById('filterProductCategory');
-const filterPriceMin = document.getElementById('filterPriceMin');
-const filterPriceMax = document.getElementById('filterPriceMax');
-const applyFilterBtn = document.getElementById('applyFilterBtn');
-const clearFilterBtn = document.getElementById('clearFilterBtn');
+const filterProductName = document.getElementById("filterProductName");
+const filterProductCategory = document.getElementById("filterProductCategory");
+const filterPriceMin = document.getElementById("filterPriceMin");
+const filterPriceMax = document.getElementById("filterPriceMax");
+const applyFilterBtn = document.getElementById("applyFilterBtn");
+const clearFilterBtn = document.getElementById("clearFilterBtn");
 
 function applyFilters() {
   // gán giá trị input từ filterProductName và filterProductCategory cho nameFilter categoryFilter
@@ -271,14 +272,15 @@ function applyFilters() {
   const maxPriceFilter = parseFloat(filterPriceMax.value) || Infinity;
 
   // filter cho từng adj trong mảng products
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = products.filter((product) => {
     const productName = product.name.toLowerCase();
-    const productCategory = (product.category || '').toLowerCase();
+    const productCategory = (product.category || "").toLowerCase();
     const productPrice = parsePrice(product.value);
 
     const nameMatch = productName.includes(nameFilter);
     const categoryMatch = productCategory.includes(categoryFilter);
-    const priceMatch = productPrice >= minPriceFilter && productPrice <= maxPriceFilter;
+    const priceMatch =
+      productPrice >= minPriceFilter && productPrice <= maxPriceFilter;
 
     // return khớp tất cả điều kiện
     return nameMatch && categoryMatch && priceMatch;
@@ -291,14 +293,14 @@ function applyFilters() {
 // hàm xóa filter
 function clearFilters() {
   // gán hết 4 filter.value  = ''
-  filterProductName.value = '';
-  filterProductCategory.value = '';
-  filterPriceMin.value = '';
-  filterPriceMax.value = '';
+  filterProductName.value = "";
+  filterProductCategory.value = "";
+  filterPriceMin.value = "";
+  filterPriceMax.value = "";
   // renderProducts products lại
   renderProducts(products);
 }
 
 // gán click cho applyFilterBtn và clearFilterBtn
-applyFilterBtn.addEventListener('click', applyFilters);
-clearFilterBtn.addEventListener('click', clearFilters);
+applyFilterBtn.addEventListener("click", applyFilters);
+clearFilterBtn.addEventListener("click", clearFilters);
