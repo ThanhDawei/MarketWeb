@@ -130,6 +130,82 @@
           <i class="fa-solid fa-store"></i>DMarket
         </button>
       </h1>
+
+<!-- ============================== #region REGISTER FORM ============================== -->
+      <p
+        style="background: none; border: none"
+        > <h1 style="--h1-left: 86.4%; --h1-top: 1%">
+          |
+          </h1>
+      </p>
+      <button
+          id="open-register-form"
+          type="button"
+          style="background: none; border: none; padding:none; cursor: pointer;"
+      >
+          <h1 style="--h1-left: 87%; --h1-top: 4%">
+          Đăng ký
+          </h1>
+      </button>
+
+      <div class="modal" id="modal-toggle">
+          <div class="modal_overlay"></div> <!-- overlay nền đen -->
+              
+          <div class="modal_body">
+
+              <!-- Authen form -->
+              <div class="auth-form">
+                  <div class="auth-form_header"> <!-- phần head -->
+                      <h3 class="auth-form_heading">Đăng ký</h3>
+                  </div>
+
+                  <div class="auth-form_container">
+                      <div class="auth-form_form"><!--Phần điền form-->
+                          <div class="auth-form_group">
+                              <input type="text" class="auth-form_input" placeholder="Tên đăng nhập">
+                          </div>
+                          <div class="auth-form_group">
+                              <input type="password" class="auth-form_input" placeholder="Mật khẩu">
+                          </div>
+                          <div class="auth-form_group">
+                              <input type="password" class="auth-form_input" id="last-input" placeholder="Nhập lại mật khẩu">
+                          </div>
+                      </div>
+                      
+                      <div class="auth-form_policy"> <!--điều khoản dịch vụ -->
+                          <p class="auth-form_policy-text">
+                              Bằng việc đăng kí, bạn đã đồng ý với cửa hàng về
+                              <a href="" class="auth-form_policy-link">Điều khoản dịch vụ</a>
+                              & 
+                              <a href="" class="auth-form_policy-link">Chính sách bảo mật</a>
+                          </p>
+                      </div>
+                      
+                      <div class="auth-form_control"> <!-- nút trở lại / đăng kí-->
+                          <button class="btn-register " id="turnback">Trở lại</button>
+                          <button class="btn-register" id="register">Đăng kí</button>
+                      </div>
+                      
+                  </div>
+
+                  <div class="auth-form_socials"> <!-- liên kết mạng xã hội-->
+                      <a href="" class="btn-register btn_s-font" id="btn-icon-facebook">
+                          <i class="fa-brands fa-facebook"></i>
+                          Kết nối với Facebook
+                      </a>
+                      <a href="" class="btn-register btn_s-font" id="btn-icon-google">
+                          <i class="fa-brands fa-google"></i>
+                          Kết nối với Google
+                      </a>
+                  </div>
+
+              </div>
+
+          </div>
+
+      </div>
+<!-- ============================== #endregion REGISTER FORM============================== -->
+
       <div
         class="search-container"
         style="--search-left: 31%; --search-top: 40%"

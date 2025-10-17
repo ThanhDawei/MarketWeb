@@ -33,7 +33,102 @@ document.querySelector(".login-form").onsubmit = function (e) {
     alert("Sai tên đăng nhập hoặc mật khẩu!");
   }
 };
+/* ============================== #region REGISTER FORM ============================== */
+// Lấy các phần tử cần thiết
+const modal = document.getElementById('modal-toggle');
+const openButton = document.getElementById('open-register-form');
+const turnbackButton = document.getElementById('turnback');
+const registerButton = document.getElementById('register');
+const modalOverlay = document.querySelector('.modal_overlay');
 
+// --- Khai báo Mảng (Array) để lưu tạm thời và Tên Local Storage Key ---
+let users = [];
+const STORAGE_KEY = 'userAccounts';
+
+// --- Hàm tải dữ liệu người dùng từ Local Storage khi khởi động ---
+function loadUsers() {
+    const storedUsers = localStorage.getItem(STORAGE_KEY);
+    if (storedUsers) {
+        // Chuyển chuỗi JSON thành mảng JavaScript
+        users = JSON.parse(storedUsers); 
+        console.log("Đã tải dữ liệu người dùng từ Local Storage:", users);
+    }
+}
+
+// Gọi hàm tải dữ liệu khi code chạy
+loadUsers();
+// 1. Chức năng mở Modal
+openButton.addEventListener('click', () => {
+    modal.style.display = 'flex'; // Hiện modal
+});
+
+// 2. Chức năng đóng Modal (Nút "Trở lại" và click vào overlay)
+function closeModal() {
+    modal.style.display = 'none'; // Ẩn modal
+}
+
+turnbackButton.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', closeModal);
+
+// 3. Chức năng nút "Đăng kí"
+registerButton.addEventListener('click', (event) => {
+    // Ngăn hành vi submit form mặc định (nếu có)
+    event.preventDefault(); 
+    
+    // Lấy giá trị từ các trường input
+    const username = document.querySelector('.auth-form_input[placeholder="Tên đăng nhập"]').value;
+    const password = document.querySelector('.auth-form_input[placeholder="Mật khẩu"]').value;
+    const confirmPassword = document.getElementById('last-input').value;
+
+    // Ví dụ kiểm tra cơ bản
+    if (username === "" || password === "" || confirmPassword === "") {
+        alert("Vui lòng điền đầy đủ tất cả các trường!");
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert("Mật khẩu và Nhập lại mật khẩu không khớp!");
+        return;
+    }
+    
+    // **Kiểm tra trùng lặp Tên đăng nhập (quan trọng)**
+    const existingUser = users.find(user => user.username === username);
+    if (existingUser) {
+        alert("Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác!");
+        return;
+    }
+
+    // --- LOGIC LƯU DỮ LIỆU ---
+
+    // 1. Tạo đối tượng người dùng mới
+    const newUser = {
+        username: username,
+        password: password // Lưu ý: Trong thực tế, KHÔNG BAO GIỜ lưu mật khẩu dưới dạng văn bản thuần
+    };
+
+    // 2. Thêm người dùng mới vào Mảng
+    users.push(newUser); 
+    
+    // 3. Cập nhật Local Storage
+    // Lưu ý: Local Storage chỉ lưu chuỗi, nên cần dùng JSON.stringify() để chuyển mảng thành chuỗi
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+
+    // --- KẾT THÚC LOGIC LƯU DỮ LIỆU ---
+
+    console.log("Đăng ký thành công!");
+    console.log("Dữ liệu người dùng hiện tại (trong mảng):", users);
+    
+    alert("Đăng ký thành công! Chúc bạn có trải nghiệm mua sắm vui vẻ");
+    
+    // Xóa dữ liệu input sau khi đăng ký thành công (tùy chọn)
+    document.querySelector('.auth-form_input[placeholder="Tên đăng nhập"]').value = '';
+    document.querySelector('.auth-form_input[placeholder="Mật khẩu"]').value = '';
+    document.getElementById('last-input').value = '';
+
+    closeModal();
+});
+
+/* =============================== #endregion REGISTER FORM ============================= */
 //thêm sản phẩm
 let products = [];
 
