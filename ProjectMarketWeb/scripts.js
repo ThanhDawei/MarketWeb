@@ -194,6 +194,8 @@ if (storedProducts) {
   products = JSON.parse(storedProducts);
 }
 
+let editingIndex = null;
+
 function renderProducts(list = products) {
   productList.innerHTML = "";
   list.forEach((product, index) => {
@@ -213,8 +215,8 @@ function renderProducts(list = products) {
             <span class="home-product-item__sold">${product.quantity}</span>
           </div>
         </a>
-        <button class ="edit-btn" id="editBtn" style="display: none">Chỉnh sửa sản phẩm</button>
-        <button class ="buy-btn" id="buyBtn" style="display: block">Mua</button>
+        <button class ="edit-btn" id="editBtn" style="display: none" onclick="editProduct(${index})">Chỉnh sửa sản phẩm</button>
+        <button class ="buy-btn" id="buyBtn" style="display: block" onclick="buyProduct(${index})">Mua</button>
         <button class="delete-btn" id="deleteBtn" style="display: none" onclick="deleteProduct(${index})">Xóa</button>
         <button class="add-to-cart" id="addcartBtn" style="display: block" onclick="addToCart('${escapeHtml(
           product.name
@@ -230,14 +232,48 @@ function deleteProduct(index) {
 }
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-  let name = document.getElementById("name").value;
-  let value = document.getElementById("value").value;
-  let quantity = document.getElementById("quantity").value;
-  let category = document.getElementById("category").value;
-  let file = document.getElementById("image").files[0];
 
+  const name = document.getElementById("name").value;
+  const value = document.getElementById("value").value;
+  const quantity = document.getElementById("quantity").value;
+  const category = document.getElementById("category").value;
+  const file = document.getElementById("image").files[0];
+
+  // Nếu đang sửa (editingIndex khác null)
+  if (editingIndex !== null) {
+    const product = products[editingIndex];
+
+    // Nếu có file mới thì resize ảnh
+    if (file) {
+      resizeImage(file, 400, 400, 0.7, function (imageData) {
+        product.name = name;
+        product.value = value;
+        product.quantity = quantity;
+        product.category = category;
+        product.image = imageData;
+        localStorage.setItem("products", JSON.stringify(products));
+        renderProducts();
+        form.reset();
+        document.getElementById("product-form-popup").style.display = "none";
+        editingIndex = null;
+      });
+    } else {
+      // Không có ảnh mới -> giữ ảnh cũ
+      product.name = name;
+      product.value = value;
+      product.quantity = quantity;
+      product.category = category;
+      localStorage.setItem("products", JSON.stringify(products));
+      renderProducts();
+      form.reset();
+      document.getElementById("product-form-popup").style.display = "none";
+      editingIndex = null;
+    }
+    return;
+  }
+
+  // Nếu đang thêm mới
   if (file) {
-    // Resize và nén ảnh trước khi lưu
     resizeImage(file, 400, 400, 0.7, function (imageData) {
       products.push({ name, value, quantity, category, image: imageData });
       localStorage.setItem("products", JSON.stringify(products));
@@ -247,6 +283,7 @@ form.addEventListener("submit", (e) => {
     });
   }
 });
+
 const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
 
@@ -261,6 +298,23 @@ searchBtn.addEventListener("click", () => {
 searchInput.addEventListener("keyup", (e) => {
   if (e.key === "Enter") searchBtn.click();
 });
+
+function editProduct(index) {
+  const product = products[index];
+  if (!product) return;
+
+  editingIndex = index; // Đánh dấu đang sửa sản phẩm nào
+
+  // Điền dữ liệu cũ vào form
+  document.getElementById("name").value = product.name;
+  document.getElementById("value").value = product.value;
+  document.getElementById("quantity").value = product.quantity;
+  document.getElementById("category").value = product.category;
+
+  // Mở popup thêm/sửa sản phẩm
+  document.getElementById("product-form-popup").style.display = "flex";
+}
+
 
 renderProducts();
 
@@ -399,3 +453,72 @@ function clearFilters() {
 // gán click cho applyFilterBtn và clearFilterBtn
 applyFilterBtn.addEventListener("click", applyFilters);
 clearFilterBtn.addEventListener("click", clearFilters);
+
+// ==================== POPUP XÁC NHẬN MUA HÀNG ====================
+let checkoutList = []; // danh sách sản phẩm chờ thanh toán
+
+function buyProduct(index) {
+  const product = products[index];
+  if (!product) return;
+  if (product.quantity <= 0) {
+    alert("Sản phẩm đã hết hàng!");
+    return;
+  }
+
+  // Thêm vào danh sách thanh toán
+  checkoutList.push(product);
+  renderCheckoutPopup();
+  document.getElementById("checkout-popup").style.display = "flex";
+}
+
+function renderCheckoutPopup() {
+  const checkoutItems = document.getElementById("checkout-items");
+  const checkoutTotal = document.getElementById("checkout-total");
+  checkoutItems.innerHTML = "";
+
+  let total = 0;
+  checkoutList.forEach((item) => {
+    total += parsePrice(item.value);
+    const div = document.createElement("div");
+    div.className = "checkout-item";
+    div.innerHTML = `
+      <p><strong>${escapeHtml(item.name)}</strong> - ${formatPrice(item.value)}đ</p>
+    `;
+    checkoutItems.appendChild(div);
+  });
+
+  checkoutTotal.textContent = formatPrice(total);
+}
+
+// Đóng popup
+document.getElementById("close-checkout-popup").onclick = function () {
+  document.getElementById("checkout-popup").style.display = "none";
+  checkoutList = [];
+};
+
+// Hủy mua
+document.getElementById("cancel-checkout").onclick = function () {
+  document.getElementById("checkout-popup").style.display = "none";
+  checkoutList = [];
+};
+
+// Thanh toán
+document.getElementById("confirm-checkout").onclick = function () {
+  // Trừ số lượng của từng sản phẩm
+  checkoutList.forEach((item) => {
+    const product = products.find(p => p.name === item.name);
+    if (product && product.quantity > 0) {
+      product.quantity--;
+    }
+  });
+
+  // Lưu lại localStorage
+  localStorage.setItem("products", JSON.stringify(products));
+
+  // Render lại sản phẩm
+  renderProducts();
+
+  alert("🎉 Bạn đã mua thành công sản phẩm!");
+  document.getElementById("checkout-popup").style.display = "none";
+  checkoutList = [];
+};
