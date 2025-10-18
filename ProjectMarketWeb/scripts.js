@@ -522,3 +522,51 @@ document.getElementById("confirm-checkout").onclick = function () {
   document.getElementById("checkout-popup").style.display = "none";
   checkoutList = [];
 };
+// Lấy các phần tử cần thiết
+const adminBtn = document.getElementById('admin-btn');
+const adminPopup = document.getElementById('admin-popup');
+const closeAdminPopup = document.getElementById('close-admin-popup');
+const cancelAdminBtn = document.getElementById('cancel-admin');
+const accessAdminBtn = document.getElementById('access-admin'); // Nút Truy cập
+
+// Hàm hiển thị popup admin
+function openAdminPopup() {
+    adminPopup.style.display = 'flex'; // Dùng flex để căn giữa
+}
+
+// Hàm ẩn popup admin
+function closeAdminPopupFunc() {
+    adminPopup.style.display = 'none';
+}
+
+// Gắn sự kiện click cho nút mở popup admin
+if (adminBtn) {
+    adminBtn.addEventListener('click', openAdminPopup);
+}
+
+// Gắn sự kiện click cho nút đóng popup admin (biểu tượng X)
+if (closeAdminPopup) {
+    closeAdminPopup.addEventListener('click', closeAdminPopupFunc);
+}
+
+// Gắn sự kiện click cho nút "Đóng" trong popup
+if (cancelAdminBtn) {
+    cancelAdminBtn.addEventListener('click', closeAdminPopupFunc);
+}
+
+// Gắn sự kiện click cho nút "Truy cập" trong popup (bạn sẽ xử lý logic chuyển hướng tại đây)
+if (accessAdminBtn) {
+    accessAdminBtn.addEventListener('click', () => {
+        alert('Chuyển hướng đến trang quản trị viên!'); // Thay bằng logic chuyển hướng thực tế
+        closeAdminPopupFunc();
+    });
+}
+
+// Đóng popup khi click ra ngoài vùng nội dung popup
+if (adminPopup) {
+    adminPopup.addEventListener('click', (event) => {
+        if (event.target === adminPopup) {
+            closeAdminPopupFunc();
+        }
+    });
+}

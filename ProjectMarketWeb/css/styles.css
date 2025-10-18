@@ -956,3 +956,152 @@ input {
     width: 100%;
   }
 }
+/* Style cho nút Admin trong header */
+#admin-btn h1 {
+  /* Điều chỉnh vị trí nếu cần */
+  --h1-left: 77%; /* Giá trị cũ */
+  --h1-top: 4%;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+#admin-btn .fa-user-gear {
+  font-size: 1.1em;
+}
+
+/* Style cụ thể cho nội dung popup admin */
+.admin-popup-content {
+  max-width: 450px; /* Điều chỉnh chiều rộng popup admin */
+  padding: 0; /* Bỏ padding mặc định để tự kiểm soát */
+  border-radius: 15px;
+  overflow: hidden; /* Đảm bảo bo góc cho header */
+}
+
+.admin-header {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  padding: 20px 0;
+  border-radius: 15px 15px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.admin-header h2 {
+  margin: 0;
+  font-size: 1.8em;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.admin-gear-icon {
+  font-size: 2em;
+}
+
+.admin-welcome-text {
+  font-size: 1.05em;
+  color: #555;
+  margin-bottom: 25px;
+  padding: 0 30px; /* Padding cho text */
+}
+
+.admin-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+  padding: 0 30px; /* Padding cho các nút option */
+}
+
+.admin-option-btn {
+  background-color: #f0f4f8; /* Nền nhẹ nhàng */
+  color: #333;
+  padding: 15px 20px;
+  border: 1px solid #e0e6ec;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 1.1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    border-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.admin-option-btn i {
+  font-size: 1.3em;
+  color: #6a11cb; /* Màu icon */
+}
+
+.admin-option-btn:hover {
+  background-color: #e2eaf2; /* Đậm hơn khi hover */
+  border-color: #c9d2db;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.admin-option-btn:active {
+  transform: translateY(0);
+}
+
+.admin-actions {
+  display: flex;
+  justify-content: flex-end; /* Căn phải các nút */
+  gap: 15px;
+  padding: 0 30px 25px 30px; /* Padding cho các nút action */
+  border-top: 1px solid #eee; /* Đường kẻ phân cách */
+  padding-top: 20px;
+  margin-top: 10px;
+}
+
+.btn-primary {
+  background-color: #6a11cb;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #5a0ca0;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: #e0e0e0;
+  color: #333;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #cccccc;
+  transform: translateY(-2px);
+}
+
+/* Đảm bảo nút đóng popup vẫn hoạt động */
+.admin-popup-content .close {
+  top: 15px;
+  right: 20px;
+  color: white; /* Đổi màu nút đóng cho header */
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 1; /* Đảm bảo nó nằm trên header */
+}
+
+.admin-popup-content .close:hover {
+  color: #f0f0f0;
+}

@@ -309,3 +309,44 @@
     </div>
   </body>
 </html>
+<!-- Nút mở Popup Admin -->
+<button
+  id="admin-btn"
+  type="button"
+  style="background: none; border: none; cursor: pointer;"
+>
+  <h1 style="--h1-left: 77%; --h1-top: 4%;">
+    <i class="fa-solid fa-user-gear"></i>
+    Admin
+  </h1>
+</button>
+
+<!-- Popup Quản trị viên -->
+<div id="admin-popup" class="popup" style="display: none">
+  <div class="popup-content admin-popup-content">
+    <span id="close-admin-popup" class="close">&times;</span>
+    <div class="admin-header">
+      <i class="fa-solid fa-gear admin-gear-icon"></i>
+      <h2>QUẢN TRỊ VIÊN</h2>
+    </div>
+    <p class="admin-welcome-text">Chào mừng! Vui lòng chọn tác vụ quản lý.</p>
+    <div class="admin-options">
+      <button class="admin-option-btn">
+        <i class="fa-solid fa-pen-to-square"></i> QUẢN LÝ SẢN PHẨM
+      </button>
+      <button class="admin-option-btn">
+        <i class="fa-solid fa-users"></i> QUẢN LÝ NGƯỜI DÙNG
+      </button>
+      <button class="admin-option-btn">
+        <i class="fa-solid fa-chart-bar"></i> THỐNG KÊ - BÁO CÁO
+      </button>
+      <button class="admin-option-btn">
+        <i class="fa-solid fa-gears"></i> CÀI ĐẶT HỆ THỐNG
+      </button>
+    </div>
+    <div class="admin-actions">
+      <button id="cancel-admin" class="btn-secondary">Đóng</button>
+      <button id="access-admin" class="btn-primary">Truy cập</button>
+    </div>
+  </div>
+</div>
