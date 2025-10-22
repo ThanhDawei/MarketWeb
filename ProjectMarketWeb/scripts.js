@@ -23,109 +23,140 @@ document.querySelector(".login-form").onsubmit = function (e) {
   if (usernameInput === "admin1" && passwordInput === "admin1") {
     document.getElementById("login-popup").style.display = "none";
     document.getElementById("login-btn").style.display = "none";
+    document.getElementById("admin").style.display = "block";
+    document.getElementById("open-product-form-btn").style.display = "block";
+    // Đánh dấu là admin (lưu vào localStorage để giữ trạng thái khi render lại)
+    localStorage.setItem("isAdmin", "true");
+
+    // Cập nhật ngay UI cho các nút hiện có
+    document
+      .querySelectorAll(".delete-btn")
+      .forEach((el) => (el.style.display = "block"));
+    document
+      .querySelectorAll(".edit-btn")
+      .forEach((el) => (el.style.display = "block"));
+    document
+      .querySelectorAll(".add-to-cart")
+      .forEach((el) => (el.style.display = "none"));
+    document
+      .querySelectorAll(".buy-btn")
+      .forEach((el) => (el.style.display = "none"));
+    document.getElementById("open-product-form-btn").style.display = "block";
+    // Render lại để các sản phẩm mới cũng hiển thị đúng
+    renderProducts();
+  } else if (
+    users.find(
+      (user) =>
+        user.username === usernameInput && user.password === passwordInput
+    )
+  ) {
+    document.getElementById("login-popup").style.display = "none";
+    document.getElementById("login-btn").style.display = "none";
     document.getElementById("username-display").style.display = "block";
     document.getElementById("displayed-username").innerText = usernameInput;
-    document.getElementById("deleteBtn").style.display = "block";
-    document.getElementById("addcartBtn").style.display = "none";
-    document.getElementById("buyBtn").style.display = "none";
-    document.getElementById("editBtn").style.display = "block";
   } else {
     alert("Sai tên đăng nhập hoặc mật khẩu!");
   }
 };
 /* ============================== #region REGISTER FORM ============================== */
 // Lấy các phần tử cần thiết
-const modal = document.getElementById('modal-toggle');
-const openButton = document.getElementById('open-register-form');
-const turnbackButton = document.getElementById('turnback');
-const registerButton = document.getElementById('register');
-const modalOverlay = document.querySelector('.modal_overlay');
+const modal = document.getElementById("modal-toggle");
+const openButton = document.getElementById("open-register-form");
+const turnbackButton = document.getElementById("turnback");
+const registerButton = document.getElementById("register");
+const modalOverlay = document.querySelector(".modal_overlay");
 
 // --- Khai báo Mảng (Array) để lưu tạm thời và Tên Local Storage Key ---
 let users = [];
-const STORAGE_KEY = 'userAccounts';
+const STORAGE_KEY = "userAccounts";
 
 // --- Hàm tải dữ liệu người dùng từ Local Storage khi khởi động ---
 function loadUsers() {
-    const storedUsers = localStorage.getItem(STORAGE_KEY);
-    if (storedUsers) {
-        // Chuyển chuỗi JSON thành mảng JavaScript
-        users = JSON.parse(storedUsers); 
-        console.log("Đã tải dữ liệu người dùng từ Local Storage:", users);
-    }
+  const storedUsers = localStorage.getItem(STORAGE_KEY);
+  if (storedUsers) {
+    // Chuyển chuỗi JSON thành mảng JavaScript
+    users = JSON.parse(storedUsers);
+    console.log("Đã tải dữ liệu người dùng từ Local Storage:", users);
+  }
 }
 
 // Gọi hàm tải dữ liệu khi code chạy
 loadUsers();
 // 1. Chức năng mở Modal
-openButton.addEventListener('click', () => {
-    modal.style.display = 'flex'; // Hiện modal
+openButton.addEventListener("click", () => {
+  modal.style.display = "flex"; // Hiện modal
 });
 
 // 2. Chức năng đóng Modal (Nút "Trở lại" và click vào overlay)
 function closeModal() {
-    modal.style.display = 'none'; // Ẩn modal
+  modal.style.display = "none"; // Ẩn modal
 }
 
-turnbackButton.addEventListener('click', closeModal);
-modalOverlay.addEventListener('click', closeModal);
+turnbackButton.addEventListener("click", closeModal);
+modalOverlay.addEventListener("click", closeModal);
 
 // 3. Chức năng nút "Đăng kí"
-registerButton.addEventListener('click', (event) => {
-    // Ngăn hành vi submit form mặc định (nếu có)
-    event.preventDefault(); 
-    
-    // Lấy giá trị từ các trường input
-    const username = document.querySelector('.auth-form_input[placeholder="Tên đăng nhập"]').value;
-    const password = document.querySelector('.auth-form_input[placeholder="Mật khẩu"]').value;
-    const confirmPassword = document.getElementById('last-input').value;
+registerButton.addEventListener("click", (event) => {
+  // Ngăn hành vi submit form mặc định (nếu có)
+  event.preventDefault();
 
-    // Ví dụ kiểm tra cơ bản
-    if (username === "" || password === "" || confirmPassword === "") {
-        alert("Vui lòng điền đầy đủ tất cả các trường!");
-        return;
-    }
+  // Lấy giá trị từ các trường input
+  const username = document.querySelector(
+    '.auth-form_input[placeholder="Tên đăng nhập"]'
+  ).value;
+  const password = document.querySelector(
+    '.auth-form_input[placeholder="Mật khẩu"]'
+  ).value;
+  const confirmPassword = document.getElementById("last-input").value;
 
-    if (password !== confirmPassword) {
-        alert("Mật khẩu và Nhập lại mật khẩu không khớp!");
-        return;
-    }
-    
-    // **Kiểm tra trùng lặp Tên đăng nhập (quan trọng)**
-    const existingUser = users.find(user => user.username === username);
-    if (existingUser) {
-        alert("Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác!");
-        return;
-    }
+  // Ví dụ kiểm tra cơ bản
+  if (username === "" || password === "" || confirmPassword === "") {
+    alert("Vui lòng điền đầy đủ tất cả các trường!");
+    return;
+  }
 
-    // --- LOGIC LƯU DỮ LIỆU ---
+  if (password !== confirmPassword) {
+    alert("Mật khẩu và Nhập lại mật khẩu không khớp!");
+    return;
+  }
 
-    // 1. Tạo đối tượng người dùng mới
-    const newUser = {
-        username: username,
-        password: password // Lưu ý: Trong thực tế, KHÔNG BAO GIỜ lưu mật khẩu dưới dạng văn bản thuần
-    };
+  // **Kiểm tra trùng lặp Tên đăng nhập (quan trọng)**
+  const existingUser = users.find((user) => user.username === username);
+  if (existingUser) {
+    alert("Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác!");
+    return;
+  }
 
-    // 2. Thêm người dùng mới vào Mảng
-    users.push(newUser); 
-    
-    // 3. Cập nhật Local Storage
-    // Lưu ý: Local Storage chỉ lưu chuỗi, nên cần dùng JSON.stringify() để chuyển mảng thành chuỗi
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+  // --- LOGIC LƯU DỮ LIỆU ---
 
-    // --- KẾT THÚC LOGIC LƯU DỮ LIỆU ---
+  // 1. Tạo đối tượng người dùng mới
+  const newUser = {
+    username: username,
+    password: password, // Lưu ý: Trong thực tế, KHÔNG BAO GIỜ lưu mật khẩu dưới dạng văn bản thuần
+  };
 
-    console.log("Đăng ký thành công!");
-    console.log("Dữ liệu người dùng hiện tại (trong mảng):", users);
-    
-    alert("Đăng ký thành công! Chúc bạn có trải nghiệm mua sắm vui vẻ");
-    
-    // Xóa dữ liệu input sau khi đăng ký thành công (tùy chọn)
-    document.querySelector('.auth-form_input[placeholder="Tên đăng nhập"]').value = '';
-    document.querySelector('.auth-form_input[placeholder="Mật khẩu"]').value = '';
-    document.getElementById('last-input').value = '';
+  // 2. Thêm người dùng mới vào Mảng
+  users.push(newUser);
 
-    closeModal();
+  // 3. Cập nhật Local Storage
+  // Lưu ý: Local Storage chỉ lưu chuỗi, nên cần dùng JSON.stringify() để chuyển mảng thành chuỗi
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+
+  // --- KẾT THÚC LOGIC LƯU DỮ LIỆU ---
+
+  console.log("Đăng ký thành công!");
+  console.log("Dữ liệu người dùng hiện tại (trong mảng):", users);
+
+  alert("Đăng ký thành công! Chúc bạn có trải nghiệm mua sắm vui vẻ");
+
+  // Xóa dữ liệu input sau khi đăng ký thành công (tùy chọn)
+  document.querySelector(
+    '.auth-form_input[placeholder="Tên đăng nhập"]'
+  ).value = "";
+  document.querySelector('.auth-form_input[placeholder="Mật khẩu"]').value = "";
+  document.getElementById("last-input").value = "";
+
+  closeModal();
 });
 
 /* =============================== #endregion REGISTER FORM ============================= */
@@ -315,7 +346,6 @@ function editProduct(index) {
   document.getElementById("product-form-popup").style.display = "flex";
 }
 
-
 renderProducts();
 
 document.getElementById("open-product-form-btn").onclick = function () {
@@ -482,7 +512,9 @@ function renderCheckoutPopup() {
     const div = document.createElement("div");
     div.className = "checkout-item";
     div.innerHTML = `
-      <p><strong>${escapeHtml(item.name)}</strong> - ${formatPrice(item.value)}đ</p>
+      <p><strong>${escapeHtml(item.name)}</strong> - ${formatPrice(
+      item.value
+    )}đ</p>
     `;
     checkoutItems.appendChild(div);
   });
@@ -506,7 +538,7 @@ document.getElementById("cancel-checkout").onclick = function () {
 document.getElementById("confirm-checkout").onclick = function () {
   // Trừ số lượng của từng sản phẩm
   checkoutList.forEach((item) => {
-    const product = products.find(p => p.name === item.name);
+    const product = products.find((p) => p.name === item.name);
     if (product && product.quantity > 0) {
       product.quantity--;
     }
@@ -523,50 +555,50 @@ document.getElementById("confirm-checkout").onclick = function () {
   checkoutList = [];
 };
 // Lấy các phần tử cần thiết
-const adminBtn = document.getElementById('admin-btn');
-const adminPopup = document.getElementById('admin-popup');
-const closeAdminPopup = document.getElementById('close-admin-popup');
-const cancelAdminBtn = document.getElementById('cancel-admin');
-const accessAdminBtn = document.getElementById('access-admin'); // Nút Truy cập
+const adminBtn = document.getElementById("admin-btn");
+const adminPopup = document.getElementById("admin-popup");
+const closeAdminPopup = document.getElementById("close-admin-popup");
+const cancelAdminBtn = document.getElementById("cancel-admin");
+const accessAdminBtn = document.getElementById("access-admin"); // Nút Truy cập
 
 // Hàm hiển thị popup admin
 function openAdminPopup() {
-    adminPopup.style.display = 'flex'; // Dùng flex để căn giữa
+  adminPopup.style.display = "flex"; // Dùng flex để căn giữa
 }
 
 // Hàm ẩn popup admin
 function closeAdminPopupFunc() {
-    adminPopup.style.display = 'none';
+  adminPopup.style.display = "none";
 }
 
 // Gắn sự kiện click cho nút mở popup admin
 if (adminBtn) {
-    adminBtn.addEventListener('click', openAdminPopup);
+  adminBtn.addEventListener("click", openAdminPopup);
 }
 
 // Gắn sự kiện click cho nút đóng popup admin (biểu tượng X)
 if (closeAdminPopup) {
-    closeAdminPopup.addEventListener('click', closeAdminPopupFunc);
+  closeAdminPopup.addEventListener("click", closeAdminPopupFunc);
 }
 
 // Gắn sự kiện click cho nút "Đóng" trong popup
 if (cancelAdminBtn) {
-    cancelAdminBtn.addEventListener('click', closeAdminPopupFunc);
+  cancelAdminBtn.addEventListener("click", closeAdminPopupFunc);
 }
 
 // Gắn sự kiện click cho nút "Truy cập" trong popup (bạn sẽ xử lý logic chuyển hướng tại đây)
 if (accessAdminBtn) {
-    accessAdminBtn.addEventListener('click', () => {
-        alert('Chuyển hướng đến trang quản trị viên!'); // Thay bằng logic chuyển hướng thực tế
-        closeAdminPopupFunc();
-    });
+  accessAdminBtn.addEventListener("click", () => {
+    alert("Chuyển hướng đến trang quản trị viên!"); // Thay bằng logic chuyển hướng thực tế
+    closeAdminPopupFunc();
+  });
 }
 
 // Đóng popup khi click ra ngoài vùng nội dung popup
 if (adminPopup) {
-    adminPopup.addEventListener('click', (event) => {
-        if (event.target === adminPopup) {
-            closeAdminPopupFunc();
-        }
-    });
+  adminPopup.addEventListener("click", (event) => {
+    if (event.target === adminPopup) {
+      closeAdminPopupFunc();
+    }
+  });
 }
