@@ -27,6 +27,7 @@ document.querySelector(".login-form").onsubmit = function (e) {
     document.getElementById("open-product-form-btn").style.display = "block";
     // Đánh dấu là admin (lưu vào localStorage để giữ trạng thái khi render lại)
     localStorage.setItem("isAdmin", "true");
+    localStorage.setItem("isLoggedIn", "true");
 
     // Cập nhật ngay UI cho các nút hiện có
     document
@@ -54,6 +55,7 @@ document.querySelector(".login-form").onsubmit = function (e) {
     document.getElementById("login-btn").style.display = "none";
     document.getElementById("username-display").style.display = "block";
     document.getElementById("displayed-username").innerText = usernameInput;
+    localStorage.setItem("isLoggedIn", "true");
   } else {
     alert("Sai tên đăng nhập hoặc mật khẩu!");
   }
@@ -390,6 +392,10 @@ function updateTotal() {
 
 // Thêm vào giỏ hàng
 function addToCart(name, value) {
+  if (localStorage.getItem("isLoggedIn") !== "true") {
+    alert(" Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!");
+    return; 
+  }
   let item = cart.find((p) => p.name === name);
   if (item) {
     item.quantity++;
@@ -488,6 +494,10 @@ clearFilterBtn.addEventListener("click", clearFilters);
 let checkoutList = []; // danh sách sản phẩm chờ thanh toán
 
 function buyProduct(index) {
+  if (localStorage.getItem("isLoggedIn") !== "true") {
+    alert("Bạn cần đăng nhập để mua hàng!");
+    return;
+  }
   const product = products[index];
   if (!product) return;
   if (product.quantity <= 0) {
