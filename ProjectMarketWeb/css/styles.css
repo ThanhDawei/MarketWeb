@@ -388,6 +388,7 @@ h1 {
   left: 0;
   display: none;
   animation: fadeIn2 linear 0.4s;
+  z-index: 9999;
 }
 .modal_overlay {
   position: absolute;
@@ -897,6 +898,7 @@ input {
 .home-product-item__action {
   margin-left: 0px;
   margin-right: 120px;
+  white-space: nowrap;
 }
 
 .home-product-item__price {
