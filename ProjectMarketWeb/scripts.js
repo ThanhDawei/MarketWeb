@@ -504,16 +504,11 @@ function buyProduct(index) {
     alert("Sản phẩm đã hết hàng!");
     return;
   }
-  if (!checkLoginBeforePurchase()) {
-    return;
-  }
-  else { 
-    // Thêm vào danh sách thanh toán
-    checkoutList.push(product);
-    renderCheckoutPopup();
-    document.getElementById("checkout-popup").style.display = "flex";
-  }
-  
+
+  // Thêm vào danh sách thanh toán
+  checkoutList.push(product);
+  renderCheckoutPopup();
+  document.getElementById("checkout-popup").style.display = "flex";
 }
 
 function renderCheckoutPopup() {
@@ -616,15 +611,4 @@ if (adminPopup) {
       closeAdminPopupFunc();
     }
   });
-}
-
-// kiểm tra đăng nhập mới được mua hàng
-function checkLoginBeforePurchase() {
-  const isLoggedIn =
-    document.getElementById("username-display").style.display === "block";
-  if (!isLoggedIn) {
-    alert("Vui lòng đăng nhập để mua hàng!");
-    return false;
-  }
-  return true;
 }
