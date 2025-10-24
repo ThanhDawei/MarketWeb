@@ -131,80 +131,91 @@
         </button>
       </h1>
 
-<!-- ============================== #region REGISTER FORM ============================== -->
-      <p
-        style="background: none; border: none"
-        > <h1 style="--h1-left: 86.4%; --h1-top: 1%">
-          |
-          </h1>
-      </p>
+      <!-- ============================== #region REGISTER FORM ============================== -->
+
       <button
-          id="open-register-form"
-          type="button"
-          style="background: none; border: none; padding:none; cursor: pointer;"
+        id="open-register-form"
+        type="button"
+        style="background: none; border: none; padding: none; cursor: pointer"
       >
-          <h1 style="--h1-left: 87%; --h1-top: 4%">
-          Đăng ký
-          </h1>
+        <h1 style="--h1-left: 86.4%; --h1-top: 1%">|</h1>
+        <h1 style="--h1-left: 87%; --h1-top: 4%">Đăng ký</h1>
       </button>
-
       <div class="modal" id="modal-toggle">
-          <div class="modal_overlay"></div> <!-- overlay nền đen -->
-              
-          <div class="modal_body">
+        <div class="modal_overlay"></div>
+        <!-- overlay nền đen -->
 
-              <!-- Authen form -->
-              <div class="auth-form">
-                  <div class="auth-form_header"> <!-- phần head -->
-                      <h3 class="auth-form_heading">Đăng ký</h3>
-                  </div>
+        <div class="modal_body">
+          <!-- Authen form -->
+          <div class="auth-form">
+            <div class="auth-form_header">
+              <!-- phần head -->
+              <h3 class="auth-form_heading">Đăng ký</h3>
+            </div>
 
-                  <div class="auth-form_container">
-                      <div class="auth-form_form"><!--Phần điền form-->
-                          <div class="auth-form_group">
-                              <input type="text" class="auth-form_input" placeholder="Tên đăng nhập">
-                          </div>
-                          <div class="auth-form_group">
-                              <input type="password" class="auth-form_input" placeholder="Mật khẩu">
-                          </div>
-                          <div class="auth-form_group">
-                              <input type="password" class="auth-form_input" id="last-input" placeholder="Nhập lại mật khẩu">
-                          </div>
-                      </div>
-                      
-                      <div class="auth-form_policy"> <!--điều khoản dịch vụ -->
-                          <p class="auth-form_policy-text">
-                              Bằng việc đăng kí, bạn đã đồng ý với cửa hàng về
-                              <a href="" class="auth-form_policy-link">Điều khoản dịch vụ</a>
-                              & 
-                              <a href="" class="auth-form_policy-link">Chính sách bảo mật</a>
-                          </p>
-                      </div>
-                      
-                      <div class="auth-form_control"> <!-- nút trở lại / đăng kí-->
-                          <button class="btn-register " id="turnback">Trở lại</button>
-                          <button class="btn-register" id="register">Đăng kí</button>
-                      </div>
-                      
-                  </div>
-
-                  <div class="auth-form_socials"> <!-- liên kết mạng xã hội-->
-                      <a href="" class="btn-register btn_s-font" id="btn-icon-facebook">
-                          <i class="fa-brands fa-facebook"></i>
-                          Kết nối với Facebook
-                      </a>
-                      <a href="" class="btn-register btn_s-font" id="btn-icon-google">
-                          <i class="fa-brands fa-google"></i>
-                          Kết nối với Google
-                      </a>
-                  </div>
-
+            <div class="auth-form_container">
+              <div class="auth-form_form">
+                <!--Phần điền form-->
+                <div class="auth-form_group">
+                  <input
+                    type="text"
+                    class="auth-form_input"
+                    placeholder="Tên đăng nhập"
+                  />
+                </div>
+                <div class="auth-form_group">
+                  <input
+                    type="password"
+                    class="auth-form_input"
+                    placeholder="Mật khẩu"
+                  />
+                </div>
+                <div class="auth-form_group">
+                  <input
+                    type="password"
+                    class="auth-form_input"
+                    id="last-input"
+                    placeholder="Nhập lại mật khẩu"
+                  />
+                </div>
               </div>
 
-          </div>
+              <div class="auth-form_policy">
+                <!--điều khoản dịch vụ -->
+                <p class="auth-form_policy-text">
+                  Bằng việc đăng kí, bạn đã đồng ý với cửa hàng về
+                  <a href="" class="auth-form_policy-link"
+                    >Điều khoản dịch vụ</a
+                  >
+                  &
+                  <a href="" class="auth-form_policy-link"
+                    >Chính sách bảo mật</a
+                  >
+                </p>
+              </div>
 
+              <div class="auth-form_control">
+                <!-- nút trở lại / đăng kí-->
+                <button class="btn-register" id="turnback">Trở lại</button>
+                <button class="btn-register" id="register">Đăng kí</button>
+              </div>
+            </div>
+
+            <div class="auth-form_socials">
+              <!-- liên kết mạng xã hội-->
+              <a href="" class="btn-register btn_s-font" id="btn-icon-facebook">
+                <i class="fa-brands fa-facebook"></i>
+                Kết nối với Facebook
+              </a>
+              <a href="" class="btn-register btn_s-font" id="btn-icon-google">
+                <i class="fa-brands fa-google"></i>
+                Kết nối với Google
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
-<!-- ============================== #endregion REGISTER FORM============================== -->
+      <!-- ============================== #endregion REGISTER FORM============================== -->
 
       <div
         class="search-container"
@@ -235,7 +246,9 @@
     </header>
 
     <!-- Nút thêm sp mới -->
-    <button id="open-product-form-btn" style="display: none;">Thêm sản phẩm mới</button>
+    <button id="open-product-form-btn" style="display: none">
+      Thêm sản phẩm mới
+    </button>
 
     <!-- Popup thêm sp mới -->
     <div id="product-form-popup" class="popup">
@@ -254,7 +267,7 @@
     </div>
 
     <!-- Popup xác nhận mua hàng -->
-    <div id="checkout-popup" class="popup" style="display: none;">
+    <div id="checkout-popup" class="popup" style="display: none">
       <div class="popup-content">
         <span id="close-checkout-popup" class="close">&times;</span>
         <h2>Xác nhận mua hàng</h2>
@@ -307,49 +320,53 @@
 
       <div id="productList" class="product-grid"></div>
     </div>
-    <h1 id="admin" style="--h1-left: 80%; --h1-top: -1%; font-size: 0.9em; display:none;">
-    <button
-     id="admin-btn"
-     type="button"
-     style="background: none; border: none; cursor: pointer;"
+    <h1
+      id="admin"
+      style="--h1-left: 80%; --h1-top: -1%; font-size: 0.9em; display: none"
     >
-     <h1>
-       <i class="fa-solid fa-user-gear"></i>
-       Admin
-     </h1>
-    </button>
+      <button
+        id="admin-btn"
+        type="button"
+        style="background: none; border: none; cursor: pointer"
+      >
+        <h1>
+          <i class="fa-solid fa-user-gear"></i>
+          Admin
+        </h1>
+      </button>
     </h1>
     <!-- Popup Quản trị viên -->
     <div id="admin-popup" class="popup" style="display: none">
-     <div class="popup-content admin-popup-content">
-       <span id="close-admin-popup" class="close">&times;</span>
-       <div class="admin-header">
-         <i class="fa-solid fa-gear admin-gear-icon"></i>
-         <h2>QUẢN TRỊ VIÊN</h2>
-       </div>
-       <p class="admin-welcome-text">Chào mừng! Vui lòng chọn tác vụ quản lý.</p>
-       <div class="admin-options">
-         <button class="admin-option-btn">
-           <i class="fa-solid fa-pen-to-square"></i> QUẢN LÝ SẢN PHẨM
-         </button>
-         <button class="admin-option-btn">
-           <i class="fa-solid fa-users"></i> QUẢN LÝ NGƯỜI DÙNG
-         </button>
-         <button class="admin-option-btn">
-           <i class="fa-solid fa-chart-bar"></i> THỐNG KÊ - BÁO CÁO
-         </button>
-         <button class="admin-option-btn">
-           <i class="fa-solid fa-gears"></i> CÀI ĐẶT HỆ THỐNG
-         </button>
-       </div>
-       <div class="admin-actions">
-         <button id="cancel-admin" class="btn-secondary">Đóng</button>
-         <button id="access-admin" class="btn-primary">Truy cập</button>
-       </div>
-     </div>
+      <div class="popup-content admin-popup-content">
+        <span id="close-admin-popup" class="close">&times;</span>
+        <div class="admin-header">
+          <i class="fa-solid fa-gear admin-gear-icon"></i>
+          <h2>QUẢN TRỊ VIÊN</h2>
+        </div>
+        <p class="admin-welcome-text">
+          Chào mừng! Vui lòng chọn tác vụ quản lý.
+        </p>
+        <div class="admin-options">
+          <button class="admin-option-btn">
+            <i class="fa-solid fa-pen-to-square"></i> QUẢN LÝ SẢN PHẨM
+          </button>
+          <button class="admin-option-btn">
+            <i class="fa-solid fa-users"></i> QUẢN LÝ NGƯỜI DÙNG
+          </button>
+          <button class="admin-option-btn">
+            <i class="fa-solid fa-chart-bar"></i> THỐNG KÊ - BÁO CÁO
+          </button>
+          <button class="admin-option-btn">
+            <i class="fa-solid fa-gears"></i> CÀI ĐẶT HỆ THỐNG
+          </button>
+        </div>
+        <div class="admin-actions">
+          <button id="cancel-admin" class="btn-secondary">Đóng</button>
+          <button id="access-admin" class="btn-primary">Truy cập</button>
+        </div>
+      </div>
     </div>
-    <footer>
-    </footer>
+    <footer></footer>
   </body>
 </html>
 <!-- Nút mở Popup Admin -->

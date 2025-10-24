@@ -4,7 +4,10 @@ document.getElementById("login-btn").onclick = function () {
 document.getElementById("close-login-popup").onclick = function () {
   document.getElementById("login-popup").style.display = "none";
 };
-
+if (localStorage.getItem("isAdmin") === null)
+  localStorage.setItem("isAdmin", "false");
+if (localStorage.getItem("isLoggedIn") === null)
+  localStorage.setItem("isLoggedIn", "false");
 window.addEventListener("click", function (event) {
   var loginPopup = document.getElementById("login-popup");
   if (event.target == loginPopup) {
@@ -25,26 +28,15 @@ document.querySelector(".login-form").onsubmit = function (e) {
     document.getElementById("login-btn").style.display = "none";
     document.getElementById("admin").style.display = "block";
     document.getElementById("open-product-form-btn").style.display = "block";
+    document.getElementById("open-register-form").style.display = "none";
     // Đánh dấu là admin (lưu vào localStorage để giữ trạng thái khi render lại)
     localStorage.setItem("isAdmin", "true");
     localStorage.setItem("isLoggedIn", "true");
 
     // Cập nhật ngay UI cho các nút hiện có
-    document
-      .querySelectorAll(".delete-btn")
-      .forEach((el) => (el.style.display = "block"));
-    document
-      .querySelectorAll(".edit-btn")
-      .forEach((el) => (el.style.display = "block"));
-    document
-      .querySelectorAll(".add-to-cart")
-      .forEach((el) => (el.style.display = "none"));
-    document
-      .querySelectorAll(".buy-btn")
-      .forEach((el) => (el.style.display = "none"));
-    document.getElementById("open-product-form-btn").style.display = "block";
-    // Render lại để các sản phẩm mới cũng hiển thị đúng
+
     renderProducts();
+    // Render lại để các sản phẩm mới cũng hiển thị đúng
   } else if (
     users.find(
       (user) =>
@@ -55,6 +47,7 @@ document.querySelector(".login-form").onsubmit = function (e) {
     document.getElementById("login-btn").style.display = "none";
     document.getElementById("username-display").style.display = "block";
     document.getElementById("displayed-username").innerText = usernameInput;
+    document.getElementById("open-register-form").style.display = "none";
     localStorage.setItem("isLoggedIn", "true");
   } else {
     alert("Sai tên đăng nhập hoặc mật khẩu!");
@@ -248,9 +241,7 @@ function renderProducts(list = products) {
             <span class="home-product-item__sold">${product.quantity}</span>
           </div>
         </a>
-        <button class ="edit-btn" id="editBtn" style="display: none" onclick="editProduct(${index})">Chỉnh sửa sản phẩm</button>
         <button class ="buy-btn" id="buyBtn" style="display: block" onclick="buyProduct(${index})">Mua</button>
-        <button class="delete-btn" id="deleteBtn" style="display: none" onclick="deleteProduct(${index})">Xóa</button>
         <button class="add-to-cart" id="addcartBtn" style="display: block" onclick="addToCart('${escapeHtml(
           product.name
         )}', ${product.value})">Thêm vào giỏ</button>
@@ -394,7 +385,7 @@ function updateTotal() {
 function addToCart(name, value) {
   if (localStorage.getItem("isLoggedIn") !== "true") {
     alert(" Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!");
-    return; 
+    return;
   }
   let item = cart.find((p) => p.name === name);
   if (item) {
