@@ -1107,3 +1107,105 @@ input {
 .admin-popup-content .close:hover {
   color: #f0f0f0;
 }
+
+/* ==================== USER POPUP STYLES ==================== */
+.user-popup-content {
+  max-width: 450px;
+  padding: 0;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.user-header {
+  background: linear-gradient(135deg, #2575fc, #6a11cb); /* Gradient xanh -> tím */
+  color: white;
+  padding: 20px 0;
+  border-radius: 15px 15px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.user-header h2 {
+  margin: 0;
+  font-size: 1.8em;
+  font-weight: 700;
+}
+
+.user-icon {
+  font-size: 2em;
+}
+
+.user-welcome-text {
+  font-size: 1.05em;
+  color: #555;
+  margin-bottom: 25px;
+  padding: 0 30px;
+}
+
+.user-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+  padding: 0 30px;
+}
+
+.user-option-btn {
+  background-color: #f0f4f8;
+  color: #333;
+  padding: 15px 20px;
+  border: 1px solid #e0e6ec;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 1.1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    border-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-option-btn i {
+  font-size: 1.3em;
+  color: #2575fc; /* Màu icon xanh */
+}
+
+.user-option-btn:hover {
+  background-color: #e2eaf2;
+  border-color: #c9d2db;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.user-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 30px 25px 30px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+  margin-top: 10px;
+}
+
+.logout-btn {
+  background-color: #d9534f; /* Màu đỏ cho nút đăng xuất */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logout-btn:hover {
+  background-color: #c9302c;
+}
+
+.user-popup-content .close {
+  top: 15px;
+  right: 20px;
+  color: white;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}

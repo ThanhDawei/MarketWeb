@@ -366,7 +366,37 @@
         </div>
       </div>
     </div>
-    <footer></footer>
+    <!-- ==================== USER PROFILE POPUP ==================== -->
+    <div id="user-popup" class="popup" style="display:none;">
+      <div class="popup-content user-popup-content">
+        <span id="close-user-popup" class="close">&times;</span>
+        <div class="user-header">
+          <i class="fa-solid fa-user-circle user-icon"></i>
+          <h2 id="popup-username">Tên người dùng</h2>
+        </div>
+        <p class="user-welcome-text">Quản lý thông tin và các hoạt động của bạn</p>
+        <div class="user-options">
+          <button class="user-option-btn">
+            <i class="fa-solid fa-id-card"></i> Hồ sơ của tôi
+          </button>
+          <button class="user-option-btn">
+            <i class="fa-solid fa-box-archive"></i> Lịch sử đơn hàng
+          </button>
+          <button class="user-option-btn">
+            <i class="fa-solid fa-map-location-dot"></i> Địa chỉ nhận hàng
+          </button>
+        </div>
+
+        <!-- Khối action -->
+        <div class="user-actions">
+          <button id="logout-btn" class="btn-primary logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- ==================== END USER PROFILE POPUP ==================== -->
+    <footer>
+    </footer>
   </body>
 </html>
-<!-- Nút mở Popup Admin -->

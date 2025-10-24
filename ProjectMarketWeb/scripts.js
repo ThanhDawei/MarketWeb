@@ -603,3 +603,59 @@ if (adminPopup) {
     }
   });
 }
+
+// ==================== USER PROFILE POPUP LOGIC ====================
+// getElementByID
+// userDisplay tên ng dùng ("username-display")
+const userDisplay = document.getElementById("username-display");
+
+// Popup ng dùng ("user-popup")
+const userPopup = document.getElementById("user-popup");
+
+// nút x close ("close-user-popup")
+const closeUserPopup = document.getElementById("close-user-popup");
+
+// Nút đăng xuất ("logout-btn")
+const logoutBtn = document.getElementById("logout-btn");
+
+// hiển thị tên trong popup ("popup-username")
+const popupUsername = document.getElementById("popup-username");
+
+// Sự kiện mở popup
+// khi click vào tên user trên header
+userDisplay.addEventListener("click", () => {
+  // Lấy tên ng dùng hiện tại từ header
+  const currentUsername = document.getElementById("displayed-username").innerText;
+  // Cập nhật tên vô popup
+  popupUsername.innerText = currentUsername;
+  // Hiển thị flex popup
+  userPopup.style.display = "flex";
+})
+
+// Hàm chung để đóng popup
+function closeUserPopupFunc() {
+  userPopup.style.display = "none";
+}
+
+// Sự kiện đóng popup
+// 1. Khi bấm nút x
+closeUserPopup.addEventListener("click", closeUserPopupFunc);
+
+// 2. Khi bấm ra ngoài vùng nội dung popup
+userPopup.addEventListener("click", (event) => {
+  if(event.target === userPopup) {
+    closeUserPopupFunc();
+  }
+});
+
+// Sự kiện nút đăng xuất
+// Khi bấm vào logout
+logoutBtn.addEventListener("click", () => {
+  // Xóa trạng thái đã đăng nhập, admin (nếu có), giỏ hàng
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("isAdmin");
+  localStorage.removeItem("cart");
+  // Reload trang
+  window.location.reload();
+});
+// ==================== END USER PROFILE POPUP LOGIC ====================
