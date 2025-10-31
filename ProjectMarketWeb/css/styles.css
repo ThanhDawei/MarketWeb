@@ -400,7 +400,7 @@ h1 {
   --growth-form: 0.7;
   --growth-to: 1;
   width: 475px;
-  height: 510px;
+  height: 550px;
   background-color: rgb(255, 255, 255);
   margin: auto;
   position: relative;
@@ -453,9 +453,6 @@ h1 {
   border: 2px solid rgb(127, 161, 255);
   outline: none;
 }
-.auth-form_input#last-input {
-  margin-bottom: 0;
-}
 .auth-form_policy-text {
   text-align: center;
   font-size: 1.1;
@@ -465,7 +462,7 @@ h1 {
   color: red;
 }
 .auth-form_control {
-  margin: 120px 0 20px;
+  margin: 0px 0 20px;
   display: flex;
   justify-content: flex-end;
 }

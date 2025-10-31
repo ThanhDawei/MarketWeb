@@ -96,14 +96,15 @@ registerButton.addEventListener("click", (event) => {
   // Ngăn hành vi submit form mặc định (nếu có)
   event.preventDefault();
 
-  // Lấy giá trị từ các trường input
-  const username = document.querySelector(
-    '.auth-form_input[placeholder="Tên đăng nhập"]'
-  ).value;
-  const password = document.querySelector(
-    '.auth-form_input[placeholder="Mật khẩu"]'
-  ).value;
-  const confirmPassword = document.getElementById("last-input").value;
+  // Lấy giá trị từ các trường input (Đã cập nhật để lấy SĐT và Email)
+  const inputs = document.querySelectorAll('.auth-form_form .auth-form_input');
+  
+  // Các input được lấy theo thứ tự xuất hiện trong HTML:
+  const username = inputs[0].value; // Tên đăng nhập
+  const password = inputs[1].value; // Mật khẩu
+  const confirmPassword = document.getElementById("last-input").value; // Nhập lại mật khẩu
+  const phone = inputs[3].value; // Số điện thoại (Input thứ 4 trong form)
+  const email = inputs[4].value; // Email (Input thứ 5 trong form)
 
   // Ví dụ kiểm tra cơ bản
   if (username === "" || password === "" || confirmPassword === "") {
@@ -129,6 +130,8 @@ registerButton.addEventListener("click", (event) => {
   const newUser = {
     username: username,
     password: password, // Lưu ý: Trong thực tế, KHÔNG BAO GIỜ lưu mật khẩu dưới dạng văn bản thuần
+    phone: phone,
+    email: email,
   };
 
   // 2. Thêm người dùng mới vào Mảng
@@ -146,12 +149,11 @@ registerButton.addEventListener("click", (event) => {
   alert("Đăng ký thành công! Chúc bạn có trải nghiệm mua sắm vui vẻ");
 
   // Xóa dữ liệu input sau khi đăng ký thành công (tùy chọn)
-  document.querySelector(
-    '.auth-form_input[placeholder="Tên đăng nhập"]'
-  ).value = "";
-  document.querySelector('.auth-form_input[placeholder="Mật khẩu"]').value = "";
-  document.getElementById("last-input").value = "";
-
+  inputs[0].value = ""; // Tên đăng nhập
+  inputs[1].value = ""; // Mật khẩu
+  document.getElementById("last-input").value = ""; // Nhập lại mật khẩu
+  inputs[3].value = ""; // Số điện thoại
+  inputs[4].value = ""; // Email
   closeModal();
 });
 
