@@ -566,43 +566,30 @@ input {
   display: block;
 }
 
-/* Ẩn menu ban đầu */
-.cart-dropdown {
-  display: inline-block;
-  position: absolute;
-  top: 60px;
-  /* cách icon 1 chút */
-  right: 60px;
-  width: 250px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-  padding: 10px;
-  z-index: 100;
+.cart-popup {
+  display: none;
+  position: fixed;
+  top: 100px; /* chừa header */ 
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: calc(100vh - 100px);;
+  background: white;
+  z-index: 9999;
+  overflow-y: auto;
+  padding: 20px;
+  animation: zoomIn 0.25s ease forwards;
 }
-
-/* Khi hover vào wrapper thì menu hiện ra */
-#cartWrapper:hover .cart-dropdown {
-  display: block;
-}
-
-.cart-dropdown ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.cart-dropdown li {
-  padding: 8px 5px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.cart-dropdown li:last-child {
-  border-bottom: none;
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .quantity {
@@ -1206,4 +1193,93 @@ input {
   color: white;
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   z-index: 1;
+}
+.cart-container{
+    width: 80%;
+    margin: 80px auto;
+}
+.cart-part{
+    display: grid;
+    grid-template-columns: 20% 20% 20% 15% 15% 10%;
+    align-items: center;
+    margin: 20px 0;
+}
+.cart-img{
+    width: 20%;
+}
+.cart-img img{
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+}
+.cart-desc{
+    width: 20%;
+    font-size: 20px;
+
+}
+.cart-quantity{
+    width: 20%;
+    display: flex;
+    justify-content: center;
+}
+.cart-quantity input{
+    padding: 5px 10px;
+    width: 120px;
+    font-size: 15px;
+}
+.cart-price{
+    width: 15%;
+    text-align: center;
+}
+.cart-total{
+    width: 15%;
+    text-align: center;
+}
+.cart-remove{
+    width: 10%;
+}
+.cart-remove button{
+    cursor: pointer;
+    background-color: #E4003A;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+}
+.cart-summary{
+    margin-right: 200px;
+    margin-bottom: 50px;
+}
+.product-total{
+    text-align: right;
+    margin: 20px 0;
+}
+.product-checkout{
+    text-align: right;
+    margin: 20px 0;
+
+}
+.product-checkout a{
+    display: inline-block;
+    width: 130px;
+    text-decoration: none;
+    border-radius: 5px;
+    background-color: #6a11cb;
+    padding: 10px 20px;
+    text-align: center;
+    color: #fff;
+    font-size: 15px;
+    font-weight: bold;
+}
+.removeAll{
+    background-color: #E4003A;
+    display: block;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    width: 170px;
+    padding: 10px 20px;
+    margin-left: auto;
+    cursor: pointer;
+    font-weight: bold;
 }

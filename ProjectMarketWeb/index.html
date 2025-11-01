@@ -243,22 +243,26 @@
       <button
         id="cartShop"
         type="button"
-        style="background: none; border: none"
+        style="background: none; border: none; cursor: pointer;"
       >
         <h1 style="--h1-left: 80%; --h1-top: 20%; --h1-size: 30px">
           <i class="fa-solid fa-cart-shopping"></i>
         </h1>
       </button>
-      <div id="cartMenu" class="cart-dropdown" style="display: none">
-        <h3>Giỏ hàng</h3>
-        <hr />
-        <ul id="cartItems"></ul>
-        <hr />
-        <!-- Nút thanh toán -->
-        <button id="checkoutBtn" class="checkout-btn" onclick="buyProductCart()">Thanh toán</button>
-        <!-- Tổng tiền -->
-        <div class="total">Tổng: <span id="totalPrice">0</span> đ</div>
-        
+      <div id="cartMenu" class="cart-popup">
+        <!-- Cart -->
+         <div class="container">
+            <div class="cart-container"></div>
+            <div class="cart-summary">
+                <div class="product-total">
+                    <h2>Tổng tiền: <span id="total">0</span> </h2>
+                </div>
+                <div class="product-checkout"> 
+                    <a href="#" class="checkout" onclick="buyProductCart()">Thanh toán</a>
+                </div>
+                <button class="removeAll" onclick="clearCart()">Xóa tất cả</button>
+            </div>
+         </div>
       </div>
     </header>
 
