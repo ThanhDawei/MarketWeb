@@ -1,4 +1,4 @@
-/* managerScript.js - Script quản lý cho Admin (ĐÃ CẬP NHẬT ĐẦY ĐỦ LOGIC QUẢN LÝ KHO VÀ RÀNG BUỘC) */
+localStorage.clear();
 document.addEventListener("DOMContentLoaded", () => {
   const PRODUCTS_KEY = "products";
   const STORAGE_KEY = "userAccounts";
@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
       `<tr><td colspan="5" class="empty-state">Kho hàng trống.</td></tr>`;
   };
 
-  // === QUẢN LÝ NGƯỜI DÙNG (Giữ nguyên) ===
+  // === QUẢN LÝ NGƯỜI DÙNG ===
   function renderUserManagement() {
     hideAllContent();
     if (!userContent) return;
@@ -479,7 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
         image: imageUrl || placeholderImg,
       });
 
-      alert("Thêm sản phẩm thành công!");
+      alert("Sản phẩm không có trong kho!");
     }
 
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
