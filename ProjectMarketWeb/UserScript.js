@@ -73,21 +73,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const applyFilterBtn = document.getElementById("applyFilterBtn");
   const clearFilterBtn = document.getElementById("clearFilterBtn");
   // ----- Storage initialization -----
-  if (localStorage.getItem("isAdmin") === null)
-    localStorage.setItem("isAdmin", "false");
   if (localStorage.getItem("isLoggedIn") === null)
     localStorage.setItem("isLoggedIn", "false");
-  if (localStorage.getItem("isAdmin") == "True") {
-    const adminElement = document.querySelector("admin"); // Tìm thẻ <admin>
-    adminElement.style.display = "block";
-    const userElement = document.querySelector("user");
-    userElement.style.display = "none";
-  } else {
-    const adminElement = document.querySelector("admin"); // Tìm thẻ <admin>
-    adminElement.style.display = "none";
-    const userElement = document.querySelector("user");
-    userElement.style.display = "block";
-  }
   // ----- Users -----
   let users = [];
   const STORAGE_KEY = "userAccounts";
@@ -609,10 +596,10 @@ document.addEventListener("DOMContentLoaded", () => {
   window.buyProduct = buyProduct;
   if (returnToUserBtn) {
     returnToUserBtn.addEventListener("click", () => {
-      // 1. Xóa cờ isAdmin để chuyển Admin về giao diện người dùng.
-      localStorage.setItem("isAdmin", "false"); // Đặt lại cờ là false
-      // 2. Tải lại trang để kích hoạt hàm updateUI() hiển thị giao diện User
-      window.location.reload();
+      const adminElement = document.querySelector("admin"); // Tìm thẻ <admin>
+      adminElement.style.display = "none";
+      const userElement = document.querySelector("user");
+      userElement.style.display = "block";
     });
   }
 });
