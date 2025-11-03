@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Layout Toàn Màn Hình</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+      }
+
+      body {
+        background-color: #fff;
+        font-family: sans-serif;
+      }
+
+      .container {
+        display: flex;
+        border: 3px solid black;
+        height: 100vh; /* Chiếm toàn bộ chiều cao màn hình */
+        width: 100vw; /* Chiếm toàn bộ chiều rộng màn hình */
+        padding: 20px;
+        padding-top: 50px;
+      }
+
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .sidebar .box {
+        width: 220px;
+        height: 100px;
+        background-color: #9b42ad;
+        border: 3px solid black;
+      }
+
+      .content {
+        flex: 1;
+        margin-left: 40px;
+        border: 3px solid #9b42ad;
+      }
+    </style>
+  </head>
+  <body>
+    <admin>
+      <div class="container">
+        <div class="sidebar">
+          <h1>Admin</h1>
+          <button id="manageUserBtn" type="button">
+            <div class="box">
+              <h1>Quản lý khách hàng</h1>
+            </div>
+          </button>
+          <button id="manageProductBtn" type="button">
+            <div class="box">
+              <h1>Quản lý khách hàng</h1>
+            </div>
+          </button>
+          <button id="manageInvoiceBtn" type="button">
+            <div class="box">
+              <h1>Quản lý khách hàng</h1>
+            </div>
+          </button>
+          <button id="addInfoBtn" type="button">
+            <div class="box">
+              <h1>Quản lý khách hàng</h1>
+            </div>
+          </button>
+        </div>
+        <div class="content">
+          <div id="userContent" class="manageUser" style="display: none">
+            asd
+          </div>
+          <div id="productContent" class="manageProduct" style="display: none">
+            vn
+          </div>
+          <div id="invoiceContent" class="manageInvoice" style="display: none">
+            d
+          </div>
+          <div id="addInfoContent" class="addInfo" style="display: none">g</div>
+        </div>
+      </div>
+    </admin>
+  </body>
+</html>
