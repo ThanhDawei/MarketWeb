@@ -157,192 +157,192 @@ document.addEventListener("DOMContentLoaded", () => {
         value: 42990000,
         quantity: 8,
         category: "Laptop",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23d4d4d4' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EMacBook Pro%3C/text%3E%3C/svg%3E",
+        image:"image/MBP14M3.jpg",
+          
       },
       {
         name: "Dell XPS 13",
         value: 32990000,
         quantity: 12,
         category: "Laptop",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23e0e0e0' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EDell XPS 13%3C/text%3E%3C/svg%3E",
+        image:"image/DellXPS13.jpg",
+          
       },
       {
         name: "iPad Pro 12.9 inch M2",
         value: 25990000,
         quantity: 10,
         category: "Máy tính bảng",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23f0f0f0' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EiPad Pro%3C/text%3E%3C/svg%3E",
+        image:"image/iPadProM2.jpg",
+          
       },
       {
         name: "AirPods Pro 2",
         value: 5990000,
         quantity: 30,
         category: "Phụ kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23ffffff' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EAirPods Pro%3C/text%3E%3C/svg%3E",
+        image:"image/AirPodsPro2.jpg",
+          
       },
       {
         name: "Sony WH-1000XM5",
         value: 8490000,
         quantity: 18,
         category: "Phụ kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23e8e8e8' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3ESony WH-1000XM5%3C/text%3E%3C/svg%3E",
+        image:"image/SonyWH1000XM5.jpg",
+          
       },
       {
         name: "Apple Watch Series 9",
         value: 10990000,
         quantity: 25,
         category: "Đồng hồ thông minh",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23f5f5f7' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EApple Watch%3C/text%3E%3C/svg%3E",
+        image:"image/AppleWatchS9.jpg",
+          
       },
       {
         name: "Samsung Galaxy Watch 6",
         value: 7490000,
         quantity: 22,
         category: "Đồng hồ thông minh",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23e0e0e0' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EGalaxy Watch%3C/text%3E%3C/svg%3E",
+        image:"image/SamsungGW6.jpg",
+          
       },
       {
         name: "Bàn phím cơ Keychron K2",
         value: 2490000,
         quantity: 35,
         category: "Phụ kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23d4d4d4' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EKeychron K2%3C/text%3E%3C/svg%3E",
+        image:"image/KeychronK2.jpg",
+          
       },
       {
         name: "Chuột Logitech MX Master 3S",
         value: 2790000,
         quantity: 40,
         category: "Phụ kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23f0f0f0' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EMX Master 3S%3C/text%3E%3C/svg%3E",
+        image:"image/LogitechMXMaster3S.jpg",
+          
       },
       {
         name: "Màn hình LG UltraGear 27 inch",
         value: 8990000,
         quantity: 14,
         category: "Màn hình",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23e8e8e8' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3ELG UltraGear%3C/text%3E%3C/svg%3E",
+        image:"image/LGUltraGear27.jpg",
+          
       },
       {
         name: "Webcam Logitech C920",
         value: 1990000,
         quantity: 28,
         category: "Phụ kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23f5f5f7' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EC920 Webcam%3C/text%3E%3C/svg%3E",
+        image:"image/LogitechC920.jpg",
+          
       },
       {
         name: "SSD Samsung 990 PRO 1TB",
         value: 3490000,
         quantity: 32,
         category: "Linh kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23e0e0e0' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3ESSD 990 PRO%3C/text%3E%3C/svg%3E",
+        image:"image/Samsung990PRO1TB.jpg",
+         
       },
       {
         name: "RAM Corsair Vengeance 32GB",
         value: 4290000,
         quantity: 26,
         category: "Linh kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23d4d4d4' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3ECorsair RAM%3C/text%3E%3C/svg%3E",
+        image:"image/CorsairVengeance32GB.jpg",
+          
       },
       {
         name: "Tai nghe Gaming Razer BlackShark V2",
         value: 2890000,
         quantity: 19,
         category: "Phụ kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23f0f0f0' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3ERazer BlackShark%3C/text%3E%3C/svg%3E",
+        image:"image/RazerBlackSharkV2.jpg",
+          
       },
       {
         name: "Sạc dự phòng Anker 20000mAh",
         value: 990000,
         quantity: 45,
         category: "Phụ kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23e8e8e8' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EAnker 20000mAh%3C/text%3E%3C/svg%3E",
+        image:"image/Anker20000mAh.jpg",
+          
       },
       {
         name: "Ốp lưng iPhone 15 Pro",
         value: 490000,
         quantity: 50,
         category: "Phụ kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23f5f5f7' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EỐp iPhone%3C/text%3E%3C/svg%3E",
+        image:"image/OpLungIP15Pro.jpg",
+          
       },
       {
         name: "Cáp sạc USB-C to Lightning",
         value: 390000,
         quantity: 60,
         category: "Phụ kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23e0e0e0' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EUSB-C Cable%3C/text%3E%3C/svg%3E",
+        image:"image/CableUSBCtoLightning.jpg",
+          
       },
       {
         name: "Router WiFi 6 TP-Link Archer AX73",
         value: 2490000,
         quantity: 16,
         category: "Mạng & Kết nối",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23d4d4d4' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3ETP-Link Router%3C/text%3E%3C/svg%3E",
+        image:"image/TPLinkArcherAX73.jpg",
+          
       },
       {
         name: "Loa Bluetooth JBL Flip 6",
         value: 2990000,
         quantity: 24,
         category: "Âm thanh",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23f0f0f0' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EJBL Flip 6%3C/text%3E%3C/svg%3E",
+        image:"image/JBLFlip6.jpg",
+          
       },
       {
         name: "Gimbal DJI OM 6",
         value: 3990000,
         quantity: 11,
         category: "Phụ kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23e8e8e8' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EDJI OM 6%3C/text%3E%3C/svg%3E",
+        image:"image/DJIOM6.jpg",
+          
       },
       {
         name: "Máy tính bảng Samsung Tab S9",
         value: 18990000,
         quantity: 9,
         category: "Máy tính bảng",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23f5f5f7' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3ETab S9%3C/text%3E%3C/svg%3E",
+        image:"image/SamsungTabS9.jpg",
+         
       },
       {
         name: "Ổ cứng di động WD My Passport 2TB",
         value: 1990000,
         quantity: 33,
         category: "Linh kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23e0e0e0' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3EWD Passport%3C/text%3E%3C/svg%3E",
+        image:"image/WDMyPassport2TB.jpg",
+          
       },
       {
         name: "Xiaomi Redmi Note 13 Pro",
         value: 7990000,
         quantity: 4,
         category: "Điện thoại",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23d4d4d4' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3ERedmi Note 13%3C/text%3E%3C/svg%3E",
+        image:"image/RedmiNote13Pro.jpg",
+          
       },
       {
         name: "Kính cường lực iPhone 15",
         value: 290000,
         quantity: 2,
         category: "Phụ kiện",
-        image:
-          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%23f0f0f0' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%23666'%3ETempered Glass%3C/text%3E%3C/svg%3E",
+        image:"image/KinhCuongLucIP15.jpg",
+          
       },
     ];
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
