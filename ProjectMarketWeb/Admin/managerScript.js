@@ -1,10 +1,10 @@
+const PRODUCTS_KEY = "products";
+let products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
 document.addEventListener("DOMContentLoaded", () => {
-  const PRODUCTS_KEY = "products";
   const STORAGE_KEY = "userAccounts";
   const INVOICES_KEY = "invoices";
   const IMPORT_RECEIPTS_KEY = "importReceipts";
 
-  let products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
   let users = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
   let invoices = JSON.parse(localStorage.getItem(INVOICES_KEY)) || [];
   let importReceipts =
@@ -392,10 +392,34 @@ ${
     renderProductManagement();
     alert("Đã xóa sản phẩm!");
   };
+  function saveAndRenderProducts(popup, stockContent) {
+    const PRODUCTS_KEY = "products";
 
-  // === HÀM LƯU SẢN PHẨM (THÊM/SỬA) VỚI RÀNG BUỘC KHO HÀNG ===
+    // BƯỚC 1: LƯU VÀO LOCAL STORAGE
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+
+    // BƯỚC 2: CẬP NHẬT BIẾN TOÀN CỤC SAU KHI LƯU
+    products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+
+    // BƯỚC 3: CẬP NHẬT GIAO DIỆN
+    if (popup) popup.style.display = "none";
+    renderProductManagement();
+
+    if (stockContent && stockContent.style.display !== "none") {
+      renderStockManagement();
+    }
+  }
+  // === HÀM LƯU SẢN PHẨM (THÊM/SỬA) VỚI RÀNG BUỘC CHẶT CHẼ ===
   window.saveProduct = function (event) {
     event.preventDefault();
+
+    // Nếu có handler khác vô tình đăng ký trên cùng form, chặn các handler khác khi có lỗi
+    function stopOthersAndReturn() {
+      if (typeof event.stopImmediatePropagation === "function") {
+        event.stopImmediatePropagation();
+      }
+      return;
+    }
 
     const name = document.getElementById("name").value.trim();
     const value = parseInt(document.getElementById("value").value);
@@ -403,142 +427,122 @@ ${
     const category = document.getElementById("category").value.trim();
     const imageFile = document.getElementById("image").files[0];
     const popup = document.getElementById("product-form-popup");
+    const stockContent = document.getElementById("stockContent");
 
-    // Validate input
-    if (!name || !value || !quantity || !category) {
-      alert("Vui lòng điền đầy đủ thông tin!");
+    // --- VALIDATE CƠ BẢN ---
+    if (
+      !name ||
+      isNaN(value) ||
+      isNaN(quantity) ||
+      !category ||
+      value <= 0 ||
+      quantity <= 0
+    ) {
+      alert(
+        "⚠️ Vui lòng điền đầy đủ thông tin và đảm bảo Giá/Số lượng hợp lệ (> 0)!"
+      );
+      stopOthersAndReturn();
       return;
     }
 
-    if (value <= 0) {
-      alert("Giá sản phẩm phải lớn hơn 0!");
-      return;
-    }
+    const isEditMode = window.editingProductIndex !== -1;
 
-    if (quantity <= 0) {
-      alert("Số lượng phải lớn hơn 0!");
-      return;
-    }
-
-    let isEditMode = window.editingProductIndex !== -1;
-    let oldQuantity = isEditMode
-      ? products[window.editingProductIndex].quantity
-      : 0;
-
-    // Lấy tồn kho thực tế (đã trừ đi số lượng đang trên kệ)
+    // --- TÍNH TỒN KHO ---
     const currentStock = calculateStock();
     const stockItem = currentStock.find(
       (item) => item.productName.trim().toLowerCase() === name.toLowerCase()
     );
     const availableStock = stockItem ? stockItem.quantity : 0;
 
-    // --- RÀNG BUỘC: THÊM SẢN PHẨM MỚI ---
+    // --- XỬ LÝ THÊM MỚI SẢN PHẨM ---
     if (!isEditMode) {
-      // 1. Kiểm tra tồn kho
-      if (availableStock <= 0) {
-        alert(
-          `Lỗi: Không thể thêm sản phẩm "${name}" vì không có tồn kho (hiện tại: ${availableStock}). Vui lòng nhập hàng trước.`
-        );
-        return;
-      }
-
-      // 2. Kiểm tra số lượng thêm
-      if (quantity > availableStock) {
-        alert(
-          `Lỗi: Số lượng thêm (${quantity}) vượt quá số lượng tồn kho khả dụng (${availableStock}).`
-        );
-        return;
-      }
-
-      // 3. Kiểm tra trùng tên
+      // 1. Kiểm tra trùng tên - QUAN TRỌNG
       const existingProduct = products.find(
-        (p) => p.name.toLowerCase() === name.toLowerCase()
+        (p) => p.name.trim().toLowerCase() === name.toLowerCase()
       );
+
       if (existingProduct) {
         alert(
-          "Lỗi: Tên sản phẩm đã tồn tại trên kệ. Vui lòng sử dụng chức năng Sửa hoặc thêm sản phẩm khác."
+          `❌ Lỗi: Trên kệ đã có sản phẩm "${existingProduct.name}".\n\nVui lòng:\n- Dùng chức năng "Sửa" để cập nhật\n- Hoặc chọn tên khác`
         );
-        return;
+        stopOthersAndReturn();
+        return; // Dừng ngay khi trùng tên
       }
+
+      // 2. Kiểm tra tồn kho/Số lượng
+      if (availableStock <= 0 || quantity > availableStock) {
+        alert(
+          `❌ Lỗi Tồn Kho: Yêu cầu (${quantity}) vượt quá tồn kho khả dụng (${availableStock}).`
+        );
+        stopOthersAndReturn();
+        return; // Dừng ngay
+      }
+
+      // 3. THÊM VÀO DANH SÁCH
+      const imageUrl = imageFile ? URL.createObjectURL(imageFile) : "";
+      const placeholderImg = `data:image/svg+xml;utf8,${encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="#f2f2f2"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-size="28">No Image</text></svg>'
+      )}`;
+
+      const newProduct = {
+        name,
+        value,
+        quantity,
+        category,
+        image: imageUrl || placeholderImg,
+      };
+
+      products.push(newProduct);
+
+      alert("✅ Thêm sản phẩm thành công!");
     }
 
-    // --- RÀNG BUỘC: SỬA SẢN PHẨM HIỆN CÓ ---
+    // --- XỬ LÝ SỬA SẢN PHẨM HIỆN CÓ ---
     else {
-      // Tổng số lượng thay đổi
+      // (Giữ nguyên logic Sửa sản phẩm)
+      const product = products[window.editingProductIndex];
+      const oldQuantity = product.quantity;
       const quantityDelta = quantity - oldQuantity;
 
-      // Nếu số lượng mới lớn hơn số lượng cũ (tức là cần thêm hàng lên kệ)
+      // 1. Kiểm tra tăng số lượng
       if (quantityDelta > 0) {
-        // Cập nhật lại tồn kho khả dụng khi sửa
-        const currentStockForEdit = calculateStock();
-        const stockItemForEdit = currentStockForEdit.find(
-          (item) => item.productName.trim().toLowerCase() === name.toLowerCase()
-        );
-        const availableStockForEdit = stockItemForEdit
-          ? stockItemForEdit.quantity
-          : 0;
+        const availableStockForEdit = availableStock - oldQuantity;
 
         if (quantityDelta > availableStockForEdit) {
           alert(
-            `Lỗi: Không đủ hàng trong kho để tăng số lượng. Bạn cần thêm ${quantityDelta} sản phẩm nhưng kho chỉ còn ${availableStockForEdit} hàng chưa lên kệ.`
+            `❌ Không đủ hàng trong kho để tăng số lượng.\n\nKho chỉ còn ${availableStockForEdit} khả dụng.`
           );
           return;
         }
       }
 
-      // Kiểm tra trùng tên khi sửa (trừ chính sản phẩm đang sửa)
-      const existingProduct = products.find(
+      // 2. Kiểm tra trùng tên khi sửa
+      const duplicate = products.find(
         (p, i) =>
           i !== window.editingProductIndex &&
-          p.name.toLowerCase() === name.toLowerCase()
+          p.name.trim().toLowerCase() === name.toLowerCase()
       );
-      if (existingProduct) {
-        alert("Lỗi: Tên sản phẩm đã tồn tại.");
+
+      if (duplicate) {
+        alert("⚠️ Lỗi: Tên sản phẩm đã tồn tại. Vui lòng chọn tên khác.");
         return;
       }
-    }
 
-    let imageUrl = "";
-    if (imageFile) {
-      imageUrl = URL.createObjectURL(imageFile);
-    }
-
-    if (isEditMode) {
-      const product = products[window.editingProductIndex];
+      // 3. Cập nhật sản phẩm
       product.name = name;
       product.value = value;
       product.quantity = quantity;
       product.category = category;
-      if (imageUrl) product.image = imageUrl;
+      if (imageFile) product.image = URL.createObjectURL(imageFile);
 
       alert("✅ Cập nhật sản phẩm thành công!");
       window.editingProductIndex = -1;
-    } else {
-      const placeholderImg = `data:image/svg+xml;utf8,${encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="#f2f2f2"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-size="28">No Image</text></svg>'
-      )}`;
-
-      products.push({
-        name: name,
-        value: value,
-        quantity: quantity,
-        category: category,
-        image: imageUrl || placeholderImg,
-      });
-
-      alert("✅ Thêm sản phẩm thành công!");
     }
 
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-    if (popup) popup.style.display = "none";
-    renderProductManagement();
-
-    // Cập nhật lại kho nếu đang hiển thị
-    if (stockContent && stockContent.style.display !== "none") {
-      renderStockManagement();
-    }
+    // --- LƯU TRỮ VÀ RENDER CHỈ XẢY RA Ở ĐÂY ---
+    // Vì hàm chỉ chạy đến đây khi không có lệnh return nào được kích hoạt.
+    saveAndRenderProducts(popup, stockContent);
   };
-
   // === PHIẾU NHẬP HÀNG ===
   function renderAddInfo() {
     hideAllContent();

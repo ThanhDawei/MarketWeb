@@ -875,7 +875,16 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Sản phẩm đã hết hàng!");
       return;
     }
-    checkoutList = [product];
+    // Tạo object riêng cho checkout với purchaseQuantity
+    checkoutList = [
+      {
+        name: product.name,
+        value: product.value,
+        category: product.category,
+        image: product.image,
+        purchaseQuantity: 1, // Số lượng mua (không phải quantity tồn kho)
+      },
+    ];
     renderCheckoutPopup();
     if (checkoutPopup) checkoutPopup.style.display = "flex";
   }
@@ -889,12 +898,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let total = 0;
 
     checkoutList.forEach((item) => {
-      total += parsePrice(item.value);
+      const qty = item.purchaseQuantity || 1;
+      const itemTotal = parsePrice(item.value) * qty;
+      total += itemTotal;
       const d = document.createElement("div");
       d.className = "checkout-item";
       d.innerHTML = `<p><strong>${escapeHtml(
         item.name
-      )}</strong> - ${formatPrice(item.value)}đ</p>`;
+      )}</strong> x${qty} - ${formatPrice(itemTotal)}đ</p>`;
       checkoutItemsEl.appendChild(d);
     });
 
@@ -911,9 +922,14 @@ document.addEventListener("DOMContentLoaded", () => {
         items: checkoutList.map((it) => ({
           name: it.name,
           price: it.value,
-          quantity: it.quantity || 1,
+          quantity: it.purchaseQuantity || it.quantity || 1, // Ưu tiên purchaseQuantity
         })),
-        total: checkoutList.reduce((sum, it) => sum + parsePrice(it.value), 0),
+        total: checkoutList.reduce(
+          (sum, it) =>
+            sum +
+            parsePrice(it.value) * (it.purchaseQuantity || it.quantity || 1),
+          0
+        ),
       };
 
       checkoutList.forEach((it) => {
@@ -1464,7 +1480,12 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Giỏ hàng trống!");
         return;
       }
-      checkoutList = cart.slice();
+      // Chuyển đổi cart items thành format với purchaseQuantity
+      checkoutList = cart.map((item) => ({
+        name: item.name,
+        value: item.value,
+        purchaseQuantity: item.quantity, // Số lượng từ giỏ hàng
+      }));
       renderCheckoutPopup();
       if (checkoutPopup) checkoutPopup.style.display = "flex";
     };
