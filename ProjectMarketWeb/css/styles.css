@@ -1535,3 +1535,6 @@ input:focus-visible {
     break-inside: avoid;
   }
 }
+#checkout-address {
+  resize: none;
+}

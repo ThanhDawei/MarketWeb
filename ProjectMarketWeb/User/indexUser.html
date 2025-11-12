@@ -201,6 +201,26 @@
           <h2>Xác nhận thanh toán</h2>
           <div id="checkout-items"></div>
           <div id="checkout-total"></div>
+          <div class="input-group">
+          <label>Địa chỉ giao hàng:</label>
+          <div>
+            <label>
+              <input type="radio" name="address-option" id="use-saved-address" value="saved" />
+              Sử dụng địa chỉ hiện tại:
+              <span id="saved-address-display" style="font-weight:600; margin-left:6px;">(chưa có)</span>
+            </label>
+          </div>
+          <div>
+            <label>
+              <input type="radio" name="address-option" id="enter-new-address" value="new" />
+              Nhập địa chỉ mới
+            </label>
+          </div>
+            <textarea id="checkout-address" placeholder="Nhập địa chỉ nhận hàng (Số nhà, đường, quận, thành phố)" rows="3" style="width:100%; margin-top:8px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;"></textarea>
+          </div>
+          <div class="input-group">
+            <label><input type="checkbox" id="save-address-checkbox" /> Lưu địa chỉ vào hồ sơ</label>
+          </div>
           <button id="confirm-checkout" class="login-button">Xác nhận</button>
           <button id="cancel-checkout" class="btn-register">Hủy</button>
         </div>

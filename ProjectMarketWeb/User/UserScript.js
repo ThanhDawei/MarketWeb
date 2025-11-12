@@ -55,6 +55,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelCheckoutBtn = document.getElementById("cancel-checkout");
   const checkoutItemsEl = document.getElementById("checkout-items");
   const checkoutTotalEl = document.getElementById("checkout-total");
+  const checkoutAddressEl = document.getElementById("checkout-address");
+  const saveAddressCheckbox = document.getElementById("save-address-checkbox");
+  const useSavedAddressRadio = document.getElementById("use-saved-address");
+  const enterNewAddressRadio = document.getElementById("enter-new-address");
+  const savedAddressDisplay = document.getElementById("saved-address-display");
+
+  //Bật/tắt trạng thái của ô nhập khi người dùng chuyển lựa chọn 
+  if (useSavedAddressRadio) {
+    useSavedAddressRadio.addEventListener("change", () => {
+      if (useSavedAddressRadio.checked && checkoutAddressEl) {
+        checkoutAddressEl.disabled = true;
+        //Giữ nguyên địa chỉ cũ
+        checkoutAddressEl.value = savedAddressDisplay ? savedAddressDisplay.innerText : checkoutAddressEl.value;
+      }
+    });
+  }
+  if (enterNewAddressRadio) {
+    enterNewAddressRadio.addEventListener("change", () => {
+      if (enterNewAddressRadio.checked && checkoutAddressEl) {
+        checkoutAddressEl.disabled = false;
+        //xóa địa chỉ cũ trong ô nhập để nhập địa chỉ mới
+        const savedText = savedAddressDisplay ? savedAddressDisplay.innerText : "";
+        if (checkoutAddressEl.value === savedText) checkoutAddressEl.value = "";
+        checkoutAddressEl.focus();
+      }
+    });
+  }
 
   const usernameDisplay = document.getElementById("username-display");
   const displayedUsername = document.getElementById("displayed-username");
@@ -914,11 +941,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (confirmCheckoutBtn) {
     confirmCheckoutBtn.addEventListener("click", () => {
-      const currentUser = displayedUsername?.innerText || "Guest";
+      // Lấy địa chỉ dựa trên lựa chọn radio (dùng địa chỉ lưu hoặc nhập mới)
+      let address = "";
+      if (useSavedAddressRadio && useSavedAddressRadio.checked) {
+        // Dùng địa chỉ hiện tại từ hồ sơ
+        const currentUser = localStorage.getItem("currentUser");
+        const u = users.find((x) => x.username === currentUser);
+        address = (u && u.address) ? String(u.address).trim() : "";
+      } else {
+        // Dùng địa chỉ nhập mới
+        address = checkoutAddressEl?.value?.trim() || "";
+      }
+
+      if (!address) {
+        alert("Vui lòng nhập hoặc chọn địa chỉ giao hàng.");
+        return;
+      }
+
+      const currentUser = localStorage.getItem("currentUser") || displayedUsername?.innerText || "Guest";
       const invoice = {
         id: Date.now(),
         date: new Date().toLocaleString("vi-VN"),
         user: currentUser,
+        address: address,
         items: checkoutList.map((it) => ({
           name: it.name,
           price: it.value,
@@ -931,6 +976,20 @@ document.addEventListener("DOMContentLoaded", () => {
           0
         ),
       };
+
+      // Nếu người dùng chọn lưu địa chỉ thì cập nhật vào hồ sơ
+      try {
+        if (saveAddressCheckbox && saveAddressCheckbox.checked && currentUser && currentUser !== "Guest") {
+          const u = users.find((x) => x.username === currentUser);
+          if (u) {
+            u.address = address;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+            if (savedAddressDisplay) savedAddressDisplay.innerText = address;
+          }
+        }
+      } catch (e) {
+        console.error("Lỗi khi lưu địa chỉ người dùng:", e);
+      }
 
       checkoutList.forEach((it) => {
         const p = products.find((x) => x.name === it.name);
@@ -1487,7 +1546,50 @@ document.addEventListener("DOMContentLoaded", () => {
         purchaseQuantity: item.quantity, // Số lượng từ giỏ hàng
       }));
       renderCheckoutPopup();
+      // Prefill địa chỉ nếu user đã có địa chỉ trong hồ sơ; chọn radio tương ứng
+      try {
+        const currentUser = localStorage.getItem("currentUser");
+        const u = users.find((x) => x.username === currentUser);
+        const saved = u && u.address ? u.address : "";
+        if (savedAddressDisplay) savedAddressDisplay.innerText = saved || "Chưa có địa chỉ";
+        if (useSavedAddressRadio && enterNewAddressRadio && checkoutAddressEl) {
+          if (saved) {
+            useSavedAddressRadio.checked = true;
+            enterNewAddressRadio.checked = false;
+            checkoutAddressEl.value = saved;
+            checkoutAddressEl.disabled = true;
+          } else {
+            useSavedAddressRadio.checked = false;
+            enterNewAddressRadio.checked = true;
+            checkoutAddressEl.value = "";
+            checkoutAddressEl.disabled = false;
+          }
+        }
+        if (saveAddressCheckbox) saveAddressCheckbox.checked = false;
+      } catch (e) {
+        console.error("Prefill địa chỉ gặp lỗi:", e);
+      }
       if (checkoutPopup) checkoutPopup.style.display = "flex";
+
+      //xử lý bật/tắt ô nhập địa chỉ.
+      if (useSavedAddressRadio) {
+        useSavedAddressRadio.addEventListener("change", () => {
+          if (useSavedAddressRadio.checked && checkoutAddressEl) {
+            checkoutAddressEl.disabled = true;
+            checkoutAddressEl.value = savedAddressDisplay ? savedAddressDisplay.innerText : checkoutAddressEl.value;
+          }
+        });
+      }
+      if (enterNewAddressRadio) {
+        enterNewAddressRadio.addEventListener("change", () => {
+          if (enterNewAddressRadio.checked && checkoutAddressEl) {
+            checkoutAddressEl.disabled = false;
+            const savedText = savedAddressDisplay ? savedAddressDisplay.innerText : "";
+            if (checkoutAddressEl.value === savedText) checkoutAddressEl.value = "";
+            checkoutAddressEl.focus();
+          }
+        });
+      }
     };
   }
 
