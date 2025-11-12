@@ -61,13 +61,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const enterNewAddressRadio = document.getElementById("enter-new-address");
   const savedAddressDisplay = document.getElementById("saved-address-display");
 
-  //Bật/tắt trạng thái của ô nhập khi người dùng chuyển lựa chọn 
+  //Bật/tắt trạng thái của ô nhập khi người dùng chuyển lựa chọn
   if (useSavedAddressRadio) {
     useSavedAddressRadio.addEventListener("change", () => {
       if (useSavedAddressRadio.checked && checkoutAddressEl) {
         checkoutAddressEl.disabled = true;
         //Giữ nguyên địa chỉ cũ
-        checkoutAddressEl.value = savedAddressDisplay ? savedAddressDisplay.innerText : checkoutAddressEl.value;
+        checkoutAddressEl.value = savedAddressDisplay
+          ? savedAddressDisplay.innerText
+          : checkoutAddressEl.value;
       }
     });
   }
@@ -76,7 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (enterNewAddressRadio.checked && checkoutAddressEl) {
         checkoutAddressEl.disabled = false;
         //xóa địa chỉ cũ trong ô nhập để nhập địa chỉ mới
-        const savedText = savedAddressDisplay ? savedAddressDisplay.innerText : "";
+        const savedText = savedAddressDisplay
+          ? savedAddressDisplay.innerText
+          : "";
         if (checkoutAddressEl.value === savedText) checkoutAddressEl.value = "";
         checkoutAddressEl.focus();
       }
@@ -94,11 +98,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const filterProductName = document.getElementById("filterProductName");
   const filterProductCategory = document.getElementById(
     "filterProductCategory"
-  );
+  ); // Bây giờ là thẻ <select>
   const filterPriceMin = document.getElementById("filterPriceMin");
   const filterPriceMax = document.getElementById("filterPriceMax");
   const applyFilterBtn = document.getElementById("applyFilterBtn");
   const clearFilterBtn = document.getElementById("clearFilterBtn");
+
+  // === DOM POPUP CHI TIẾT (MỚI) ===
+  const productDetailPopup = document.getElementById("product-detail-popup");
+  const closeProductDetailPopup = document.getElementById(
+    "close-product-detail-popup"
+  );
 
   // ----- Storage initialization với dữ liệu mẫu -----
   if (localStorage.getItem("isLoggedIn") === null)
@@ -171,6 +181,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 15,
         category: "Điện thoại",
         image: "../image/IP15PM.jpg",
+        tags: ["điện thoại", "apple"],
+        details: { // THÊM DETAILS
+          "Màn hình": "6.7 inch, Super Retina XDR",
+          "Chip": "Apple A17 Pro",
+          "RAM": "8GB",
+          "Bộ nhớ trong": "256GB",
+          "Camera": "Chính 48MP & Phụ 12MP"
+        }
       },
       {
         name: "Samsung Galaxy S24 Ultra",
@@ -178,6 +196,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 20,
         category: "Điện thoại",
         image: "../image/S24U.jpg",
+        tags: ["điện thoại", "samsung"],
+        details: { // THÊM DETAILS
+          "Màn hình": "6.8 inch, Dynamic AMOLED 2X",
+          "Chip": "Snapdragon 8 Gen 3 for Galaxy",
+          "RAM": "12GB",
+          "Bộ nhớ trong": "256GB",
+          "Camera": "Chính 200MP & Phụ 12MP, 10MP, 50MP"
+        }
       },
       {
         name: "MacBook Pro M3 14 inch",
@@ -185,6 +211,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 8,
         category: "Laptop",
         image: "../image/MBP14M3.jpg",
+        tags: ["laptop", "apple"],
+        details: { // THÊM DETAILS
+          "Màn hình": "14.2 inch, Liquid Retina XDR",
+          "Chip": "Apple M3 Pro",
+          "RAM": "18GB",
+          "Ổ cứng": "512GB SSD",
+          "GPU": "14-core GPU"
+        }
       },
       {
         name: "Dell XPS 13",
@@ -192,6 +226,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 12,
         category: "Laptop",
         image: "../image/DellXPS13.jpg",
+        tags: ["laptop", "dell"],
+        details: { // THÊM DETAILS
+          "Màn hình": "13.4 inch, FHD+ InfinityEdge",
+          "CPU": "Intel Core Ultra 7 155H",
+          "RAM": "16GB LPDDR5x",
+          "Ổ cứng": "512GB SSD",
+          "Đồ họa": "Intel Arc Graphics"
+        }
       },
       {
         name: "iPad Pro 12.9 inch M2",
@@ -199,6 +241,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 10,
         category: "Máy tính bảng",
         image: "../image/iPadProM2.jpg",
+        tags: ["máy tính bảng", "apple"],
+        details: { // THÊM DETAILS
+          "Màn hình": "12.9 inch, Liquid Retina XDR",
+          "Chip": "Apple M2",
+          "RAM": "8GB",
+          "Bộ nhớ trong": "128GB",
+          "Kết nối": "Wi-Fi 6E"
+        }
       },
       {
         name: "AirPods Pro 2",
@@ -206,6 +256,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 30,
         category: "Phụ kiện",
         image: "../image/AirPodsPro2.jpg",
+        tags: ["phụ kiện", "âm thanh", "apple"],
+        details: { // THÊM DETAILS
+          "Tính năng": "Chống ồn chủ động (ANC)",
+          "Chip": "Apple H2",
+          "Thời lượng pin": "Tới 6 giờ (tai nghe), 30 giờ (hộp sạc)",
+          "Sạc": "MagSafe, USB-C"
+        }
       },
       {
         name: "Sony WH-1000XM5",
@@ -213,6 +270,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 18,
         category: "Phụ kiện",
         image: "../image/SonyWH1000XM5.jpg",
+        tags: ["phụ kiện", "âm thanh", "sony"],
+        details: { // THÊM DETAILS
+          "Loại": "Tai nghe Over-ear",
+          "Tính năng": "Chống ồn chủ động (ANC) hàng đầu",
+          "Driver": "30mm",
+          "Thời lượng pin": "Tới 30 giờ (bật ANC)"
+        }
       },
       {
         name: "Apple Watch Series 9",
@@ -220,6 +284,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 25,
         category: "Đồng hồ thông minh",
         image: "../image/AppleWatchS9.jpg",
+        tags: ["đồng hồ thông minh", "apple"],
+        details: { // THÊM DETAILS
+          "Kích cỡ": "45mm",
+          "Màn hình": "Always-On Retina",
+          "Chip": "Apple S9 SiP",
+          "Tính năng": "Double Tap, ECG, SpO2",
+          "Chống nước": "50m"
+        }
       },
       {
         name: "Samsung Galaxy Watch 6",
@@ -227,6 +299,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 22,
         category: "Đồng hồ thông minh",
         image: "../image/SamsungGW6.jpg",
+        tags: ["đồng hồ thông minh", "samsung"],
+        details: { // THÊM DETAILS
+          "Kích cỡ": "44mm",
+          "Màn hình": "Super AMOLED",
+          "Hệ điều hành": "Wear OS 4",
+          "Tính năng": "Đo thành phần cơ thể, ECG, Huyết áp",
+          "Chất liệu": "Armor Aluminum"
+        }
       },
       {
         name: "Bàn phím cơ Keychron K2",
@@ -234,6 +314,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 35,
         category: "Phụ kiện",
         image: "../image/KeychronK2.jpg",
+        tags: ["phụ kiện", "keychron"],
+        details: { // THÊM DETAILS
+          "Layout": "75%",
+          "Switch": "Gateron Brown",
+          "Kết nối": "Bluetooth 5.1, USB-C",
+          "Đèn nền": "RGB",
+          "Tương thích": "Mac & Windows"
+        }
       },
       {
         name: "Chuột Logitech MX Master 3S",
@@ -241,6 +329,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 40,
         category: "Phụ kiện",
         image: "../image/LogitechMXMaster3S.jpg",
+        tags: ["phụ kiện", "logitech"],
+        details: { // THÊM DETAILS
+          "Cảm biến": "Darkfield 8000 DPI",
+          "Nút cuộn": "MagSpeed",
+          "Kết nối": "Logi Bolt, Bluetooth",
+          "Tính năng": "Click yên tĩnh, Sạc nhanh USB-C"
+        }
       },
       {
         name: "Màn hình LG UltraGear 27 inch",
@@ -248,6 +343,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 14,
         category: "Màn hình",
         image: "../image/LGUltraGear27.jpg",
+        tags: ["màn hình", "lg"],
+        details: { // THÊM DETAILS
+          "Kích thước": "27 inch",
+          "Độ phân giải": "QHD (2560 x 1440)",
+          "Tấm nền": "Nano IPS",
+          "Tần số quét": "165Hz",
+          "Phản hồi": "1ms (GtG)"
+        }
       },
       {
         name: "Webcam Logitech C920",
@@ -255,6 +358,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 28,
         category: "Phụ kiện",
         image: "../image/LogitechC920.jpg",
+        tags: ["phụ kiện", "logitech"],
+        details: { // THÊM DETAILS
+          "Độ phân giải": "Full HD 1080p / 30fps",
+          "Góc nhìn": "78°",
+          "Tính năng": "Tự động lấy nét, Mic kép",
+          "Kết nối": "USB-A"
+        }
       },
       {
         name: "SSD Samsung 990 PRO 1TB",
@@ -262,6 +372,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 32,
         category: "Linh kiện",
         image: "../image/Samsung990PRO1TB.jpg",
+        tags: ["linh kiện", "samsung"],
+        details: { // THÊM DETAILS
+          "Dung lượng": "1TB",
+          "Chuẩn": "NVMe PCIe Gen 4.0",
+          "Tốc độ đọc": "~7,450 MB/s",
+          "Tốc độ ghi": "~6,900 MB/s",
+          "Form Factor": "M.2 2280"
+        }
       },
       {
         name: "RAM Corsair Vengeance 32GB",
@@ -269,6 +387,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 26,
         category: "Linh kiện",
         image: "../image/CorsairVengeance32GB.jpg",
+        tags: ["linh kiện", "corsair"],
+        details: { // THÊM DETAILS
+          "Dung lượng": "32GB (2 x 16GB)",
+          "Loại": "DDR5",
+          "Tốc độ": "6000MHz",
+          "Đèn": "RGB",
+          "Tản nhiệt": "Nhôm"
+        }
       },
       {
         name: "Tai nghe Gaming Razer BlackShark V2",
@@ -276,6 +402,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 19,
         category: "Phụ kiện",
         image: "../image/RazerBlackSharkV2.jpg",
+        tags: ["phụ kiện", "âm thanh", "razer"],
+        details: { // THÊM DETAILS
+          "Driver": "Razer TriForce Titanium 50mm",
+          "Âm thanh": "THX Spatial Audio",
+          "Mic": "Razer HyperClear Cardioid",
+          "Kết nối": "Jack 3.5mm, USB Sound Card"
+        }
       },
       {
         name: "Sạc dự phòng Anker 20000mAh",
@@ -283,6 +416,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 45,
         category: "Phụ kiện",
         image: "../image/Anker20000mAh.jpg",
+        tags: ["phụ kiện", "anker"],
+        details: { // THÊM DETAILS
+          "Dung lượng": "20,000 mAh",
+          "Công suất": "20W",
+          "Cổng ra": "1x USB-C, 1x USB-A",
+          "Công nghệ": "PowerIQ 3.0, Power Delivery (PD)"
+        }
       },
       {
         name: "Ốp lưng iPhone 15 Pro",
@@ -290,6 +430,12 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 50,
         category: "Phụ kiện",
         image: "../image/OpLungIP15Pro.jpg",
+        tags: ["phụ kiện", "apple"],
+        details: { // THÊM DETAILS
+          "Chất liệu": "Silicone",
+          "Tương thích": "iPhone 15 Pro",
+          "Tính năng": "Hỗ trợ MagSafe"
+        }
       },
       {
         name: "Cáp sạc USB-C to Lightning",
@@ -297,6 +443,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 60,
         category: "Phụ kiện",
         image: "../image/CableUSBCtoLightning.jpg",
+        tags: ["phụ kiện", "apple"],
+        details: { // THÊM DETAILS
+          "Loại": "USB-C to Lightning",
+          "Độ dài": "1m",
+          "Hãng": "Apple",
+          "Tính năng": "Sạc nhanh (PD)"
+        }
       },
       {
         name: "Router WiFi 6 TP-Link Archer AX73",
@@ -304,6 +457,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 16,
         category: "Mạng & Kết nối",
         image: "../image/TPLinkArcherAX73.jpg",
+        tags: ["mạng & kết nối", "tp-link"],
+        details: { // THÊM DETAILS
+          "Chuẩn": "Wi-Fi 6 (802.11ax)",
+          "Tốc độ": "AX5400 (5GHz: 4804 Mbps, 2.4GHz: 574 Mbps)",
+          "Anten": "6 anten",
+          "Tính năng": "OneMesh, HomeShield"
+        }
       },
       {
         name: "Loa Bluetooth JBL Flip 6",
@@ -311,6 +471,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 24,
         category: "Âm thanh",
         image: "../image/JBLFlip6.jpg",
+        tags: ["âm thanh", "jbl"],
+        details: { // THÊM DETAILS
+          "Công suất": "20W RMS (woofer) + 10W RMS (tweeter)",
+          "Chống nước": "IP67",
+          "Thời lượng pin": "12 giờ",
+          "Tính năng": "PartyBoost"
+        }
       },
       {
         name: "Gimbal DJI OM 6",
@@ -318,6 +485,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 11,
         category: "Phụ kiện",
         image: "../image/DJIOM6.jpg",
+        tags: ["phụ kiện", "dji"],
+        details: { // THÊM DETAILS
+          "Loại": "Chống rung 3 trục",
+          "Tính năng": "ActiveTrack 6.0, Quick Launch",
+          "Pin": "6.4 giờ",
+          "Trọng lượng": "309g"
+        }
       },
       {
         name: "Máy tính bảng Samsung Tab S9",
@@ -325,6 +499,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 9,
         category: "Máy tính bảng",
         image: "../image/SamsungTabS9.jpg",
+        tags: ["máy tính bảng", "samsung"],
+        details: { // THÊM DETAILS
+          "Màn hình": "11 inch, Dynamic AMOLED 2X",
+          "Chip": "Snapdragon 8 Gen 2 for Galaxy",
+          "RAM": "8GB",
+          "Bộ nhớ trong": "128GB",
+          "Bút": "S Pen đi kèm (chống nước IP68)"
+        }
       },
       {
         name: "Ổ cứng di động WD My Passport 2TB",
@@ -332,6 +514,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 33,
         category: "Linh kiện",
         image: "../image/WDMyPassport2TB.jpg",
+        tags: ["linh kiện", "wd"],
+        details: { // THÊM DETAILS
+          "Dung lượng": "2TB",
+          "Kết nối": "USB 3.2 Gen 1",
+          "Loại": "HDD",
+          "Bảo mật": "Mã hóa AES 256-bit"
+        }
       },
       {
         name: "Xiaomi Redmi Note 13 Pro",
@@ -339,6 +528,14 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 4,
         category: "Điện thoại",
         image: "../image/RedmiNote13Pro.jpg",
+        tags: ["điện thoại", "xiaomi"],
+        details: { // THÊM DETAILS
+          "Màn hình": "6.67 inch, AMOLED, 120Hz",
+          "Chip": "Helio G99-Ultra",
+          "RAM": "8GB",
+          "Bộ nhớ trong": "256GB",
+          "Camera": "Chính 200MP"
+        }
       },
       {
         name: "Kính cường lực iPhone 15",
@@ -346,6 +543,12 @@ document.addEventListener("DOMContentLoaded", () => {
         quantity: 2,
         category: "Phụ kiện",
         image: "../image/KinhCuongLucIP15.jpg",
+        tags: ["phụ kiện", "apple"],
+        details: { // THÊM DETAILS
+          "Tương thích": "iPhone 15",
+          "Độ cứng": "9H",
+          "Tính năng": "Chống vân tay, Viền 2.5D"
+        }
       },
     ];
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
@@ -361,6 +564,75 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentPage = 1;
   const itemsPerPage = 12;
   let currentProductList = products;
+
+  // === HÀM MỚI: HIỂN THỊ CHI TIẾT SẢN PHẨM ===
+  function showProductDetails(index) {
+    const product = currentProductList[index];
+    if (!product || !productDetailPopup) return;
+
+    // Lấy các element trong popup
+    const imgEl = document.getElementById("popup-product-image");
+    const nameEl = document.getElementById("popup-product-name");
+    const tagsEl = document.getElementById("popup-product-tags");
+    const priceEl = document.getElementById("popup-product-price");
+    const specsEl = document.getElementById("popup-product-specs-list");
+    const buyBtn = document.getElementById("popup-buy-btn");
+    const addCartBtn = document.getElementById("popup-add-to-cart-btn");
+
+    // 1. Điền hình ảnh
+    imgEl.src = product.image || "../image/placeholder.png";
+
+    // 2. Điền tên
+    nameEl.innerText = product.name;
+
+    // 3. Điền giá
+    priceEl.innerHTML = `Giá: <span class="home-product-item__price-current">${formatPrice(
+      product.value
+    )}đ</span>`;
+
+    // 4. Điền tags
+    tagsEl.innerHTML = "";
+    if (product.tags && product.tags.length > 0) {
+      product.tags.forEach((tag) => {
+        const tagBadge = document.createElement("span");
+        tagBadge.className = "tag-badge";
+        tagBadge.innerText = tag;
+        tagsEl.appendChild(tagBadge);
+      });
+    }
+
+    // 5. Điền thông số kỹ thuật (details)
+    specsEl.innerHTML = "";
+    if (product.details && Object.keys(product.details).length > 0) {
+      for (const [key, value] of Object.entries(product.details)) {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${escapeHtml(key)}:</strong> ${escapeHtml(
+          value
+        )}`;
+        specsEl.appendChild(li);
+      }
+    } else {
+      specsEl.innerHTML = "<li>Không có thông tin chi tiết.</li>";
+    }
+
+    // 6. Xử lý nút (vô hiệu hóa nếu hết hàng)
+    buyBtn.disabled = product.quantity <= 0;
+    addCartBtn.disabled = product.quantity <= 0;
+
+    // 7. Gán sự kiện click cho nút
+    buyBtn.onclick = () => {
+      buyProduct(index); // Dùng index của currentProductList
+      productDetailPopup.style.display = "none"; // Ẩn popup sau khi mua
+    };
+
+    addCartBtn.onclick = () => {
+      addToCart(product.name, product.value);
+      // Không ẩn popup, để người dùng có thể mua tiếp
+    };
+
+    // 8. Hiển thị popup
+    productDetailPopup.style.display = "flex";
+  }
 
   function renderProducts(list = products) {
     currentProductList = list;
@@ -379,6 +651,9 @@ document.addEventListener("DOMContentLoaded", () => {
           <p style="color: #999;">Vui lòng thử tìm kiếm hoặc lọc khác</p>
         </div>
       `;
+      // Xóa pagination nếu không có sản phẩm
+      let paginationEl = document.getElementById("pagination-container");
+      if (paginationEl) paginationEl.innerHTML = "";
       return;
     }
 
@@ -388,12 +663,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const pageProducts = currentProductList.slice(startIndex, endIndex);
 
     pageProducts.forEach((product, pageIndex) => {
-      const actualIndex = startIndex + pageIndex;
+      const actualIndex = startIndex + pageIndex; // Index chính xác trong currentProductList
       const wrapper = document.createElement("div");
       wrapper.className = "product-card";
       wrapper.style.animation = `productSlideIn 0.4s ease-out ${
         pageIndex * 0.05
       }s both`;
+      
+      // === CẬP NHẬT: THÊM ONCLICK CHO THẺ SẢN PHẨM ===
+      wrapper.onclick = () => showProductDetails(actualIndex);
+      // ===============================================
 
       const imageDiv = document.createElement("div");
       imageDiv.className = "home-product-item__img";
@@ -459,14 +738,25 @@ document.addEventListener("DOMContentLoaded", () => {
       buyBtn.className = "buy-btn";
       buyBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Mua ngay';
       buyBtn.disabled = product.quantity <= 0;
-      buyBtn.onclick = () => buyProduct(actualIndex);
+      
+      // === CẬP NHẬT: Thêm e.stopPropagation() ===
+      buyBtn.onclick = (e) => {
+        e.stopPropagation(); // Ngăn sự kiện click của thẻ cha (wrapper)
+        buyProduct(actualIndex);
+      };
 
       const addCartBtn = document.createElement("button");
       addCartBtn.className = "add-to-cart";
       addCartBtn.innerHTML =
         '<i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ';
       addCartBtn.disabled = product.quantity <= 0;
-      addCartBtn.onclick = () => addToCart(product.name, product.value);
+      
+      // === CẬP NHẬT: Thêm e.stopPropagation() ===
+      addCartBtn.onclick = (e) => {
+        e.stopPropagation(); // Ngăn sự kiện click của thẻ cha (wrapper)
+        addToCart(product.name, product.value);
+      };
+      // =========================================
 
       btnContainer.appendChild(buyBtn);
       btnContainer.appendChild(addCartBtn);
@@ -581,7 +871,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderProductsPage();
   };
 
-  // Thêm CSS cho animations và improvements
+  // === THÊM CSS CHO POPUP MỚI ===
   const productStyles = document.createElement("style");
   productStyles.textContent = `
     @keyframes productSlideIn {
@@ -723,6 +1013,169 @@ document.addEventListener("DOMContentLoaded", () => {
       padding: 0 5px;
       font-weight: 600;
     }
+
+    /* CSS CHO POPUP CHI TIẾT SẢN PHẨM */
+    .popup-content.large {
+      max-width: 900px;
+      width: 90%;
+      max-height: 90vh;
+    }
+
+    .product-detail-layout {
+      display: flex;
+      gap: 30px;
+    }
+
+    .product-detail-image-container {
+      flex: 1;
+      min-width: 300px;
+      background: #f9f9f9;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+      align-self: flex-start;
+    }
+
+    .product-detail-image-container img {
+      max-width: 100%;
+      max-height: 400px;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .product-detail-info-container {
+      flex: 1.5;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-detail-info-container h2 {
+      font-size: 2rem;
+      color: #333;
+      margin-top: 0;
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+
+    .product-detail-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .tag-badge {
+      background: #e0e7ff;
+      color: #667eea;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .product-detail-price {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    
+    .product-detail-price .home-product-item__price-current {
+      color: #e91e63;
+      font-size: 2.2rem;
+      margin-left: 10px;
+    }
+
+    .product-detail-specs {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin-bottom: 25px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .product-detail-specs h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #667eea;
+    }
+    
+    .product-detail-specs-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .product-detail-specs-list li {
+      padding: 8px 0;
+      border-bottom: 1px dashed #e0e0e0;
+      font-size: 0.95rem;
+      color: #555;
+    }
+    
+    .product-detail-specs-list li:last-child {
+      border-bottom: none;
+    }
+    
+    .product-detail-specs-list li strong {
+      color: #333;
+      min-width: 120px;
+      display: inline-block;
+    }
+
+    .product-detail-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: auto; /* Đẩy nút xuống cuối */
+    }
+    
+    .product-detail-actions button {
+      flex: 1;
+      padding: 15px 20px;
+      font-size: 1rem;
+      gap: 8px;
+    }
+    
+    .product-detail-actions button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+    
+    @media (max-width: 768px) {
+      .popup-content.large {
+        width: 95%;
+        max-height: 85vh;
+        overflow-y: auto;
+      }
+      .product-detail-layout {
+        flex-direction: column;
+      }
+      .product-detail-image-container {
+        min-width: auto;
+        max-height: 300px;
+      }
+      .product-detail-image-container img {
+        max-height: 280px;
+      }
+      .product-detail-info-container h2 {
+        font-size: 1.5rem;
+      }
+      .product-detail-price .home-product-item__price-current {
+        font-size: 1.8rem;
+      }
+      .product-detail-actions {
+        flex-direction: column;
+      }
+    }
+    /* KẾT THÚC CSS POPUP */
     
     @media (max-width: 768px) {
       .pagination-btn {
@@ -756,6 +1209,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const category = document.getElementById("category").value;
       const file = document.getElementById("image").files[0];
 
+      // Tự động thêm tags từ tên và danh mục (bạn có thể mở rộng logic này)
+      const newTags = [category.toLowerCase()];
+      if (name.toLowerCase().includes("apple")) newTags.push("apple");
+      if (name.toLowerCase().includes("samsung")) newTags.push("samsung");
+      if (name.toLowerCase().includes("xiaomi")) newTags.push("xiaomi");
+      if (name.toLowerCase().includes("dell")) newTags.push("dell");
+      // ... thêm các hãng khác ...
+      
+      // Tự động thêm details (đơn giản, có thể làm phức tạp hơn)
+      const newDetails = {
+        "Phân loại": category,
+      };
+
       function pushProduct(imageData) {
         if (editingIndex !== null) {
           products[editingIndex] = {
@@ -764,6 +1230,8 @@ document.addEventListener("DOMContentLoaded", () => {
             quantity: parseInt(quantity || 0),
             category,
             image: imageData || products[editingIndex].image,
+            tags: products[editingIndex].tags || newTags, // Giữ tag cũ hoặc cập nhật
+            details: products[editingIndex].details || newDetails, // Giữ details cũ
           };
           editingIndex = null;
         } else {
@@ -773,6 +1241,8 @@ document.addEventListener("DOMContentLoaded", () => {
             quantity: parseInt(quantity || 0),
             category,
             image: imageData || "",
+            tags: newTags, // Thêm tags cho sản phẩm mới
+            details: newDetails, // Thêm details cho sản phẩm mới
           });
         }
         localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
@@ -810,9 +1280,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // ----- Filter -----
   function applyFilters() {
     const nameFilter = (filterProductName?.value || "").toLowerCase().trim();
-    const categoryFilter = (filterProductCategory?.value || "")
-      .toLowerCase()
-      .trim();
+    // Lấy giá trị từ thẻ select, đã là chữ thường
+    const categoryFilter = (filterProductCategory?.value || "").toLowerCase();
     const minPrice = parseFloat(filterPriceMin?.value) || 0;
     const maxPrice = parseFloat(filterPriceMax?.value) || Infinity;
 
@@ -820,9 +1289,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const name = (product.name || "").toLowerCase();
       const cat = (product.category || "").toLowerCase();
       const price = parsePrice(product.value);
+      
+      // Lấy mảng tags của sản phẩm, đảm bảo là chữ thường
+      const productTags = (product.tags || []).map(t => String(t).toLowerCase());
+
+      // Kiểm tra danh mục/hãng:
+      // 1. Nếu categoryFilter là rỗng (""), thì luôn khớp
+      // 2. Nếu không, kiểm tra xem mảng productTags có chứa categoryFilter không
+      const categoryMatch = !categoryFilter || productTags.includes(categoryFilter);
+
       return (
         name.includes(nameFilter) &&
-        cat.includes(categoryFilter) &&
+        categoryMatch && // Áp dụng logic lọc mới
         price >= minPrice &&
         price <= maxPrice
       );
@@ -835,7 +1313,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (clearFilterBtn) {
     clearFilterBtn.addEventListener("click", () => {
       if (filterProductName) filterProductName.value = "";
-      if (filterProductCategory) filterProductCategory.value = "";
+      if (filterProductCategory) filterProductCategory.value = ""; // Reset thẻ select
       if (filterPriceMin) filterPriceMin.value = "";
       if (filterPriceMax) filterPriceMax.value = "";
       renderProducts(products);
@@ -880,7 +1358,23 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!");
       return;
     }
+    
+    // Tìm sản phẩm gốc để kiểm tra số lượng
+    const product = products.find(p => p.name === name);
+    if (!product) {
+      alert("Lỗi: Không tìm thấy sản phẩm.");
+      return;
+    }
+    
     const existing = cart.find((c) => c.name === name);
+    
+    // Kiểm tra số lượng tồn kho
+    const currentCartQty = existing ? existing.quantity : 0;
+    if (currentCartQty + 1 > product.quantity) {
+      alert(`Xin lỗi, bạn chỉ có thể mua tối đa ${product.quantity} sản phẩm này.`);
+      return;
+    }
+
     if (existing) {
       existing.quantity++;
     } else {
@@ -896,7 +1390,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Bạn cần đăng nhập để mua hàng!");
       return;
     }
-    const product = currentProductList[index];
+    const product = currentProductList[index]; // Lấy từ currentProductList
     if (!product) return;
     if (product.quantity <= 0) {
       alert("Sản phẩm đã hết hàng!");
@@ -947,7 +1441,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Dùng địa chỉ hiện tại từ hồ sơ
         const currentUser = localStorage.getItem("currentUser");
         const u = users.find((x) => x.username === currentUser);
-        address = (u && u.address) ? String(u.address).trim() : "";
+        address = u && u.address ? String(u.address).trim() : "";
       } else {
         // Dùng địa chỉ nhập mới
         address = checkoutAddressEl?.value?.trim() || "";
@@ -958,7 +1452,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const currentUser = localStorage.getItem("currentUser") || displayedUsername?.innerText || "Guest";
+      const currentUser =
+        localStorage.getItem("currentUser") ||
+        displayedUsername?.innerText ||
+        "Guest";
       const invoice = {
         id: Date.now(),
         date: new Date().toLocaleString("vi-VN"),
@@ -979,7 +1476,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Nếu người dùng chọn lưu địa chỉ thì cập nhật vào hồ sơ
       try {
-        if (saveAddressCheckbox && saveAddressCheckbox.checked && currentUser && currentUser !== "Guest") {
+        if (
+          saveAddressCheckbox &&
+          saveAddressCheckbox.checked &&
+          currentUser &&
+          currentUser !== "Guest"
+        ) {
           const u = users.find((x) => x.username === currentUser);
           if (u) {
             u.address = address;
@@ -990,25 +1492,36 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (e) {
         console.error("Lỗi khi lưu địa chỉ người dùng:", e);
       }
-
+      
+      // CẬP NHẬT TỒN KHO
+      let isFromCart = cart.length > 0 && checkoutList.length === cart.length;
+      
       checkoutList.forEach((it) => {
         const p = products.find((x) => x.name === it.name);
-        if (p && p.quantity > 0) p.quantity--;
+        const purchaseQty = it.purchaseQuantity || it.quantity || 1;
+        if (p && p.quantity >= purchaseQty) {
+          p.quantity -= purchaseQty; // Trừ đúng số lượng mua
+        } else if (p) {
+          console.warn(`Không đủ hàng ${p.name}, chỉ trừ ${p.quantity}`);
+          p.quantity = 0; // Hết hàng
+        }
       });
 
       invoices.push(invoice);
       localStorage.setItem("invoices", JSON.stringify(invoices));
       localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-      renderProducts();
+      renderProducts(); // Render lại sản phẩm (với số lượng mới)
 
       alert("🎉 Bạn đã mua thành công sản phẩm!");
       if (checkoutPopup) checkoutPopup.style.display = "none";
       checkoutList = [];
 
-      // Xóa giỏ hàng sau khi thanh toán
-      cart = [];
-      localStorage.setItem("cart", JSON.stringify(cart));
-      renderCart();
+      // Xóa giỏ hàng sau khi thanh toán (nếu mua từ giỏ hàng)
+      if (isFromCart) {
+         cart = [];
+         localStorage.setItem("cart", JSON.stringify(cart));
+         renderCart();
+      }
     });
   }
 
@@ -1539,6 +2052,16 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Giỏ hàng trống!");
         return;
       }
+      
+      // Kiểm tra tồn kho trước khi mở checkout
+      for (const item of cart) {
+        const product = products.find(p => p.name === item.name);
+        if (!product || item.quantity > product.quantity) {
+          alert(`Sản phẩm "${item.name}" không đủ hàng (Chỉ còn ${product.quantity}). Vui lòng điều chỉnh giỏ hàng.`);
+          return;
+        }
+      }
+      
       // Chuyển đổi cart items thành format với purchaseQuantity
       checkoutList = cart.map((item) => ({
         name: item.name,
@@ -1551,7 +2074,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const currentUser = localStorage.getItem("currentUser");
         const u = users.find((x) => x.username === currentUser);
         const saved = u && u.address ? u.address : "";
-        if (savedAddressDisplay) savedAddressDisplay.innerText = saved || "Chưa có địa chỉ";
+        if (savedAddressDisplay)
+          savedAddressDisplay.innerText = saved || "Chưa có địa chỉ";
         if (useSavedAddressRadio && enterNewAddressRadio && checkoutAddressEl) {
           if (saved) {
             useSavedAddressRadio.checked = true;
@@ -1576,7 +2100,9 @@ document.addEventListener("DOMContentLoaded", () => {
         useSavedAddressRadio.addEventListener("change", () => {
           if (useSavedAddressRadio.checked && checkoutAddressEl) {
             checkoutAddressEl.disabled = true;
-            checkoutAddressEl.value = savedAddressDisplay ? savedAddressDisplay.innerText : checkoutAddressEl.value;
+            checkoutAddressEl.value = savedAddressDisplay
+              ? savedAddressDisplay.innerText
+              : checkoutAddressEl.value;
           }
         });
       }
@@ -1584,8 +2110,11 @@ document.addEventListener("DOMContentLoaded", () => {
         enterNewAddressRadio.addEventListener("change", () => {
           if (enterNewAddressRadio.checked && checkoutAddressEl) {
             checkoutAddressEl.disabled = false;
-            const savedText = savedAddressDisplay ? savedAddressDisplay.innerText : "";
-            if (checkoutAddressEl.value === savedText) checkoutAddressEl.value = "";
+            const savedText = savedAddressDisplay
+              ? savedAddressDisplay.innerText
+              : "";
+            if (checkoutAddressEl.value === savedText)
+              checkoutAddressEl.value = "";
             checkoutAddressEl.focus();
           }
         });
@@ -1961,7 +2490,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (ev.target === productFormPopup) productFormPopup.style.display = "none";
     if (ev.target === userPopup) userPopup.style.display = "none";
     if (ev.target === checkoutPopup) checkoutPopup.style.display = "none";
+    
+    // THÊM LOGIC ĐÓNG POPUP CHI TIẾT
+    if (ev.target === productDetailPopup) {
+      productDetailPopup.style.display = "none";
+    }
   });
+  
+  // THÊM LOGIC CHO NÚT ĐÓNG POPUP CHI TIẾT
+  if (closeProductDetailPopup) {
+    closeProductDetailPopup.onclick = () => {
+      productDetailPopup.style.display = "none";
+    };
+  }
 
   // ----- Return to User button -----
   const returnToUserBtn = document.getElementById("returnToUserBtn");
@@ -1983,4 +2524,22 @@ document.addEventListener("DOMContentLoaded", () => {
   window.buyProduct = buyProduct;
 
   // Khôi phục trạng thái đăng nhập
+  function restoreLoginState() {
+     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+     const currentUser = localStorage.getItem("currentUser");
+     const isAdmin = localStorage.getItem("isAdmin") === "true";
+     
+     if(isLoggedIn && currentUser) {
+        if(loginBtn) loginBtn.style.display = "none";
+        if(openRegister) openRegister.style.display = "none";
+        if(usernameDisplay) usernameDisplay.style.display = "flex";
+        if(displayedUsername) displayedUsername.innerText = currentUser;
+        
+        if (isAdmin) {
+             if(openProductFormBtn) openProductFormBtn.style.display = "block";
+        }
+     }
+  }
+  
+  restoreLoginState();
 });

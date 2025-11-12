@@ -211,12 +211,13 @@ body {
 
 .filter-section input,
 .filter-section select {
+  color: #666;
   padding: 10px 14px;
   border-radius: 10px;
   border: 2px solid #e0e0e0;
   font-size: 0.95rem;
   outline: none;
-  transition: all 0.3s;
+  transition: all 0.1s;
   flex: 1;
   min-width: 120px;
 }

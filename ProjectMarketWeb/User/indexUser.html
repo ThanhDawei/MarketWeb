@@ -67,11 +67,39 @@
           id="filterProductName"
           placeholder="Tìm theo tên..."
         />
-        <input
-          type="text"
-          id="filterProductCategory"
-          placeholder="Danh mục..."
-        />
+        
+        <select id="filterProductCategory">
+          <option value="">Tất cả danh mục</option>
+          <optgroup label="Loại sản phẩm">
+            <option value="điện thoại">Điện thoại</option>
+            <option value="laptop">Laptop</option>
+            <option value="máy tính bảng">Máy tính bảng</option>
+            <option value="đồng hồ thông minh">Đồng hồ thông minh</option>
+            <option value="linh kiện">Linh kiện</option>
+            <option value="màn hình">Màn hình</option>
+            <option value="âm thanh">Âm thanh</option>
+            <option value="mạng & kết nối">Mạng & Kết nối</option>
+            <option value="phụ kiện">Phụ kiện</option>
+          </optgroup>
+          <optgroup label="Hãng sản xuất">
+            <option value="apple">Apple</option>
+            <option value="samsung">Samsung</option>
+            <option value="xiaomi">Xiaomi</option>
+            <option value="dell">Dell</option>
+            <option value="lg">LG</option>
+            <option value="sony">Sony</option>
+            <option value="logitech">Logitech</option>
+            <option value="keychron">Keychron</option>
+            <option value="corsair">Corsair</option>
+            <option value="razer">Razer</option>
+            <option value="anker">Anker</option>
+            <option value="tp-link">TP-Link</option>
+            <option value="jbl">JBL</option>
+            <option value="dji">DJI</option>
+            <option value="wd">WD</option>
+          </optgroup>
+        </select>
+
         <input type="number" id="filterPriceMin" placeholder="Giá từ" min="0" />
         <input type="number" id="filterPriceMax" placeholder="Đến" min="0" />
         <button id="applyFilterBtn" type="button">Lọc</button>
@@ -233,6 +261,50 @@
         <div class="total">Tổng: <span id="totalPrice">0</span>đ</div>
         <button id="checkoutBtn" class="checkout-btn">Thanh toán</button>
       </div>
+
+      <div id="product-detail-popup" class="popup" style="display: none">
+        <div class="popup-content large">
+          <span id="close-product-detail-popup" class="close">&times;</span>
+          <div class="product-detail-layout">
+            
+            <div class="product-detail-image-container">
+              <img
+                id="popup-product-image"
+                src=""
+                alt="Hình ảnh sản phẩm"
+                onerror="this.src='../image/placeholder.png';"
+              />
+            </div>
+
+            <div class="product-detail-info-container">
+              <h2 id="popup-product-name">Tên sản phẩm</h2>
+              
+              <div class="product-detail-tags" id="popup-product-tags">
+                </div>
+              
+              <div class="product-detail-price" id="popup-product-price">
+                </div>
+              
+              <div class="product-detail-specs">
+                <h3>Thông số kỹ thuật</h3>
+                <ul id="popup-product-specs-list">
+                  </ul>
+              </div>
+              
+              <div class="product-detail-actions">
+                <button id="popup-buy-btn" class="buy-btn">
+                  <i class="fa-solid fa-bolt"></i> Mua ngay
+                </button>
+                <button id="popup-add-to-cart-btn" class="add-to-cart">
+                  <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
     </user>
   </body>
 </html>
