@@ -36,8 +36,9 @@
 
       <div class="header-right">
         <button id="notificationBtn" class="icon-btn" title="Thông báo">
-          <i class="fa-solid fa-bell"></i
-            ><span class="notification-badge">3</span>
+          <i class="fa-solid fa-bell"></i>
+            <span id="notification-badge" 
+            class="notification-badge" style="display: none;">3</span>
         </button>
         <button id="helpBtn" class="text-btn">
           <i class="fa-solid fa-circle-question"></i> Hỗ trợ
@@ -255,6 +256,29 @@
         </div>
         <button id="confirm-checkout" class="login-button">Xác nhận</button>
         <button id="cancel-checkout" class="btn-register">Hủy</button>
+      </div>
+    </div>
+
+    <!-- THÔNG BÁO -->
+    <div id="notificationPopup" class="popup" style="display: none;">
+      <div class="popup-content">
+        <span id="close-notification-popup" class="close">&times;</span>
+        <h2><i class="fa-solid fa-bell"></i> Thông Báo</h2>
+        
+        <div class="notification-list">
+            <div class="notification-item">
+                <p><strong>Khuyến Mãi Lớn!</strong> Giảm giá 50% cho tất cả tai nghe trong tháng này.</p>
+                <small>1 giờ trước</small>
+            </div>
+            <div class="notification-item">
+                <p><strong>Bảo trì hệ thống</strong> dự kiến vào lúc 2 giờ sáng ngày mai để nâng cấp hiệu suất.</p>
+                <small>5 giờ trước</small>
+            </div>
+            <div class="notification-item">
+                <p>Chào mừng bạn đến với DMarket! Hãy khám phá hàng ngàn sản phẩm công nghệ tuyệt vời.</p>
+                <small>1 ngày trước</small>
+            </div>
+        </div>
       </div>
     </div>
 

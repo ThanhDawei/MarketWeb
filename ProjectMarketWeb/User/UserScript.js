@@ -112,6 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
     "close-product-detail-popup"
   );
 
+  // ----- Notification Popup Elements -----
+  const notificationBtn = document.getElementById("notificationBtn");
+  const notificationPopup = document.getElementById("notificationPopup");
+  const closeNotificationPopup = document.getElementById("close-notification-popup");
+  const notificationBadge = document.getElementById("notification-badge");
+
   // ----- Storage initialization với dữ liệu mẫu -----
   if (localStorage.getItem("isLoggedIn") === null)
     localStorage.setItem("isLoggedIn", "false");
@@ -1590,6 +1596,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (openRegister) openRegister.style.display = "none";
         if (usernameDisplay) usernameDisplay.style.display = "flex";
         if (displayedUsername) displayedUsername.innerText = "Admin";
+        if (notificationBadge) notificationBadge.style.display = 'block';
         localStorage.setItem("isAdmin", "true");
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("currentUser", "admin1");
@@ -1608,6 +1615,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (loginBtn) loginBtn.style.display = "none";
         if (usernameDisplay) usernameDisplay.style.display = "flex";
         if (displayedUsername) displayedUsername.innerText = usernameInput;
+        if (notificationBadge) notificationBadge.style.display = 'block';
+        localStorage.setItem("isLoggedIn", "true");
         if (openRegister) openRegister.style.display = "none";
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("currentUser", usernameInput);
@@ -2072,6 +2081,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // ----- Notification Popup Logic -----
+  if (notificationBtn && notificationPopup) {
+    notificationBtn.addEventListener('click', (event) => {
+        event.preventDefault(); 
+        // BƯỚC KIỂM TRA ĐĂNG NHẬP
+        if (localStorage.getItem("isLoggedIn") === "true") {
+            // Nếu đã đăng nhập, thì hiển thị popup thông báo
+            notificationPopup.style.display = 'flex';
+        } else {
+            // Nếu chưa đăng nhập, thì hiển thị cảnh báo
+            alert("Bạn cần đăng nhập để xem thông báo!");
+            loginPopup.style.display = 'flex'; 
+        }
+    });
+  }
+  if (closeNotificationPopup && notificationPopup) {
+      closeNotificationPopup.addEventListener('click', () => {
+          notificationPopup.style.display = 'none';
+      });
+  }
+
   if (checkoutBtn) {
     checkoutBtn.onclick = () => {
       if (localStorage.getItem("isLoggedIn") !== "true") {
@@ -2470,6 +2500,8 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.removeItem("isAdmin");
         localStorage.removeItem("currentUser");
         localStorage.removeItem("cart");
+        if (notificationBadge) notificationBadge.style.display = 'none';
+        localStorage.removeItem("isLoggedIn");
         window.location.reload();
       });
     }
@@ -2563,10 +2595,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if(openRegister) openRegister.style.display = "none";
         if(usernameDisplay) usernameDisplay.style.display = "flex";
         if(displayedUsername) displayedUsername.innerText = currentUser;
-        
+        if (notificationBadge) notificationBadge.style.display = 'block';
+
         if (isAdmin) {
              if(openProductFormBtn) openProductFormBtn.style.display = "block";
         }
+     } else {
+      // Nếu không đăng nhập, đảm bảo huy hiệu bị ẩn
+      if (notificationBadge) notificationBadge.style.display = 'none';
      }
   }
   

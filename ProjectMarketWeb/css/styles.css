@@ -829,6 +829,40 @@ body {
   text-align: center;
 }
 
+/* Notification Popup */
+.notification-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 400px; /* Thêm chiều cao tối đa và thanh cuộn */
+  overflow-y: auto;
+  padding-right: 10px; /* Thêm khoảng trống cho thanh cuộn */
+}
+
+.notification-item {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  border-left: 4px solid #667eea;
+  transition: transform 0.2s ease-out;
+}
+
+.notification-item:hover {
+  transform: translateX(5px);
+}
+
+.notification-item p {
+  margin: 0 0 5px 0;
+  color: #333;
+  line-height: 1.4;
+}
+
+.notification-item small {
+  color: #888;
+  font-style: italic;
+}
+
 .user-header {
   margin-bottom: 20px;
 }
