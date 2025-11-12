@@ -648,7 +648,7 @@ body {
   border-radius: 12px;
   font-size: 1rem;
   outline: none;
-  transition: all 0.3s;
+  transition: all 0.1s;
 }
 
 .auth-form_input:focus {
