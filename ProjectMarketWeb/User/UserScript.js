@@ -55,6 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelCheckoutBtn = document.getElementById("cancel-checkout");
   const checkoutItemsEl = document.getElementById("checkout-items");
   const checkoutTotalEl = document.getElementById("checkout-total");
+  const checkoutCustomerNameEl = document.getElementById("checkout-customer-name");
+  const checkoutCustomerPhoneEl = document.getElementById("checkout-customer-phone");
   const checkoutAddressEl = document.getElementById("checkout-address");
   const saveAddressCheckbox = document.getElementById("save-address-checkbox");
   const useSavedAddressRadio = document.getElementById("use-saved-address");
@@ -1431,6 +1433,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     checkoutTotalEl.textContent = formatPrice(total);
+    // Hiển thị thông tin người nhận (tên & điện thoại) nếu có
+    try {
+      const currentUser =
+        localStorage.getItem("currentUser") || displayedUsername?.innerText || "Guest";
+      let nameToShow = currentUser || "Guest";
+      let phoneToShow = "(Chưa có)";
+      const u = users.find((x) => x.username === currentUser);
+      if (u) {
+        nameToShow = u.username || nameToShow;
+        phoneToShow = u.phone || phoneToShow;
+      }
+      if (checkoutCustomerNameEl) checkoutCustomerNameEl.textContent = nameToShow;
+      if (checkoutCustomerPhoneEl) checkoutCustomerPhoneEl.textContent = phoneToShow;
+    } catch (e) {
+      console.error("Không thể hiển thị thông tin người nhận:", e);
+    }
   }
 
   if (confirmCheckoutBtn) {

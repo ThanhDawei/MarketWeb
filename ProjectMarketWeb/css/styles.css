@@ -522,7 +522,7 @@ body {
 
 /* Form styling */
 .input-group {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .input-group label {
@@ -802,6 +802,7 @@ body {
   cursor: pointer;
   transition: all 0.3s;
   margin: 10px 5px;
+  width:100%;
 }
 
 #confirm-checkout {
