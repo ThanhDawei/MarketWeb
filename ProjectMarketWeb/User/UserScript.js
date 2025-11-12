@@ -1449,6 +1449,18 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) {
       console.error("Không thể hiển thị thông tin người nhận:", e);
     }
+    
+    // Update địa chỉ đã lưu
+    try {
+      const currentUser = localStorage.getItem("currentUser");
+      const u = users.find((x) => x.username === currentUser);
+      const saved = u && u.address && u.address.trim() ? u.address : "";
+      if (savedAddressDisplay) {
+        savedAddressDisplay.innerText = saved || "(chưa có)";
+      }
+    } catch (e) {
+      console.error("Không thể cập nhật địa chỉ đã lưu:", e);
+    }
   }
 
   if (confirmCheckoutBtn) {
@@ -2091,9 +2103,8 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const currentUser = localStorage.getItem("currentUser");
         const u = users.find((x) => x.username === currentUser);
-        const saved = u && u.address ? u.address : "";
-        if (savedAddressDisplay)
-          savedAddressDisplay.innerText = saved || "Chưa có địa chỉ";
+        const saved = u && u.address && u.address.trim() ? u.address.trim() : "";
+        
         if (useSavedAddressRadio && enterNewAddressRadio && checkoutAddressEl) {
           if (saved) {
             useSavedAddressRadio.checked = true;
