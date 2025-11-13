@@ -55,8 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelCheckoutBtn = document.getElementById("cancel-checkout");
   const checkoutItemsEl = document.getElementById("checkout-items");
   const checkoutTotalEl = document.getElementById("checkout-total");
-  const checkoutCustomerNameEl = document.getElementById("checkout-customer-name");
-  const checkoutCustomerPhoneEl = document.getElementById("checkout-customer-phone");
+  const checkoutCustomerNameEl = document.getElementById(
+    "checkout-customer-name"
+  );
+  const checkoutCustomerPhoneEl = document.getElementById(
+    "checkout-customer-phone"
+  );
   const checkoutAddressEl = document.getElementById("checkout-address");
   const saveAddressCheckbox = document.getElementById("save-address-checkbox");
   const useSavedAddressRadio = document.getElementById("use-saved-address");
@@ -115,7 +119,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // ----- Notification Popup Elements -----
   const notificationBtn = document.getElementById("notificationBtn");
   const notificationPopup = document.getElementById("notificationPopup");
-  const closeNotificationPopup = document.getElementById("close-notification-popup");
+  const closeNotificationPopup = document.getElementById(
+    "close-notification-popup"
+  );
   const notificationBadge = document.getElementById("notification-badge");
 
   // ----- Storage initialization với dữ liệu mẫu -----
@@ -190,13 +196,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Điện thoại",
         image: "../image/IP15PM.jpg",
         tags: ["điện thoại", "apple"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Màn hình": "6.7 inch, Super Retina XDR",
-          "Chip": "Apple A17 Pro",
-          "RAM": "8GB",
+          Chip: "Apple A17 Pro",
+          RAM: "8GB",
           "Bộ nhớ trong": "256GB",
-          "Camera": "Chính 48MP & Phụ 12MP"
-        }
+          Camera: "Chính 48MP & Phụ 12MP",
+        },
       },
       {
         name: "Samsung Galaxy S24 Ultra",
@@ -205,13 +212,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Điện thoại",
         image: "../image/S24U.jpg",
         tags: ["điện thoại", "samsung"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Màn hình": "6.8 inch, Dynamic AMOLED 2X",
-          "Chip": "Snapdragon 8 Gen 3 for Galaxy",
-          "RAM": "12GB",
+          Chip: "Snapdragon 8 Gen 3 for Galaxy",
+          RAM: "12GB",
           "Bộ nhớ trong": "256GB",
-          "Camera": "Chính 200MP & Phụ 12MP, 10MP, 50MP"
-        }
+          Camera: "Chính 200MP & Phụ 12MP, 10MP, 50MP",
+        },
       },
       {
         name: "MacBook Pro M3 14 inch",
@@ -220,13 +228,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Laptop",
         image: "../image/MBP14M3.jpg",
         tags: ["laptop", "apple"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Màn hình": "14.2 inch, Liquid Retina XDR",
-          "Chip": "Apple M3 Pro",
-          "RAM": "18GB",
+          Chip: "Apple M3 Pro",
+          RAM: "18GB",
           "Ổ cứng": "512GB SSD",
-          "GPU": "14-core GPU"
-        }
+          GPU: "14-core GPU",
+        },
       },
       {
         name: "Dell XPS 13",
@@ -235,13 +244,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Laptop",
         image: "../image/DellXPS13.jpg",
         tags: ["laptop", "dell"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Màn hình": "13.4 inch, FHD+ InfinityEdge",
-          "CPU": "Intel Core Ultra 7 155H",
-          "RAM": "16GB LPDDR5x",
+          CPU: "Intel Core Ultra 7 155H",
+          RAM: "16GB LPDDR5x",
           "Ổ cứng": "512GB SSD",
-          "Đồ họa": "Intel Arc Graphics"
-        }
+          "Đồ họa": "Intel Arc Graphics",
+        },
       },
       {
         name: "iPad Pro 12.9 inch M2",
@@ -250,13 +260,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Máy tính bảng",
         image: "../image/iPadProM2.jpg",
         tags: ["máy tính bảng", "apple"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Màn hình": "12.9 inch, Liquid Retina XDR",
-          "Chip": "Apple M2",
-          "RAM": "8GB",
+          Chip: "Apple M2",
+          RAM: "8GB",
           "Bộ nhớ trong": "128GB",
-          "Kết nối": "Wi-Fi 6E"
-        }
+          "Kết nối": "Wi-Fi 6E",
+        },
       },
       {
         name: "AirPods Pro 2",
@@ -265,12 +276,13 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Phụ kiện",
         image: "../image/AirPodsPro2.jpg",
         tags: ["phụ kiện", "âm thanh", "apple"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Tính năng": "Chống ồn chủ động (ANC)",
-          "Chip": "Apple H2",
+          Chip: "Apple H2",
           "Thời lượng pin": "Tới 6 giờ (tai nghe), 30 giờ (hộp sạc)",
-          "Sạc": "MagSafe, USB-C"
-        }
+          Sạc: "MagSafe, USB-C",
+        },
       },
       {
         name: "Sony WH-1000XM5",
@@ -279,12 +291,13 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Phụ kiện",
         image: "../image/SonyWH1000XM5.jpg",
         tags: ["phụ kiện", "âm thanh", "sony"],
-        details: { // THÊM DETAILS
-          "Loại": "Tai nghe Over-ear",
+        details: {
+          // THÊM DETAILS
+          Loại: "Tai nghe Over-ear",
           "Tính năng": "Chống ồn chủ động (ANC) hàng đầu",
-          "Driver": "30mm",
-          "Thời lượng pin": "Tới 30 giờ (bật ANC)"
-        }
+          Driver: "30mm",
+          "Thời lượng pin": "Tới 30 giờ (bật ANC)",
+        },
       },
       {
         name: "Apple Watch Series 9",
@@ -293,13 +306,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Đồng hồ thông minh",
         image: "../image/AppleWatchS9.jpg",
         tags: ["đồng hồ thông minh", "apple"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Kích cỡ": "45mm",
           "Màn hình": "Always-On Retina",
-          "Chip": "Apple S9 SiP",
+          Chip: "Apple S9 SiP",
           "Tính năng": "Double Tap, ECG, SpO2",
-          "Chống nước": "50m"
-        }
+          "Chống nước": "50m",
+        },
       },
       {
         name: "Samsung Galaxy Watch 6",
@@ -308,13 +322,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Đồng hồ thông minh",
         image: "../image/SamsungGW6.jpg",
         tags: ["đồng hồ thông minh", "samsung"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Kích cỡ": "44mm",
           "Màn hình": "Super AMOLED",
           "Hệ điều hành": "Wear OS 4",
           "Tính năng": "Đo thành phần cơ thể, ECG, Huyết áp",
-          "Chất liệu": "Armor Aluminum"
-        }
+          "Chất liệu": "Armor Aluminum",
+        },
       },
       {
         name: "Bàn phím cơ Keychron K2",
@@ -323,13 +338,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Phụ kiện",
         image: "../image/KeychronK2.jpg",
         tags: ["phụ kiện", "keychron"],
-        details: { // THÊM DETAILS
-          "Layout": "75%",
-          "Switch": "Gateron Brown",
+        details: {
+          // THÊM DETAILS
+          Layout: "75%",
+          Switch: "Gateron Brown",
           "Kết nối": "Bluetooth 5.1, USB-C",
           "Đèn nền": "RGB",
-          "Tương thích": "Mac & Windows"
-        }
+          "Tương thích": "Mac & Windows",
+        },
       },
       {
         name: "Chuột Logitech MX Master 3S",
@@ -338,12 +354,13 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Phụ kiện",
         image: "../image/LogitechMXMaster3S.jpg",
         tags: ["phụ kiện", "logitech"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Cảm biến": "Darkfield 8000 DPI",
           "Nút cuộn": "MagSpeed",
           "Kết nối": "Logi Bolt, Bluetooth",
-          "Tính năng": "Click yên tĩnh, Sạc nhanh USB-C"
-        }
+          "Tính năng": "Click yên tĩnh, Sạc nhanh USB-C",
+        },
       },
       {
         name: "Màn hình LG UltraGear 27 inch",
@@ -352,13 +369,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Màn hình",
         image: "../image/LGUltraGear27.jpg",
         tags: ["màn hình", "lg"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Kích thước": "27 inch",
           "Độ phân giải": "QHD (2560 x 1440)",
           "Tấm nền": "Nano IPS",
           "Tần số quét": "165Hz",
-          "Phản hồi": "1ms (GtG)"
-        }
+          "Phản hồi": "1ms (GtG)",
+        },
       },
       {
         name: "Webcam Logitech C920",
@@ -367,12 +385,13 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Phụ kiện",
         image: "../image/LogitechC920.jpg",
         tags: ["phụ kiện", "logitech"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Độ phân giải": "Full HD 1080p / 30fps",
           "Góc nhìn": "78°",
           "Tính năng": "Tự động lấy nét, Mic kép",
-          "Kết nối": "USB-A"
-        }
+          "Kết nối": "USB-A",
+        },
       },
       {
         name: "SSD Samsung 990 PRO 1TB",
@@ -381,13 +400,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Linh kiện",
         image: "../image/Samsung990PRO1TB.jpg",
         tags: ["linh kiện", "samsung"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Dung lượng": "1TB",
-          "Chuẩn": "NVMe PCIe Gen 4.0",
+          Chuẩn: "NVMe PCIe Gen 4.0",
           "Tốc độ đọc": "~7,450 MB/s",
           "Tốc độ ghi": "~6,900 MB/s",
-          "Form Factor": "M.2 2280"
-        }
+          "Form Factor": "M.2 2280",
+        },
       },
       {
         name: "RAM Corsair Vengeance 32GB",
@@ -396,13 +416,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Linh kiện",
         image: "../image/CorsairVengeance32GB.jpg",
         tags: ["linh kiện", "corsair"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Dung lượng": "32GB (2 x 16GB)",
-          "Loại": "DDR5",
+          Loại: "DDR5",
           "Tốc độ": "6000MHz",
-          "Đèn": "RGB",
-          "Tản nhiệt": "Nhôm"
-        }
+          Đèn: "RGB",
+          "Tản nhiệt": "Nhôm",
+        },
       },
       {
         name: "Tai nghe Gaming Razer BlackShark V2",
@@ -411,12 +432,13 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Phụ kiện",
         image: "../image/RazerBlackSharkV2.jpg",
         tags: ["phụ kiện", "âm thanh", "razer"],
-        details: { // THÊM DETAILS
-          "Driver": "Razer TriForce Titanium 50mm",
+        details: {
+          // THÊM DETAILS
+          Driver: "Razer TriForce Titanium 50mm",
           "Âm thanh": "THX Spatial Audio",
-          "Mic": "Razer HyperClear Cardioid",
-          "Kết nối": "Jack 3.5mm, USB Sound Card"
-        }
+          Mic: "Razer HyperClear Cardioid",
+          "Kết nối": "Jack 3.5mm, USB Sound Card",
+        },
       },
       {
         name: "Sạc dự phòng Anker 20000mAh",
@@ -425,12 +447,13 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Phụ kiện",
         image: "../image/Anker20000mAh.jpg",
         tags: ["phụ kiện", "anker"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Dung lượng": "20,000 mAh",
           "Công suất": "20W",
           "Cổng ra": "1x USB-C, 1x USB-A",
-          "Công nghệ": "PowerIQ 3.0, Power Delivery (PD)"
-        }
+          "Công nghệ": "PowerIQ 3.0, Power Delivery (PD)",
+        },
       },
       {
         name: "Ốp lưng iPhone 15 Pro",
@@ -439,11 +462,12 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Phụ kiện",
         image: "../image/OpLungIP15Pro.jpg",
         tags: ["phụ kiện", "apple"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Chất liệu": "Silicone",
           "Tương thích": "iPhone 15 Pro",
-          "Tính năng": "Hỗ trợ MagSafe"
-        }
+          "Tính năng": "Hỗ trợ MagSafe",
+        },
       },
       {
         name: "Cáp sạc USB-C to Lightning",
@@ -452,12 +476,13 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Phụ kiện",
         image: "../image/CableUSBCtoLightning.jpg",
         tags: ["phụ kiện", "apple"],
-        details: { // THÊM DETAILS
-          "Loại": "USB-C to Lightning",
+        details: {
+          // THÊM DETAILS
+          Loại: "USB-C to Lightning",
           "Độ dài": "1m",
-          "Hãng": "Apple",
-          "Tính năng": "Sạc nhanh (PD)"
-        }
+          Hãng: "Apple",
+          "Tính năng": "Sạc nhanh (PD)",
+        },
       },
       {
         name: "Router WiFi 6 TP-Link Archer AX73",
@@ -466,12 +491,13 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Mạng & Kết nối",
         image: "../image/TPLinkArcherAX73.jpg",
         tags: ["mạng & kết nối", "tp-link"],
-        details: { // THÊM DETAILS
-          "Chuẩn": "Wi-Fi 6 (802.11ax)",
+        details: {
+          // THÊM DETAILS
+          Chuẩn: "Wi-Fi 6 (802.11ax)",
           "Tốc độ": "AX5400 (5GHz: 4804 Mbps, 2.4GHz: 574 Mbps)",
-          "Anten": "6 anten",
-          "Tính năng": "OneMesh, HomeShield"
-        }
+          Anten: "6 anten",
+          "Tính năng": "OneMesh, HomeShield",
+        },
       },
       {
         name: "Loa Bluetooth JBL Flip 6",
@@ -480,12 +506,13 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Âm thanh",
         image: "../image/JBLFlip6.jpg",
         tags: ["âm thanh", "jbl"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Công suất": "20W RMS (woofer) + 10W RMS (tweeter)",
           "Chống nước": "IP67",
           "Thời lượng pin": "12 giờ",
-          "Tính năng": "PartyBoost"
-        }
+          "Tính năng": "PartyBoost",
+        },
       },
       {
         name: "Gimbal DJI OM 6",
@@ -494,12 +521,13 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Phụ kiện",
         image: "../image/DJIOM6.jpg",
         tags: ["phụ kiện", "dji"],
-        details: { // THÊM DETAILS
-          "Loại": "Chống rung 3 trục",
+        details: {
+          // THÊM DETAILS
+          Loại: "Chống rung 3 trục",
           "Tính năng": "ActiveTrack 6.0, Quick Launch",
-          "Pin": "6.4 giờ",
-          "Trọng lượng": "309g"
-        }
+          Pin: "6.4 giờ",
+          "Trọng lượng": "309g",
+        },
       },
       {
         name: "Máy tính bảng Samsung Tab S9",
@@ -508,13 +536,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Máy tính bảng",
         image: "../image/SamsungTabS9.jpg",
         tags: ["máy tính bảng", "samsung"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Màn hình": "11 inch, Dynamic AMOLED 2X",
-          "Chip": "Snapdragon 8 Gen 2 for Galaxy",
-          "RAM": "8GB",
+          Chip: "Snapdragon 8 Gen 2 for Galaxy",
+          RAM: "8GB",
           "Bộ nhớ trong": "128GB",
-          "Bút": "S Pen đi kèm (chống nước IP68)"
-        }
+          Bút: "S Pen đi kèm (chống nước IP68)",
+        },
       },
       {
         name: "Ổ cứng di động WD My Passport 2TB",
@@ -523,12 +552,13 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Linh kiện",
         image: "../image/WDMyPassport2TB.jpg",
         tags: ["linh kiện", "wd"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Dung lượng": "2TB",
           "Kết nối": "USB 3.2 Gen 1",
-          "Loại": "HDD",
-          "Bảo mật": "Mã hóa AES 256-bit"
-        }
+          Loại: "HDD",
+          "Bảo mật": "Mã hóa AES 256-bit",
+        },
       },
       {
         name: "Xiaomi Redmi Note 13 Pro",
@@ -537,13 +567,14 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Điện thoại",
         image: "../image/RedmiNote13Pro.jpg",
         tags: ["điện thoại", "xiaomi"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Màn hình": "6.67 inch, AMOLED, 120Hz",
-          "Chip": "Helio G99-Ultra",
-          "RAM": "8GB",
+          Chip: "Helio G99-Ultra",
+          RAM: "8GB",
           "Bộ nhớ trong": "256GB",
-          "Camera": "Chính 200MP"
-        }
+          Camera: "Chính 200MP",
+        },
       },
       {
         name: "Kính cường lực iPhone 15",
@@ -552,11 +583,12 @@ document.addEventListener("DOMContentLoaded", () => {
         category: "Phụ kiện",
         image: "../image/KinhCuongLucIP15.jpg",
         tags: ["phụ kiện", "apple"],
-        details: { // THÊM DETAILS
+        details: {
+          // THÊM DETAILS
           "Tương thích": "iPhone 15",
           "Độ cứng": "9H",
-          "Tính năng": "Chống vân tay, Viền 2.5D"
-        }
+          "Tính năng": "Chống vân tay, Viền 2.5D",
+        },
       },
     ];
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
@@ -567,36 +599,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ----- Invoices -----
   let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
-  
+
   if (invoices.length === 0) {
     invoices = [
-        // Mỗi {} là một hóa đơn của khách
-        {
-            id: 1736784100001,
-            date: "12/11/2025, 10:05:21",
-            user: "user1", // Tên người dùng đã mua
-            address: "123 Nguyễn Huệ, Quận 1, TP.HCM",
-            items: [ // Danh sách các món hàng trong hóa đơn
-                { name: "iPhone 15 Pro Max", price: 29990000, quantity: 1 }
-            ],
-            total: 29990000
-        },
-        {
-            id: 1736784200002,
-            date: "12/11/2025, 15:45:10",
-            user: "nguyenvana",
-            address: "456 Lê Lợi, Quận 3, TP.HCM",
-            items: [
-                { name: "AirPods Pro 2", price: 5990000, quantity: 1 },
-                { name: "Ốp lưng iPhone 15 Pro", price: 490000, quantity: 1 }
-            ],
-            total: 6480000
-        }
+      // Mỗi {} là một hóa đơn của khách
+      {
+        id: 1736784100001,
+        date: "12/11/2025, 10:05:21",
+        user: "user1", // Tên người dùng đã mua
+        address: "123 Nguyễn Huệ, Quận 1, TP.HCM",
+        items: [
+          // Danh sách các món hàng trong hóa đơn
+          { name: "iPhone 15 Pro Max", price: 29990000, quantity: 1 },
+        ],
+        total: 29990000,
+      },
+      {
+        id: 1736784200002,
+        date: "12/11/2025, 15:45:10",
+        user: "nguyenvana",
+        address: "456 Lê Lợi, Quận 3, TP.HCM",
+        items: [
+          { name: "AirPods Pro 2", price: 5990000, quantity: 1 },
+          { name: "Ốp lưng iPhone 15 Pro", price: 490000, quantity: 1 },
+        ],
+        total: 6480000,
+      },
     ];
     // Lưu dữ liệu mẫu này vào "sổ tay" localStorage
     localStorage.setItem("invoices", JSON.stringify(invoices));
   }
-  
+
   // ----- Import Receipts (Phiếu Nhập Hàng) -----
   let importReceipts = JSON.parse(localStorage.getItem("importReceipts")) || [];
 
@@ -604,84 +637,265 @@ document.addEventListener("DOMContentLoaded", () => {
     importReceipts = [
       // Mỗi {} là một phiếu nhập hàng
       {
-        id: "PN1736784000001", date: "10/11/2025, 08:30:00", productName: "iPhone 15 Pro Max", quantity: 50, price: 25000000, category: "Điện thoại", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000001",
+        date: "10/11/2025, 08:30:00",
+        productName: "iPhone 15 Pro Max",
+        quantity: 50,
+        price: 25000000,
+        category: "Điện thoại",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000002", date: "10/11/2025, 08:32:15", productName: "Samsung Galaxy S24 Ultra", quantity: 50, price: 23000000, category: "Điện thoại", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000002",
+        date: "10/11/2025, 08:32:15",
+        productName: "Samsung Galaxy S24 Ultra",
+        quantity: 50,
+        price: 23000000,
+        category: "Điện thoại",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000003", date: "11/11/2025, 14:00:00", productName: "MacBook Pro M3 14 inch", quantity: 20, price: 38000000, category: "Laptop", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000003",
+        date: "11/11/2025, 14:00:00",
+        productName: "MacBook Pro M3 14 inch",
+        quantity: 20,
+        price: 38000000,
+        category: "Laptop",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000004", date: "11/11/2025, 14:05:00", productName: "Dell XPS 13", quantity: 30, price: 28000000, category: "Laptop", importedBy: "Admin", status: "Chưa hoàn thành"
-      
+        id: "PN1736784000004",
+        date: "11/11/2025, 14:05:00",
+        productName: "Dell XPS 13",
+        quantity: 30,
+        price: 28000000,
+        category: "Laptop",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000005", date: "11/11/2025, 14:10:00", productName: "iPad Pro 12.9 inch M2", quantity: 25, price: 22000000, category: "Máy tính bảng", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000005",
+        date: "11/11/2025, 14:10:00",
+        productName: "iPad Pro 12.9 inch M2",
+        quantity: 25,
+        price: 22000000,
+        category: "Máy tính bảng",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000006", date: "11/11/2025, 14:15:00", productName: "AirPods Pro 2", quantity: 100, price: 4500000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000006",
+        date: "11/11/2025, 14:15:00",
+        productName: "AirPods Pro 2",
+        quantity: 100,
+        price: 4500000,
+        category: "Phụ kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000007", date: "11/11/2025, 14:20:00", productName: "Sony WH-1000XM5", quantity: 40, price: 7000000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000007",
+        date: "11/11/2025, 14:20:00",
+        productName: "Sony WH-1000XM5",
+        quantity: 40,
+        price: 7000000,
+        category: "Phụ kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000008", date: "12/11/2025, 09:00:00", productName: "Apple Watch Series 9", quantity: 50, price: 9000000, category: "Đồng hồ thông minh", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000008",
+        date: "12/11/2025, 09:00:00",
+        productName: "Apple Watch Series 9",
+        quantity: 50,
+        price: 9000000,
+        category: "Đồng hồ thông minh",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000009", date: "12/11/2025, 09:05:00", productName: "Samsung Galaxy Watch 6", quantity: 50, price: 6000000, category: "Đồng hồ thông minh", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000009",
+        date: "12/11/2025, 09:05:00",
+        productName: "Samsung Galaxy Watch 6",
+        quantity: 50,
+        price: 6000000,
+        category: "Đồng hồ thông minh",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000010", date: "12/11/2025, 09:10:00", productName: "Bàn phím cơ Keychron K2", quantity: 80, price: 2000000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000010",
+        date: "12/11/2025, 09:10:00",
+        productName: "Bàn phím cơ Keychron K2",
+        quantity: 80,
+        price: 2000000,
+        category: "Phụ kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000011", date: "12/11/2025, 09:15:00", productName: "Chuột Logitech MX Master 3S", quantity: 100, price: 2200000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000011",
+        date: "12/11/2025, 09:15:00",
+        productName: "Chuột Logitech MX Master 3S",
+        quantity: 100,
+        price: 2200000,
+        category: "Phụ kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000012", date: "12/11/2025, 09:20:00", productName: "Màn hình LG UltraGear 27 inch", quantity: 30, price: 7500000, category: "Màn hình", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000012",
+        date: "12/11/2025, 09:20:00",
+        productName: "Màn hình LG UltraGear 27 inch",
+        quantity: 30,
+        price: 7500000,
+        category: "Màn hình",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000013", date: "12/11/2025, 09:25:00", productName: "Webcam Logitech C920", quantity: 60, price: 1500000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000013",
+        date: "12/11/2025, 09:25:00",
+        productName: "Webcam Logitech C920",
+        quantity: 60,
+        price: 1500000,
+        category: "Phụ kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000014", date: "12/11/2025, 09:30:00", productName: "SSD Samsung 990 PRO 1TB", quantity: 50, price: 2800000, category: "Linh kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000014",
+        date: "12/11/2025, 09:30:00",
+        productName: "SSD Samsung 990 PRO 1TB",
+        quantity: 50,
+        price: 2800000,
+        category: "Linh kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000015", date: "12/11/2025, 09:35:00", productName: "RAM Corsair Vengeance 32GB", quantity: 40, price: 3500000, category: "Linh kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000015",
+        date: "12/11/2025, 09:35:00",
+        productName: "RAM Corsair Vengeance 32GB",
+        quantity: 40,
+        price: 3500000,
+        category: "Linh kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000016", date: "12/11/2025, 09:40:00", productName: "Tai nghe Gaming Razer BlackShark V2", quantity: 30, price: 2200000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000016",
+        date: "12/11/2025, 09:40:00",
+        productName: "Tai nghe Gaming Razer BlackShark V2",
+        quantity: 30,
+        price: 2200000,
+        category: "Phụ kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000017", date: "12/11/2025, 09:45:00", productName: "Sạc dự phòng Anker 20000mAh", quantity: 100, price: 700000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000017",
+        date: "12/11/2025, 09:45:00",
+        productName: "Sạc dự phòng Anker 20000mAh",
+        quantity: 100,
+        price: 700000,
+        category: "Phụ kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000018", date: "12/11/2025, 09:50:00", productName: "Ốp lưng iPhone 15 Pro", quantity: 200, price: 250000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000018",
+        date: "12/11/2025, 09:50:00",
+        productName: "Ốp lưng iPhone 15 Pro",
+        quantity: 200,
+        price: 250000,
+        category: "Phụ kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000019", date: "12/11/2025, 09:55:00", productName: "Cáp sạc USB-C to Lightning", quantity: 300, price: 150000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000019",
+        date: "12/11/2025, 09:55:00",
+        productName: "Cáp sạc USB-C to Lightning",
+        quantity: 300,
+        price: 150000,
+        category: "Phụ kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000020", date: "13/11/2025, 10:00:00", productName: "Router WiFi 6 TP-Link Archer AX73", quantity: 30, price: 2000000, category: "Mạng & Kết nối", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000020",
+        date: "13/11/2025, 10:00:00",
+        productName: "Router WiFi 6 TP-Link Archer AX73",
+        quantity: 30,
+        price: 2000000,
+        category: "Mạng & Kết nối",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000021", date: "13/11/2025, 10:05:00", productName: "Loa Bluetooth JBL Flip 6", quantity: 40, price: 2500000, category: "Âm thanh", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000021",
+        date: "13/11/2025, 10:05:00",
+        productName: "Loa Bluetooth JBL Flip 6",
+        quantity: 40,
+        price: 2500000,
+        category: "Âm thanh",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000022", date: "13/11/2025, 10:10:00", productName: "Gimbal DJI OM 6", quantity: 50, price: 3200000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000022",
+        date: "13/11/2025, 10:10:00",
+        productName: "Gimbal DJI OM 6",
+        quantity: 50,
+        price: 3200000,
+        category: "Phụ kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000023", date: "13/11/2025, 10:15:00", productName: "Máy tính bảng Samsung Tab S9", quantity: 20, price: 16000000, category: "Máy tính bảng", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000023",
+        date: "13/11/2025, 10:15:00",
+        productName: "Máy tính bảng Samsung Tab S9",
+        quantity: 20,
+        price: 16000000,
+        category: "Máy tính bảng",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000024", date: "13/11/2025, 10:20:00", productName: "Ổ cứng di động WD My Passport 2TB", quantity: 50, price: 1500000, category: "Linh kiện", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000024",
+        date: "13/11/2025, 10:20:00",
+        productName: "Ổ cứng di động WD My Passport 2TB",
+        quantity: 50,
+        price: 1500000,
+        category: "Linh kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000025", date: "13/11/2025, 10:25:00", productName: "Xiaomi Redmi Note 13 Pro", quantity: 30, price: 6500000, category: "Điện thoại", importedBy: "Admin", status: "Chưa hoàn thành"
+        id: "PN1736784000025",
+        date: "13/11/2025, 10:25:00",
+        productName: "Xiaomi Redmi Note 13 Pro",
+        quantity: 30,
+        price: 6500000,
+        category: "Điện thoại",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
       },
       {
-        id: "PN1736784000026", date: "13/11/2025, 10:30:00", productName: "Kính cường lực iPhone 15", quantity: 150, price: 100000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
-      }
+        id: "PN1736784000026",
+        date: "13/11/2025, 10:30:00",
+        productName: "Kính cường lực iPhone 15",
+        quantity: 150,
+        price: 100000,
+        category: "Phụ kiện",
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
+      },
     ];
     // Lưu dữ liệu mẫu này vào "sổ tay" localStorage
     localStorage.setItem("importReceipts", JSON.stringify(importReceipts));
@@ -796,7 +1010,7 @@ document.addEventListener("DOMContentLoaded", () => {
       wrapper.style.animation = `productSlideIn 0.4s ease-out ${
         pageIndex * 0.05
       }s both`;
-      
+
       // === CẬP NHẬT: THÊM ONCLICK CHO THẺ SẢN PHẨM ===
       wrapper.onclick = () => showProductDetails(actualIndex);
       // ===============================================
@@ -865,7 +1079,7 @@ document.addEventListener("DOMContentLoaded", () => {
       buyBtn.className = "buy-btn";
       buyBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Mua ngay';
       buyBtn.disabled = product.quantity <= 0;
-      
+
       // === CẬP NHẬT: Thêm e.stopPropagation() ===
       buyBtn.onclick = (e) => {
         e.stopPropagation(); // Ngăn sự kiện click của thẻ cha (wrapper)
@@ -877,7 +1091,7 @@ document.addEventListener("DOMContentLoaded", () => {
       addCartBtn.innerHTML =
         '<i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ';
       addCartBtn.disabled = product.quantity <= 0;
-      
+
       // === CẬP NHẬT: Thêm e.stopPropagation() ===
       addCartBtn.onclick = (e) => {
         e.stopPropagation(); // Ngăn sự kiện click của thẻ cha (wrapper)
@@ -1343,7 +1557,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (name.toLowerCase().includes("xiaomi")) newTags.push("xiaomi");
       if (name.toLowerCase().includes("dell")) newTags.push("dell");
       // ... thêm các hãng khác ...
-      
+
       // Tự động thêm details (đơn giản, có thể làm phức tạp hơn)
       const newDetails = {
         "Phân loại": category,
@@ -1416,14 +1630,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const name = (product.name || "").toLowerCase();
       const cat = (product.category || "").toLowerCase();
       const price = parsePrice(product.value);
-      
+
       // Lấy mảng tags của sản phẩm, đảm bảo là chữ thường
-      const productTags = (product.tags || []).map(t => String(t).toLowerCase());
+      const productTags = (product.tags || []).map((t) =>
+        String(t).toLowerCase()
+      );
 
       // Kiểm tra danh mục/hãng:
       // 1. Nếu categoryFilter là rỗng (""), thì luôn khớp
       // 2. Nếu không, kiểm tra xem mảng productTags có chứa categoryFilter không
-      const categoryMatch = !categoryFilter || productTags.includes(categoryFilter);
+      const categoryMatch =
+        !categoryFilter || productTags.includes(categoryFilter);
 
       return (
         name.includes(nameFilter) &&
@@ -1484,13 +1701,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function hasUserCompleteProfile(username) {
     const currentUser = username || localStorage.getItem("currentUser");
     if (!currentUser) return false;
-    
-    const user = users.find(u => u.username === currentUser);
+
+    const user = users.find((u) => u.username === currentUser);
     if (!user) return false;
-    
+
     const hasPhone = user.phone && String(user.phone).trim() !== "";
     const hasAddress = user.address && String(user.address).trim() !== "";
-    
+
     return hasPhone && hasAddress;
   }
 
@@ -1499,26 +1716,30 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!");
       return;
     }
-    
+
     // Kiểm tra xem tài khoản có đủ thông tin (số điện thoại và địa chỉ)
     if (!hasUserCompleteProfile()) {
-      alert("⚠️ Vui lòng cập nhật số điện thoại/địa chỉ trong hồ sơ trước khi mua hàng!");
+      alert(
+        "⚠️ Vui lòng cập nhật số điện thoại/địa chỉ trong hồ sơ trước khi mua hàng!"
+      );
       return;
     }
-    
+
     // Tìm sản phẩm gốc để kiểm tra số lượng
-    const product = products.find(p => p.name === name);
+    const product = products.find((p) => p.name === name);
     if (!product) {
       alert("Lỗi: Không tìm thấy sản phẩm.");
       return;
     }
-    
+
     const existing = cart.find((c) => c.name === name);
-    
+
     // Kiểm tra số lượng tồn kho
     const currentCartQty = existing ? existing.quantity : 0;
     if (currentCartQty + 1 > product.quantity) {
-      alert(`Xin lỗi, bạn chỉ có thể mua tối đa ${product.quantity} sản phẩm này.`);
+      alert(
+        `Xin lỗi, bạn chỉ có thể mua tối đa ${product.quantity} sản phẩm này.`
+      );
       return;
     }
 
@@ -1537,13 +1758,15 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Bạn cần đăng nhập để mua hàng!");
       return;
     }
-    
+
     // Kiểm tra xem tài khoản có đủ thông tin (số điện thoại và địa chỉ)
     if (!hasUserCompleteProfile()) {
-      alert("⚠️ Vui lòng cập nhật số điện thoại/địa chỉ trong hồ sơ trước khi mua hàng!");
+      alert(
+        "⚠️ Vui lòng cập nhật số điện thoại/địa chỉ trong hồ sơ trước khi mua hàng!"
+      );
       return;
     }
-    
+
     const product = currentProductList[index]; // Lấy từ currentProductList
     if (!product) return;
     if (product.quantity <= 0) {
@@ -1588,7 +1811,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Hiển thị thông tin người nhận (tên & điện thoại) nếu có
     try {
       const currentUser =
-        localStorage.getItem("currentUser") || displayedUsername?.innerText || "Guest";
+        localStorage.getItem("currentUser") ||
+        displayedUsername?.innerText ||
+        "Guest";
       let nameToShow = currentUser || "Guest";
       let phoneToShow = "(Chưa có)";
       const u = users.find((x) => x.username === currentUser);
@@ -1596,12 +1821,14 @@ document.addEventListener("DOMContentLoaded", () => {
         nameToShow = u.username || nameToShow;
         phoneToShow = u.phone || phoneToShow;
       }
-      if (checkoutCustomerNameEl) checkoutCustomerNameEl.textContent = nameToShow;
-      if (checkoutCustomerPhoneEl) checkoutCustomerPhoneEl.textContent = phoneToShow;
+      if (checkoutCustomerNameEl)
+        checkoutCustomerNameEl.textContent = nameToShow;
+      if (checkoutCustomerPhoneEl)
+        checkoutCustomerPhoneEl.textContent = phoneToShow;
     } catch (e) {
       console.error("Không thể hiển thị thông tin người nhận:", e);
     }
-    
+
     // Update địa chỉ đã lưu
     try {
       const currentUser = localStorage.getItem("currentUser");
@@ -1674,10 +1901,10 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (e) {
         console.error("Lỗi khi lưu địa chỉ người dùng:", e);
       }
-      
+
       // CẬP NHẬT TỒN KHO
       let isFromCart = cart.length > 0 && checkoutList.length === cart.length;
-      
+
       checkoutList.forEach((it) => {
         const p = products.find((x) => x.name === it.name);
         const purchaseQty = it.purchaseQuantity || it.quantity || 1;
@@ -1700,9 +1927,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Xóa giỏ hàng sau khi thanh toán (nếu mua từ giỏ hàng)
       if (isFromCart) {
-         cart = [];
-         localStorage.setItem("cart", JSON.stringify(cart));
-         renderCart();
+        cart = [];
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
       }
     });
   }
@@ -1731,25 +1958,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (loginForm) {
     loginForm.onsubmit = (e) => {
       e.preventDefault();
-      const usernameInput = document.getElementById("username").value;
-      const passwordInput = document.getElementById("password").value;
+      const usernameInput = document.getElementById("username").value.trim();
+      const passwordInput = document.getElementById("password").value.trim();
 
-      // Kiểm tra admin
-      if (usernameInput === "admin1" && passwordInput === "admin1") {
-        if (loginPopup) loginPopup.style.display = "none";
-        if (loginBtn) loginBtn.style.display = "none";
-        if (openProductFormBtn) openProductFormBtn.style.display = "block";
-        if (openRegister) openRegister.style.display = "none";
-        if (usernameDisplay) usernameDisplay.style.display = "flex";
-        if (displayedUsername) displayedUsername.innerText = "Admin";
-        if (notificationBadge) notificationBadge.style.display = 'block';
-        localStorage.setItem("isAdmin", "true");
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("currentUser", "admin1");
-        alert("Chào mừng Admin!");
-        renderProducts();
-        return;
-      }
+      const users = JSON.parse(localStorage.getItem("userAccounts")) || [];
 
       // Kiểm tra user thông thường
       const foundUser = users.find(
@@ -1757,18 +1969,29 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       if (foundUser) {
+        // 🧩 Kiểm tra trạng thái khóa tài khoản
+        if (foundUser.locked) {
+          alert(
+            "🔒 Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên!"
+          );
+          return; // Dừng toàn bộ quá trình đăng nhập
+        }
+
+        // ✅ Nếu không bị khóa, tiến hành đăng nhập bình thường
         if (loginPopup) loginPopup.style.display = "none";
         if (loginBtn) loginBtn.style.display = "none";
         if (usernameDisplay) usernameDisplay.style.display = "flex";
         if (displayedUsername) displayedUsername.innerText = usernameInput;
-        if (notificationBadge) notificationBadge.style.display = 'block';
-        localStorage.setItem("isLoggedIn", "true");
-        if (openRegister) openRegister.style.display = "none";
+        if (notificationBadge) notificationBadge.style.display = "block";
+
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("currentUser", usernameInput);
+
+        if (openRegister) openRegister.style.display = "none";
+
         alert("Đăng nhập thành công!");
       } else {
-        alert("Sai tên đăng nhập hoặc mật khẩu!");
+        alert("❌ Sai tên đăng nhập hoặc mật khẩu!");
       }
     };
   }
@@ -2229,23 +2452,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ----- Notification Popup Logic -----
   if (notificationBtn && notificationPopup) {
-    notificationBtn.addEventListener('click', (event) => {
-        event.preventDefault(); 
-        // BƯỚC KIỂM TRA ĐĂNG NHẬP
-        if (localStorage.getItem("isLoggedIn") === "true") {
-            // Nếu đã đăng nhập, thì hiển thị popup thông báo
-            notificationPopup.style.display = 'flex';
-        } else {
-            // Nếu chưa đăng nhập, thì hiển thị cảnh báo
-            alert("Bạn cần đăng nhập để xem thông báo!");
-            loginPopup.style.display = 'flex'; 
-        }
+    notificationBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      // BƯỚC KIỂM TRA ĐĂNG NHẬP
+      if (localStorage.getItem("isLoggedIn") === "true") {
+        // Nếu đã đăng nhập, thì hiển thị popup thông báo
+        notificationPopup.style.display = "flex";
+      } else {
+        // Nếu chưa đăng nhập, thì hiển thị cảnh báo
+        alert("Bạn cần đăng nhập để xem thông báo!");
+        loginPopup.style.display = "flex";
+      }
     });
   }
   if (closeNotificationPopup && notificationPopup) {
-      closeNotificationPopup.addEventListener('click', () => {
-          notificationPopup.style.display = 'none';
-      });
+    closeNotificationPopup.addEventListener("click", () => {
+      notificationPopup.style.display = "none";
+    });
   }
 
   if (checkoutBtn) {
@@ -2258,22 +2481,26 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Giỏ hàng trống!");
         return;
       }
-      
+
       // Kiểm tra xem tài khoản có đủ thông tin (số điện thoại và địa chỉ)
       if (!hasUserCompleteProfile()) {
-        alert("⚠️ Vui lòng cập nhật số điện thoại/địa chỉ trong hồ sơ trước khi mua hàng!");
+        alert(
+          "⚠️ Vui lòng cập nhật số điện thoại/địa chỉ trong hồ sơ trước khi mua hàng!"
+        );
         return;
       }
-      
+
       // Kiểm tra tồn kho trước khi mở checkout
       for (const item of cart) {
-        const product = products.find(p => p.name === item.name);
+        const product = products.find((p) => p.name === item.name);
         if (!product || item.quantity > product.quantity) {
-          alert(`Sản phẩm "${item.name}" không đủ hàng (Chỉ còn ${product.quantity}). Vui lòng điều chỉnh giỏ hàng.`);
+          alert(
+            `Sản phẩm "${item.name}" không đủ hàng (Chỉ còn ${product.quantity}). Vui lòng điều chỉnh giỏ hàng.`
+          );
           return;
         }
       }
-      
+
       // Chuyển đổi cart items thành format với purchaseQuantity
       checkoutList = cart.map((item) => ({
         name: item.name,
@@ -2285,8 +2512,9 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const currentUser = localStorage.getItem("currentUser");
         const u = users.find((x) => x.username === currentUser);
-        const saved = u && u.address && u.address.trim() ? u.address.trim() : "";
-        
+        const saved =
+          u && u.address && u.address.trim() ? u.address.trim() : "";
+
         if (useSavedAddressRadio && enterNewAddressRadio && checkoutAddressEl) {
           if (saved) {
             useSavedAddressRadio.checked = true;
@@ -2652,7 +2880,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.removeItem("isAdmin");
         localStorage.removeItem("currentUser");
         localStorage.removeItem("cart");
-        if (notificationBadge) notificationBadge.style.display = 'none';
+        if (notificationBadge) notificationBadge.style.display = "none";
         localStorage.removeItem("isLoggedIn");
         window.location.reload();
       });
@@ -2703,13 +2931,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (ev.target === productFormPopup) productFormPopup.style.display = "none";
     if (ev.target === userPopup) userPopup.style.display = "none";
     if (ev.target === checkoutPopup) checkoutPopup.style.display = "none";
-    
+
     // THÊM LOGIC ĐÓNG POPUP CHI TIẾT
     if (ev.target === productDetailPopup) {
       productDetailPopup.style.display = "none";
     }
   });
-  
+
   // THÊM LOGIC CHO NÚT ĐÓNG POPUP CHI TIẾT
   if (closeProductDetailPopup) {
     closeProductDetailPopup.onclick = () => {
@@ -2738,25 +2966,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Khôi phục trạng thái đăng nhập
   function restoreLoginState() {
-     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-     const currentUser = localStorage.getItem("currentUser");
-     const isAdmin = localStorage.getItem("isAdmin") === "true";
-     
-     if(isLoggedIn && currentUser) {
-        if(loginBtn) loginBtn.style.display = "none";
-        if(openRegister) openRegister.style.display = "none";
-        if(usernameDisplay) usernameDisplay.style.display = "flex";
-        if(displayedUsername) displayedUsername.innerText = currentUser;
-        if (notificationBadge) notificationBadge.style.display = 'block';
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    const currentUser = localStorage.getItem("currentUser");
+    const isAdmin = localStorage.getItem("isAdmin") === "true";
 
-        if (isAdmin) {
-             if(openProductFormBtn) openProductFormBtn.style.display = "block";
-        }
-     } else {
+    if (isLoggedIn && currentUser) {
+      if (loginBtn) loginBtn.style.display = "none";
+      if (openRegister) openRegister.style.display = "none";
+      if (usernameDisplay) usernameDisplay.style.display = "flex";
+      if (displayedUsername) displayedUsername.innerText = currentUser;
+      if (notificationBadge) notificationBadge.style.display = "block";
+
+      if (isAdmin) {
+        if (openProductFormBtn) openProductFormBtn.style.display = "block";
+      }
+    } else {
       // Nếu không đăng nhập, đảm bảo huy hiệu bị ẩn
-      if (notificationBadge) notificationBadge.style.display = 'none';
-     }
+      if (notificationBadge) notificationBadge.style.display = "none";
+    }
   }
-  
+
   restoreLoginState();
 });

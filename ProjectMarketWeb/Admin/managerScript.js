@@ -589,7 +589,13 @@ ${
       html += `
         <tr>
           <td>${index + 1}</td>
-          <td>${escapeHtml(user.username || "N/A")}</td>
+          <td>${escapeHtml(user.username || "N/A")} 
+  ${
+    user.locked
+      ? '<span style="color:#e53e3e; font-weight:bold;">(Đã khóa)</span>'
+      : ""
+  }
+</td>
           <td>${escapeHtml(user.phone || "N/A")}</td>
           <td>${escapeHtml(user.address || "Chưa cập nhật")}</td>
           <td><span class="badge badge-success">${
@@ -605,8 +611,9 @@ ${
             <button onclick="editUser(${index})" class="btn-edit">
               <i class="fa-solid fa-pen"></i> Sửa
             </button>
-            <button onclick="deleteUser(${index})" class="btn-delete">
-              <i class="fa-solid fa-trash"></i> Xóa
+            <button onclick="toggleUserLock(${index})" class="btn-lock" 
+              style="background-color: #718096;">
+                <i class="fa-solid fa-lock"></i> Khóa
             </button>
           </td>
         </tr>
@@ -719,12 +726,20 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     alert("Cập nhật thành công!");
   };
 
-  window.deleteUser = function (index) {
-    if (!confirm("Bạn có chắc muốn xóa người dùng này?")) return;
-    users.splice(index, 1);
+  window.toggleUserLock = function (index) {
+    const user = users[index];
+    if (!user) return;
+
+    user.locked = !user.locked; // Đảo trạng thái khóa
     localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+
     renderUserManagement();
-    alert("Đã xóa người dùng!");
+
+    if (user.locked) {
+      alert(`🔒 Người dùng "${user.username}" đã bị khóa.`);
+    } else {
+      alert(`🔓 Người dùng "${user.username}" đã được mở khóa.`);
+    }
   };
   window.refreshUsers = function () {
     users = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -755,7 +770,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     alert("Đã xóa người dùng!");
   };
 
-// === QUẢN LÝ SẢN PHẨM (CẬP NHẬT VỚI CỘT LỢI NHUẬN) ===
+  // === QUẢN LÝ SẢN PHẨM (CẬP NHẬT VỚI CỘT LỢI NHUẬN) ===
   /**
    * Render giao diện Quản lý Sản phẩm.
    * @param {string} nameQuery Chuỗi tìm kiếm tên sản phẩm.
@@ -784,7 +799,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       minPrice = parseInt(parts[0]) || 0;
       maxPrice = parts[1] ? parseInt(parts[1]) : Infinity;
     }
-    
+
     // === CẬP NHẬT renderProductTable (Dùng khi lọc) ===
     function renderProductTable(filteredProducts) {
       const tbody = document.querySelector("#productContent table tbody");
@@ -795,11 +810,11 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
         const originalIndex = products.findIndex(
           (p) => p.name === product.name
         );
-        
+
         // --- LOGIC TÍNH LỢI NHUẬN (CHO BỘ LỌC) ---
         let profit = 0;
         const sellingPrice = product.value;
-        const importPriceStr = findLatestImportPrice(product.name); 
+        const importPriceStr = findLatestImportPrice(product.name);
 
         if (importPriceStr !== "") {
           // Logic 1: Sản phẩm nhập thủ công (có giá nhập)
@@ -810,7 +825,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           profit = sellingPrice * 0.05; // 5% giá bán
         }
         // ----------------------------------------
-        
+
         html += `
         <tr>
           <td>${originalIndex + 1}</td>
@@ -822,7 +837,9 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <td>${escapeHtml(product.name)}</td>
           <td>${formatPrice(product.value)}đ</td>
           
-          <td style="font-weight: 600; color: ${profit < 0 ? '#e53e3e' : '#38a169'};">
+          <td style="font-weight: 600; color: ${
+            profit < 0 ? "#e53e3e" : "#38a169"
+          };">
             ${formatPrice(profit)}đ
           </td>
           
@@ -841,7 +858,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
 
       tbody.innerHTML = html;
     }
-    
+
     const filteredProducts = products.filter((p) => {
       const matchesName =
         lowerCaseNameQuery === "" ||
@@ -960,7 +977,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       // --- LOGIC TÍNH LỢI NHUẬN (CHO RENDER BAN ĐẦU) ---
       let profit = 0;
       const sellingPrice = product.value;
-      const importPriceStr = findLatestImportPrice(product.name); 
+      const importPriceStr = findLatestImportPrice(product.name);
 
       if (importPriceStr !== "") {
         // Logic 1: Sản phẩm nhập thủ công (có giá nhập)
@@ -983,7 +1000,9 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <td>${escapeHtml(product.name)}</td>
           <td>${formatPrice(product.value)}đ</td>
           
-          <td style="font-weight: 600; color: ${profit < 0 ? '#e53e3e' : '#38a169'};">
+          <td style="font-weight: 600; color: ${
+            profit < 0 ? "#e53e3e" : "#38a169"
+          };">
             ${formatPrice(profit)}đ
           </td>
 
@@ -1491,25 +1510,33 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <td><strong>${formatPrice(totalPrice)}đ</strong></td>
           <td>${escapeHtml(receipt.importedBy)}</td>
           <td>
-              ${receipt.status === "Hoàn thành"
-          ? '<span style="color: green; font-weight: 600;">Hoàn thành</span>'
-          : '<span style="color: orange; font-weight: 600;">Chưa hoàn thành</span>'}
+              ${
+                receipt.status === "Hoàn thành"
+                  ? '<span style="color: green; font-weight: 600;">Hoàn thành</span>'
+                  : '<span style="color: orange; font-weight: 600;">Chưa hoàn thành</span>'
+              }
           </td>
           <td>
-            <button onclick="viewImportReceipt('${receipt.id
-        }')" class="btn-view">
+            <button onclick="viewImportReceipt('${
+              receipt.id
+            }')" class="btn-view">
               <i class="fa-solid fa-eye"></i> Xem
             </button>
-            ${receipt.status === "Chưa hoàn thành" ? `
+            ${
+              receipt.status === "Chưa hoàn thành"
+                ? `
             <button onclick="editImportReceipt('${receipt.id}')" class="btn-edit">
               <i class="fa-solid fa-pen"></i> Sửa
             </button>
             <button onclick="markImportReceiptDone('${receipt.id}')" class="btn-done">
               <i class="fa-solid fa-check"></i> Hoàn thành
             </button>
-            ` : ''}
-            <button onclick="deleteImportReceipt('${receipt.id
-        }')" class="btn-delete">
+            `
+                : ""
+            }
+            <button onclick="deleteImportReceipt('${
+              receipt.id
+            }')" class="btn-delete">
               <i class="fa-solid fa-trash"></i> Xóa
             </button>
           </td>
@@ -1541,8 +1568,8 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <i class="fa-solid fa-money-bill-trend-up stat-icon"></i>
           <div>
             <h3>${formatPrice(
-      importReceipts.reduce((sum, r) => sum + r.quantity * r.price, 0)
-    )}đ</h3>
+              importReceipts.reduce((sum, r) => sum + r.quantity * r.price, 0)
+            )}đ</h3>
             <p>Tổng giá trị nhập</p>
           </div>
         </div>
@@ -1712,16 +1739,16 @@ ${receipt.note ? "\nGhi chú: " + receipt.note : ""}
     alert(message);
   };
 
-
   window.editImportReceipt = function (id) {
-    const receipt = importReceipts.find(r => r.id === id);
+    const receipt = importReceipts.find((r) => r.id === id);
     if (!receipt) return alert("Không tìm thấy phiếu nhập!");
 
     const newProductName = prompt("Nhập tên sản phẩm:", receipt.productName);
     if (newProductName === null) return; // nhấn Cancel
 
     const newQuantity = parseInt(prompt("Nhập số lượng:", receipt.quantity));
-    if (isNaN(newQuantity) || newQuantity <= 0) return alert("Số lượng không hợp lệ!");
+    if (isNaN(newQuantity) || newQuantity <= 0)
+      return alert("Số lượng không hợp lệ!");
 
     const newPrice = parseFloat(prompt("Nhập đơn giá:", receipt.price));
     if (isNaN(newPrice) || newPrice <= 0) return alert("Đơn giá không hợp lệ!");
@@ -1738,20 +1765,23 @@ ${receipt.note ? "\nGhi chú: " + receipt.note : ""}
     renderAddInfo();
 
     alert("Cập nhật phiếu nhập thành công!");
-  }
+  };
 
   window.markImportReceiptDone = function (id) {
-    const receipt = importReceipts.find(r => r.id === id);
+    const receipt = importReceipts.find((r) => r.id === id);
     if (!receipt) return alert("Không tìm thấy phiếu nhập!");
 
-    if (confirm("Xác nhận hoàn thành phiếu nhập này? Sau khi hoàn thành sẽ không thể chỉnh sửa.")) {
+    if (
+      confirm(
+        "Xác nhận hoàn thành phiếu nhập này? Sau khi hoàn thành sẽ không thể chỉnh sửa."
+      )
+    ) {
       receipt.status = "Hoàn thành"; // ✅ đổi lại đây
       localStorage.setItem("importReceipts", JSON.stringify(importReceipts));
       renderAddInfo();
       alert("✅ Phiếu nhập đã được đánh dấu hoàn thành!");
     }
   };
-
 
   window.deleteImportReceipt = function (id) {
     if (
