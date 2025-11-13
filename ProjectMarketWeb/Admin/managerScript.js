@@ -70,7 +70,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return Object.values(stats);
   }
-  // === HÀM LẤY DANH MỤC ĐỘC NHẤT (Dùng chung cho Phiếu nhập) ===
+
+  // === TÍNH NĂNG MỚI: HÀM TÍNH TOÁN CHI TIẾT NHẬP/XUẤT/KỆ ===
+  /**
+   * Tính toán chi tiết nhập/xuất/kệ cho một sản phẩm cụ thể.
+   * @param {string} productName Tên sản phẩm.
+   * @returns {{imported: number, sold: number, onShelf: number, available: number}} Chi tiết.
+   */
+  function calculateStockBreakdown(productName) {
+    const key = productName.trim().toLowerCase();
+    let imported = 0;
+    let sold = 0;
+    let onShelf = 0;
+
+    // 1. Tính tổng số lượng nhập vào
+    importReceipts.forEach((receipt) => {
+      if (receipt.productName.trim().toLowerCase() === key) {
+        imported += parseInt(receipt.quantity || 0);
+      }
+    });
+
+    // 2. Tính tổng số lượng đã bán
+    invoices.forEach((invoice) => {
+      invoice.items.forEach((item) => {
+        if (item.name.trim().toLowerCase() === key) {
+          sold += parseInt(item.quantity || 0);
+        }
+      });
+    });
+
+    // 3. Tính tổng số lượng đã đưa lên kệ
+    products.forEach((product) => {
+      if (product.name.trim().toLowerCase() === key) {
+        onShelf += parseInt(product.quantity || 0);
+      }
+    });
+
+    // Tồn kho khả dụng (theo logic của calculateStock: Nhập - Bán - Trên Kệ)
+    const available = imported - sold - onShelf;
+
+    return { imported, sold, onShelf, available };
+  }
+  // ===================================================================
+
+  // === HÀM LẤY DANH MỤC ĐỘC NHẤT (Dùng chung cho Phiếu nhập và Bộ lọc) ===
   function getUniqueCategories() {
     const categories = new Set();
     products.forEach((p) => categories.add(p.category));
@@ -83,6 +126,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return [...new Set(filteredCategories)];
   }
+
+  // === HÀM LẤY CÁC KHOẢNG GIÁ ĐỘC NHẤT (Dùng cho Bộ lọc) ===
+  function getPriceRanges() {
+    const prices = products.map((p) => p.value);
+    const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+    const ranges = [];
+
+    if (maxPrice > 0) {
+      ranges.push({ label: "Dưới 100.000đ", min: 0, max: 100000 });
+      if (maxPrice > 100000)
+        ranges.push({ label: "100.000đ - 500.000đ", min: 100000, max: 500000 });
+      if (maxPrice > 500000)
+        ranges.push({
+          label: "500.000đ - 1.000.000đ",
+          min: 500000,
+          max: 1000000,
+        });
+      if (maxPrice > 1000000)
+        ranges.push({ label: "Trên 1.000.000đ", min: 1000000, max: Infinity });
+    }
+
+    // Chuyển đổi các khoảng giá thành format string "min-max"
+    return ranges.map((range) => ({
+      label: range.label,
+      value: `${range.min}-${range.max === Infinity ? "" : range.max}`,
+    }));
+  }
+
   function findLatestImportPrice(productName) {
     if (!productName) return "";
     for (let i = importReceipts.length - 1; i >= 0; i--) {
@@ -265,20 +336,119 @@ document.addEventListener("DOMContentLoaded", () => {
     return receipt ? receipt.category : "Chưa phân loại";
   }
 
-  // === QUẢN LÝ KHO (GIỮ NGUYÊN) ===
-  window.renderStockManagement = function () {
+  // === QUẢN LÝ KHO (CẬP NHẬT: THÊM TÍNH NĂNG TÌM KIẾM NÂNG CAO) ===
+  /**
+   * Render giao diện Quản lý tồn kho.
+   * @param {string} nameQuery Chuỗi tìm kiếm tên sản phẩm.
+   * @param {string} categoryQuery Chuỗi tìm kiếm danh mục.
+   */
+  window.renderStockManagement = function (nameQuery = "", categoryQuery = "") {
     hideAllContent();
     if (!stockContent) return;
     stockContent.style.display = "block";
 
-    // Bắt đầu logic renderStockManagement
+    const allStock = calculateStock();
+    const uniqueCategories = getUniqueCategories();
+
+    // --- LOGIC LỌC DỮ LIỆU TỒN KHO ---
+    const lowerCaseNameQuery = nameQuery.trim().toLowerCase();
+    const filteredStock = allStock.filter((item) => {
+      const matchesName =
+        lowerCaseNameQuery === "" ||
+        item.productName.trim().toLowerCase().includes(lowerCaseNameQuery);
+      const matchesCategory =
+        categoryQuery === "" || item.category === categoryQuery;
+      return matchesName && matchesCategory;
+    });
+
+    // --- GIAO DIỆN BỘ LỌC ---
+    const categoryOptions = uniqueCategories
+      .map(
+        (cat) =>
+          `<option value="${escapeHtml(cat)}" ${
+            cat === categoryQuery ? "selected" : ""
+          }>${escapeHtml(cat)}</option>`
+      )
+      .join("");
+    function renderStockTable(filteredStock) {
+      const tbody = document.getElementById("stockTableBody");
+      if (!tbody) return;
+
+      let html = "";
+      let idCounter = 1;
+
+      filteredStock
+        .sort((a, b) => b.quantity - a.quantity)
+        .forEach((item) => {
+          if (item.quantity > 0) {
+            const isLowStock = item.quantity <= 10;
+            html += `
+          <tr>
+            <td>${idCounter++}</td>
+            <td>${escapeHtml(item.productName)}</td>
+            <td>${escapeHtml(item.category)}</td>
+            <td><span class="badge ${
+              isLowStock ? "badge-warning" : "badge-success"
+            }">${item.quantity}</span></td>
+            <td><button class="btn-view" onclick="viewStockDetail('${escapeHtml(
+              item.productName
+            )}')"><i class="fa-solid fa-eye"></i> Xem</button></td>
+          </tr>`;
+          }
+        });
+
+      if (!html) {
+        html = `<tr><td colspan="5" class="empty-state">Kho hàng trống hoặc không tìm thấy kết quả.</td></tr>`;
+      }
+
+      tbody.innerHTML = html;
+    }
+    // Hàm global để kích hoạt việc lọc tồn kho
+    window.filterStock = function () {
+      const nameInput = document.getElementById("stockSearchInput").value;
+      const categorySelect = document.getElementById(
+        "stockCategorySelect"
+      ).value;
+
+      const allStock = calculateStock();
+      const lowerCaseNameQuery = nameInput.trim().toLowerCase();
+
+      const filteredStock = allStock.filter((item) => {
+        const matchesName =
+          lowerCaseNameQuery === "" ||
+          item.productName.trim().toLowerCase().includes(lowerCaseNameQuery);
+        const matchesCategory =
+          categorySelect === "" || item.category === categorySelect;
+        return matchesName && matchesCategory;
+      });
+
+      renderStockTable(filteredStock);
+    };
+
     let html = `
         <div class="management-header">
             <h2><i class="fa-solid fa-warehouse"></i> Quản lý tồn kho</h2>
-            <button onclick="window.renderStockManagement()" class="btn-refresh">
-                <i class="fa-solid fa-rotate"></i> Làm mới
-            </button>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button onclick="window.renderStockManagement()" class="btn-refresh">
+                    <i class="fa-solid fa-rotate"></i> Làm mới
+                </button>
+            </div>
         </div>
+        
+        <div class="filter-controls" style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <input type="text" id="stockSearchInput" onkeyup="window.filterStock()" 
+                placeholder="🔍 Tìm kiếm theo tên sản phẩm..." value="${escapeHtml(
+                  nameQuery
+                )}" 
+                style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 300px;">
+                
+            <select id="stockCategorySelect" onchange="window.filterStock()" 
+                style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 200px;">
+                <option value="">-- Tất cả Danh mục --</option>
+                ${categoryOptions}
+            </select>
+        </div>
+        
         <div class="table-container">
             <table class="admin-table">
                 <thead>
@@ -293,10 +463,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 <tbody id="stockTableBody">
     `;
 
-    const allStock = calculateStock();
     let idCounter = 1;
 
-    allStock
+    filteredStock
       .sort((a, b) => b.quantity - a.quantity)
       .forEach((item) => {
         // Chỉ hiển thị sản phẩm có tồn kho lớn hơn 0
@@ -334,13 +503,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     stockContent.innerHTML = html;
 
-    if (!document.getElementById("stockTableBody")?.innerHTML) {
+    if (
+      !document.getElementById("stockTableBody") ||
+      document.getElementById("stockTableBody").children.length === 0
+    ) {
       document.getElementById(
         "stockTableBody"
-      ).innerHTML = `<tr><td colspan="5" class="empty-state">Kho hàng trống.</td></tr>`;
+      ).innerHTML = `<tr><td colspan="5" class="empty-state">Kho hàng trống hoặc không tìm thấy kết quả.</td></tr>`;
     }
   };
 
+  // === CẬP NHẬT window.viewStockDetail ĐỂ HIỂN THỊ CHI TIẾT TỒN KHO ===
   window.viewStockDetail = function (productName) {
     const stockItem = calculateStock().find(
       (item) => item.productName === productName
@@ -351,6 +524,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // === TÍNH NĂNG MỚI: Chi tiết tồn kho (Sử dụng hàm mới) ===
+    const breakdown = calculateStockBreakdown(productName);
+    // ======================================
+
     const message = `
 ┌────────────────────────────
    CHI TIẾT TỒN KHO
@@ -358,7 +535,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 Sản phẩm: ${stockItem.productName}
 Danh mục: ${stockItem.category}
-Số lượng: ${stockItem.quantity}
+
+┌────────────────────────────
+BẢNG KÊ NHẬP/XUẤT & TỒN
+└────────────────────────────┘
+Tổng nhập (từ Phiếu nhập): ${breakdown.imported}
+Tổng bán (từ Hóa đơn):     ${breakdown.sold}
+Đã đưa lên kệ:             ${breakdown.onShelf}
+────────────────────────────
+TỒN KHO KHẢ DỤNG: ${stockItem.quantity}
+(Tổng nhập - Tổng bán - Trên kệ)
 
 ${
   stockItem.quantity <= 10 ? "⚠️ CẢNH BÁO: Tồn kho thấp!" : "✅ Tồn kho ổn định"
@@ -367,6 +553,7 @@ ${
 
     alert(message);
   };
+  // ===================================================================
 
   // === QUẢN LÝ NGƯỜI DÙNG (GIỮ NGUYÊN) ===
   function renderUserManagement() {
@@ -568,24 +755,161 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     alert("Đã xóa người dùng!");
   };
 
-  // === QUẢN LÝ SẢN PHẨM (GIỮ NGUYÊN KHUNG) ===
-  function renderProductManagement() {
+  // === QUẢN LÝ SẢN PHẨM (CẬP NHẬT: THÊM TÍNH NĂNG TÌM KIẾM NÂNG CAO) ===
+  /**
+   * Render giao diện Quản lý Sản phẩm.
+   * @param {string} nameQuery Chuỗi tìm kiếm tên sản phẩm.
+   * @param {string} categoryQuery Chuỗi tìm kiếm danh mục.
+   * @param {string} priceRangeQuery Khoảng giá ('min-max').
+   */
+  function renderProductManagement(
+    nameQuery = "",
+    categoryQuery = "",
+    priceRangeQuery = ""
+  ) {
     hideAllContent();
     if (!productContent) return;
     productContent.style.display = "block";
 
+    const uniqueCategories = getUniqueCategories();
+    const priceRanges = getPriceRanges();
+
+    // --- LOGIC LỌC DỮ LIỆU SẢN PHẨM ---
+    const lowerCaseNameQuery = nameQuery.trim().toLowerCase();
+    let minPrice = 0;
+    let maxPrice = Infinity;
+
+    if (priceRangeQuery) {
+      const parts = priceRangeQuery.split("-");
+      minPrice = parseInt(parts[0]) || 0;
+      maxPrice = parts[1] ? parseInt(parts[1]) : Infinity;
+    }
+    function renderProductTable(filteredProducts) {
+      const tbody = document.querySelector("#productContent table tbody");
+      if (!tbody) return;
+
+      let html = "";
+      filteredProducts.forEach((product, index) => {
+        const originalIndex = products.findIndex(
+          (p) => p.name === product.name
+        );
+        html += `
+        <tr>
+          <td>${originalIndex + 1}</td>
+          <td>
+            <div class="product-img-mini" style="background-image: url('${
+              product.image || ""
+            }')"></div>
+          </td>
+          <td>${escapeHtml(product.name)}</td>
+          <td>${formatPrice(product.value)}đ</td>
+          <td>${product.quantity}</td>
+          <td>${escapeHtml(product.category)}</td>
+          <td>
+            <button onclick="editProduct(${originalIndex})" class="btn-edit"><i class="fa-solid fa-pen"></i> Sửa</button>
+            <button onclick="deleteProduct(${originalIndex})" class="btn-delete"><i class="fa-solid fa-trash"></i> Xóa</button>
+          </td>
+        </tr>`;
+      });
+
+      if (!html)
+        html = `<tr><td colspan="7" class="empty-state">Không có sản phẩm phù hợp.</td></tr>`;
+
+      tbody.innerHTML = html;
+    }
+    const filteredProducts = products.filter((p) => {
+      const matchesName =
+        lowerCaseNameQuery === "" ||
+        p.name.trim().toLowerCase().includes(lowerCaseNameQuery);
+      const matchesCategory =
+        categoryQuery === "" || p.category === categoryQuery;
+      const matchesPrice = p.value >= minPrice && p.value <= maxPrice;
+
+      return matchesName && matchesCategory && matchesPrice;
+    });
+
+    // --- GIAO DIỆN BỘ LỌC ---
+    const categoryOptions = uniqueCategories
+      .map(
+        (cat) =>
+          `<option value="${escapeHtml(cat)}" ${
+            cat === categoryQuery ? "selected" : ""
+          }>${escapeHtml(cat)}</option>`
+      )
+      .join("");
+
+    const priceOptions = priceRanges
+      .map(
+        (range) =>
+          `<option value="${range.value}" ${
+            range.value === priceRangeQuery ? "selected" : ""
+          }>${range.label}</option>`
+      )
+      .join("");
+
+    // Hàm global để kích hoạt việc lọc sản phẩm
+    window.filterProducts = function () {
+      const nameInput = document.getElementById("productSearchInput").value;
+      const categorySelect = document.getElementById(
+        "productCategorySelect"
+      ).value;
+      const priceSelect = document.getElementById("productPriceSelect").value;
+
+      const lowerCaseNameQuery = nameInput.trim().toLowerCase();
+      let minPrice = 0,
+        maxPrice = Infinity;
+      if (priceSelect) {
+        const parts = priceSelect.split("-");
+        minPrice = parseInt(parts[0]) || 0;
+        maxPrice = parts[1] ? parseInt(parts[1]) : Infinity;
+      }
+
+      const filteredProducts = products.filter((p) => {
+        const matchesName =
+          lowerCaseNameQuery === "" ||
+          p.name.trim().toLowerCase().includes(lowerCaseNameQuery);
+        const matchesCategory =
+          categorySelect === "" || p.category === categorySelect;
+        const matchesPrice = p.value >= minPrice && p.value <= maxPrice;
+        return matchesName && matchesCategory && matchesPrice;
+      });
+
+      renderProductTable(filteredProducts);
+    };
+
     let html = `
       <div class="management-header">
         <h2><i class="fa-solid fa-box"></i> Quản lý Sản phẩm</h2>
-        <div>
-          <button onclick="addNewProduct()" class="btn-add">
-            <i class="fa-solid fa-plus"></i> Thêm sản phẩm (Từ kho)
-          </button>
-          <button onclick="refreshProducts()" class="btn-refresh">
-            <i class="fa-solid fa-rotate"></i> Làm mới
-          </button>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button onclick="addNewProduct()" class="btn-add">
+                <i class="fa-solid fa-plus"></i> Thêm sản phẩm (Từ kho)
+            </button>
+            <button onclick="refreshProducts()" class="btn-refresh">
+                <i class="fa-solid fa-rotate"></i> Làm mới
+            </button>
         </div>
       </div>
+      
+      <div class="filter-controls" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+        <input type="text" id="productSearchInput" onkeyup="window.filterProducts()" 
+            placeholder="🔍 Tìm kiếm theo tên sản phẩm..." value="${escapeHtml(
+              nameQuery
+            )}" 
+            style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 300px;">
+            
+        <select id="productCategorySelect" onchange="window.filterProducts()" 
+            style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 200px;">
+            <option value="">-- Tất cả Danh mục --</option>
+            ${categoryOptions}
+        </select>
+        
+        <select id="productPriceSelect" onchange="window.filterProducts()" 
+            style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 200px;">
+            <option value="">-- Tất cả Khoảng giá --</option>
+            ${priceOptions}
+        </select>
+      </div>
+      
       <div class="table-container">
         <table class="admin-table">
           <thead>
@@ -602,10 +926,13 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <tbody>
     `;
 
-    products.forEach((product, index) => {
+    filteredProducts.forEach((product, index) => {
+      // Tìm lại index gốc để dùng cho thao tác Sửa/Xóa chính xác
+      const originalIndex = products.findIndex((p) => p.name === product.name);
+
       html += `
         <tr>
-          <td>${index + 1}</td>
+          <td>${originalIndex + 1}</td>
           <td>
             <div class="product-img-mini" style="background-image: url('${
               product.image || ""
@@ -616,10 +943,10 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <td>${product.quantity}</td>
           <td>${escapeHtml(product.category)}</td>
           <td>
-            <button onclick="editProduct(${index})" class="btn-edit">
+            <button onclick="editProduct(${originalIndex})" class="btn-edit">
               <i class="fa-solid fa-pen"></i> Sửa
             </button>
-            <button onclick="deleteProduct(${index})" class="btn-delete">
+            <button onclick="deleteProduct(${originalIndex})" class="btn-delete">
               <i class="fa-solid fa-trash"></i> Xóa
             </button>
           </td>
@@ -1481,7 +1808,7 @@ Tổng tiền: ${formatPrice(invoice.total)}đ
   }
 
   if (manageProductBtn) {
-    manageProductBtn.addEventListener("click", renderProductManagement);
+    manageProductBtn.addEventListener("click", () => renderProductManagement());
   }
 
   if (manageInvoiceBtn) {
@@ -1493,7 +1820,7 @@ Tổng tiền: ${formatPrice(invoice.total)}đ
   }
 
   if (manageStockBtn) {
-    manageStockBtn.addEventListener("click", renderStockManagement);
+    manageStockBtn.addEventListener("click", () => renderStockManagement());
   }
 
   // === GẮN SỰ KIỆN CHO FORM SẢN PHẨM (GIỮ NGUYÊN) ===
@@ -1553,8 +1880,8 @@ Tổng tiền: ${formatPrice(invoice.total)}đ
 
   // === KHỞI TẠO TRANG (GIỮ NGUYÊN) ===
   if (localStorage.getItem("isAdmin") === "true") {
-    renderProductManagement();
-    renderStockManagement();
+    // Không gọi renderProductManagement() hoặc renderStockManagement() ở đây
+    // vì chúng sẽ được gọi khi người dùng click vào các tab.
   } else {
     // Nếu không phải admin, chuyển về trang login
     if (window.location.pathname.includes("admin")) {
