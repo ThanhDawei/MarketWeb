@@ -1361,9 +1361,29 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCart();
   };
 
+  // Hàm kiểm tra tài khoản có đủ thông tin (số điện thoại và địa chỉ)
+  function hasUserCompleteProfile(username) {
+    const currentUser = username || localStorage.getItem("currentUser");
+    if (!currentUser) return false;
+    
+    const user = users.find(u => u.username === currentUser);
+    if (!user) return false;
+    
+    const hasPhone = user.phone && String(user.phone).trim() !== "";
+    const hasAddress = user.address && String(user.address).trim() !== "";
+    
+    return hasPhone && hasAddress;
+  }
+
   function addToCart(name, value) {
     if (localStorage.getItem("isLoggedIn") !== "true") {
       alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!");
+      return;
+    }
+    
+    // Kiểm tra xem tài khoản có đủ thông tin (số điện thoại và địa chỉ)
+    if (!hasUserCompleteProfile()) {
+      alert("⚠️ Vui lòng cập nhật số điện thoại/địa chỉ trong hồ sơ trước khi mua hàng!");
       return;
     }
     
@@ -1398,6 +1418,13 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Bạn cần đăng nhập để mua hàng!");
       return;
     }
+    
+    // Kiểm tra xem tài khoản có đủ thông tin (số điện thoại và địa chỉ)
+    if (!hasUserCompleteProfile()) {
+      alert("⚠️ Vui lòng cập nhật số điện thoại/địa chỉ trong hồ sơ trước khi mua hàng!");
+      return;
+    }
+    
     const product = currentProductList[index]; // Lấy từ currentProductList
     if (!product) return;
     if (product.quantity <= 0) {
@@ -2110,6 +2137,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (cart.length === 0) {
         alert("Giỏ hàng trống!");
+        return;
+      }
+      
+      // Kiểm tra xem tài khoản có đủ thông tin (số điện thoại và địa chỉ)
+      if (!hasUserCompleteProfile()) {
+        alert("⚠️ Vui lòng cập nhật số điện thoại/địa chỉ trong hồ sơ trước khi mua hàng!");
         return;
       }
       
