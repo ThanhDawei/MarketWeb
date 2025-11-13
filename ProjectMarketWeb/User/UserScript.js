@@ -604,82 +604,83 @@ document.addEventListener("DOMContentLoaded", () => {
     importReceipts = [
       // Mỗi {} là một phiếu nhập hàng
       {
-        id: "PN1736784000001", date: "10/11/2025, 08:30:00", productName: "iPhone 15 Pro Max", quantity: 50, price: 25000000, category: "Điện thoại", importedBy: "Admin"
+        id: "PN1736784000001", date: "10/11/2025, 08:30:00", productName: "iPhone 15 Pro Max", quantity: 50, price: 25000000, category: "Điện thoại", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000002", date: "10/11/2025, 08:32:15", productName: "Samsung Galaxy S24 Ultra", quantity: 50, price: 23000000, category: "Điện thoại", importedBy: "Admin"
+        id: "PN1736784000002", date: "10/11/2025, 08:32:15", productName: "Samsung Galaxy S24 Ultra", quantity: 50, price: 23000000, category: "Điện thoại", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000003", date: "11/11/2025, 14:00:00", productName: "MacBook Pro M3 14 inch", quantity: 20, price: 38000000, category: "Laptop", importedBy: "Admin"
+        id: "PN1736784000003", date: "11/11/2025, 14:00:00", productName: "MacBook Pro M3 14 inch", quantity: 20, price: 38000000, category: "Laptop", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000004", date: "11/11/2025, 14:05:00", productName: "Dell XPS 13", quantity: 30, price: 28000000, category: "Laptop", importedBy: "Admin"
+        id: "PN1736784000004", date: "11/11/2025, 14:05:00", productName: "Dell XPS 13", quantity: 30, price: 28000000, category: "Laptop", importedBy: "Admin", status: "Chưa hoàn thành"
+      
       },
       {
-        id: "PN1736784000005", date: "11/11/2025, 14:10:00", productName: "iPad Pro 12.9 inch M2", quantity: 25, price: 22000000, category: "Máy tính bảng", importedBy: "Admin"
+        id: "PN1736784000005", date: "11/11/2025, 14:10:00", productName: "iPad Pro 12.9 inch M2", quantity: 25, price: 22000000, category: "Máy tính bảng", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000006", date: "11/11/2025, 14:15:00", productName: "AirPods Pro 2", quantity: 100, price: 4500000, category: "Phụ kiện", importedBy: "Admin"
+        id: "PN1736784000006", date: "11/11/2025, 14:15:00", productName: "AirPods Pro 2", quantity: 100, price: 4500000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000007", date: "11/11/2025, 14:20:00", productName: "Sony WH-1000XM5", quantity: 40, price: 7000000, category: "Phụ kiện", importedBy: "Admin"
+        id: "PN1736784000007", date: "11/11/2025, 14:20:00", productName: "Sony WH-1000XM5", quantity: 40, price: 7000000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000008", date: "12/11/2025, 09:00:00", productName: "Apple Watch Series 9", quantity: 50, price: 9000000, category: "Đồng hồ thông minh", importedBy: "Admin"
+        id: "PN1736784000008", date: "12/11/2025, 09:00:00", productName: "Apple Watch Series 9", quantity: 50, price: 9000000, category: "Đồng hồ thông minh", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000009", date: "12/11/2025, 09:05:00", productName: "Samsung Galaxy Watch 6", quantity: 50, price: 6000000, category: "Đồng hồ thông minh", importedBy: "Admin"
+        id: "PN1736784000009", date: "12/11/2025, 09:05:00", productName: "Samsung Galaxy Watch 6", quantity: 50, price: 6000000, category: "Đồng hồ thông minh", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000010", date: "12/11/2025, 09:10:00", productName: "Bàn phím cơ Keychron K2", quantity: 80, price: 2000000, category: "Phụ kiện", importedBy: "Admin"
+        id: "PN1736784000010", date: "12/11/2025, 09:10:00", productName: "Bàn phím cơ Keychron K2", quantity: 80, price: 2000000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000011", date: "12/11/2025, 09:15:00", productName: "Chuột Logitech MX Master 3S", quantity: 100, price: 2200000, category: "Phụ kiện", importedBy: "Admin"
+        id: "PN1736784000011", date: "12/11/2025, 09:15:00", productName: "Chuột Logitech MX Master 3S", quantity: 100, price: 2200000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000012", date: "12/11/2025, 09:20:00", productName: "Màn hình LG UltraGear 27 inch", quantity: 30, price: 7500000, category: "Màn hình", importedBy: "Admin"
+        id: "PN1736784000012", date: "12/11/2025, 09:20:00", productName: "Màn hình LG UltraGear 27 inch", quantity: 30, price: 7500000, category: "Màn hình", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000013", date: "12/11/2025, 09:25:00", productName: "Webcam Logitech C920", quantity: 60, price: 1500000, category: "Phụ kiện", importedBy: "Admin"
+        id: "PN1736784000013", date: "12/11/2025, 09:25:00", productName: "Webcam Logitech C920", quantity: 60, price: 1500000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000014", date: "12/11/2025, 09:30:00", productName: "SSD Samsung 990 PRO 1TB", quantity: 50, price: 2800000, category: "Linh kiện", importedBy: "Admin"
+        id: "PN1736784000014", date: "12/11/2025, 09:30:00", productName: "SSD Samsung 990 PRO 1TB", quantity: 50, price: 2800000, category: "Linh kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000015", date: "12/11/2025, 09:35:00", productName: "RAM Corsair Vengeance 32GB", quantity: 40, price: 3500000, category: "Linh kiện", importedBy: "Admin"
+        id: "PN1736784000015", date: "12/11/2025, 09:35:00", productName: "RAM Corsair Vengeance 32GB", quantity: 40, price: 3500000, category: "Linh kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000016", date: "12/11/2025, 09:40:00", productName: "Tai nghe Gaming Razer BlackShark V2", quantity: 30, price: 2200000, category: "Phụ kiện", importedBy: "Admin"
+        id: "PN1736784000016", date: "12/11/2025, 09:40:00", productName: "Tai nghe Gaming Razer BlackShark V2", quantity: 30, price: 2200000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000017", date: "12/11/2025, 09:45:00", productName: "Sạc dự phòng Anker 20000mAh", quantity: 100, price: 700000, category: "Phụ kiện", importedBy: "Admin"
+        id: "PN1736784000017", date: "12/11/2025, 09:45:00", productName: "Sạc dự phòng Anker 20000mAh", quantity: 100, price: 700000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000018", date: "12/11/2025, 09:50:00", productName: "Ốp lưng iPhone 15 Pro", quantity: 200, price: 250000, category: "Phụ kiện", importedBy: "Admin"
+        id: "PN1736784000018", date: "12/11/2025, 09:50:00", productName: "Ốp lưng iPhone 15 Pro", quantity: 200, price: 250000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000019", date: "12/11/2025, 09:55:00", productName: "Cáp sạc USB-C to Lightning", quantity: 300, price: 150000, category: "Phụ kiện", importedBy: "Admin"
+        id: "PN1736784000019", date: "12/11/2025, 09:55:00", productName: "Cáp sạc USB-C to Lightning", quantity: 300, price: 150000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000020", date: "13/11/2025, 10:00:00", productName: "Router WiFi 6 TP-Link Archer AX73", quantity: 30, price: 2000000, category: "Mạng & Kết nối", importedBy: "Admin"
+        id: "PN1736784000020", date: "13/11/2025, 10:00:00", productName: "Router WiFi 6 TP-Link Archer AX73", quantity: 30, price: 2000000, category: "Mạng & Kết nối", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000021", date: "13/11/2025, 10:05:00", productName: "Loa Bluetooth JBL Flip 6", quantity: 40, price: 2500000, category: "Âm thanh", importedBy: "Admin"
+        id: "PN1736784000021", date: "13/11/2025, 10:05:00", productName: "Loa Bluetooth JBL Flip 6", quantity: 40, price: 2500000, category: "Âm thanh", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000022", date: "13/11/2025, 10:10:00", productName: "Gimbal DJI OM 6", quantity: 50, price: 3200000, category: "Phụ kiện", importedBy: "Admin"
+        id: "PN1736784000022", date: "13/11/2025, 10:10:00", productName: "Gimbal DJI OM 6", quantity: 50, price: 3200000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000023", date: "13/11/2025, 10:15:00", productName: "Máy tính bảng Samsung Tab S9", quantity: 20, price: 16000000, category: "Máy tính bảng", importedBy: "Admin"
+        id: "PN1736784000023", date: "13/11/2025, 10:15:00", productName: "Máy tính bảng Samsung Tab S9", quantity: 20, price: 16000000, category: "Máy tính bảng", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000024", date: "13/11/2025, 10:20:00", productName: "Ổ cứng di động WD My Passport 2TB", quantity: 50, price: 1500000, category: "Linh kiện", importedBy: "Admin"
+        id: "PN1736784000024", date: "13/11/2025, 10:20:00", productName: "Ổ cứng di động WD My Passport 2TB", quantity: 50, price: 1500000, category: "Linh kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000025", date: "13/11/2025, 10:25:00", productName: "Xiaomi Redmi Note 13 Pro", quantity: 30, price: 6500000, category: "Điện thoại", importedBy: "Admin"
+        id: "PN1736784000025", date: "13/11/2025, 10:25:00", productName: "Xiaomi Redmi Note 13 Pro", quantity: 30, price: 6500000, category: "Điện thoại", importedBy: "Admin", status: "Chưa hoàn thành"
       },
       {
-        id: "PN1736784000026", date: "13/11/2025, 10:30:00", productName: "Kính cường lực iPhone 15", quantity: 150, price: 100000, category: "Phụ kiện", importedBy: "Admin"
+        id: "PN1736784000026", date: "13/11/2025, 10:30:00", productName: "Kính cường lực iPhone 15", quantity: 150, price: 100000, category: "Phụ kiện", importedBy: "Admin", status: "Chưa hoàn thành"
       }
     ];
     // Lưu dữ liệu mẫu này vào "sổ tay" localStorage

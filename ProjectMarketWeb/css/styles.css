@@ -1042,7 +1042,8 @@ admin {
 
 .btn-edit,
 .btn-delete,
-.btn-view {
+.btn-view ,
+.btn-done{
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
@@ -1051,6 +1052,18 @@ admin {
   transition: all 0.2s;
   margin-right: 6px;
   font-size: 0.85rem;
+}
+
+.btn-done {
+  background: rgb(53, 45, 192);
+  color: white;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+}
+
+.btn-done:hover{
+  background: #5968d9;
+  transform: translateY(-1px);
 }
 
 .btn-edit {

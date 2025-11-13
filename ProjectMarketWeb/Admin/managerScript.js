@@ -1472,6 +1472,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
               <th>Đơn giá</th>
               <th>Thành tiền</th>
               <th>Người nhập</th>
+              <th>Trạng thái</th>
               <th>Thao tác</th>
             </tr>
           </thead>
@@ -1490,14 +1491,25 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <td><strong>${formatPrice(totalPrice)}đ</strong></td>
           <td>${escapeHtml(receipt.importedBy)}</td>
           <td>
-            <button onclick="viewImportReceipt('${
-              receipt.id
-            }')" class="btn-view">
+              ${receipt.status === "Hoàn thành"
+          ? '<span style="color: green; font-weight: 600;">Hoàn thành</span>'
+          : '<span style="color: orange; font-weight: 600;">Chưa hoàn thành</span>'}
+          </td>
+          <td>
+            <button onclick="viewImportReceipt('${receipt.id
+        }')" class="btn-view">
               <i class="fa-solid fa-eye"></i> Xem
             </button>
-            <button onclick="deleteImportReceipt('${
-              receipt.id
-            }')" class="btn-delete">
+            ${receipt.status === "Chưa hoàn thành" ? `
+            <button onclick="editImportReceipt('${receipt.id}')" class="btn-edit">
+              <i class="fa-solid fa-pen"></i> Sửa
+            </button>
+            <button onclick="markImportReceiptDone('${receipt.id}')" class="btn-done">
+              <i class="fa-solid fa-check"></i> Hoàn thành
+            </button>
+            ` : ''}
+            <button onclick="deleteImportReceipt('${receipt.id
+        }')" class="btn-delete">
               <i class="fa-solid fa-trash"></i> Xóa
             </button>
           </td>
@@ -1529,8 +1541,8 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <i class="fa-solid fa-money-bill-trend-up stat-icon"></i>
           <div>
             <h3>${formatPrice(
-              importReceipts.reduce((sum, r) => sum + r.quantity * r.price, 0)
-            )}đ</h3>
+      importReceipts.reduce((sum, r) => sum + r.quantity * r.price, 0)
+    )}đ</h3>
             <p>Tổng giá trị nhập</p>
           </div>
         </div>
@@ -1647,6 +1659,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       category: category,
       note: note,
       importedBy: "Admin",
+      status: "Chưa hoàn thành",
     };
 
     importReceipts.push(receipt);
@@ -1698,6 +1711,47 @@ ${receipt.note ? "\nGhi chú: " + receipt.note : ""}
 
     alert(message);
   };
+
+
+  window.editImportReceipt = function (id) {
+    const receipt = importReceipts.find(r => r.id === id);
+    if (!receipt) return alert("Không tìm thấy phiếu nhập!");
+
+    const newProductName = prompt("Nhập tên sản phẩm:", receipt.productName);
+    if (newProductName === null) return; // nhấn Cancel
+
+    const newQuantity = parseInt(prompt("Nhập số lượng:", receipt.quantity));
+    if (isNaN(newQuantity) || newQuantity <= 0) return alert("Số lượng không hợp lệ!");
+
+    const newPrice = parseFloat(prompt("Nhập đơn giá:", receipt.price));
+    if (isNaN(newPrice) || newPrice <= 0) return alert("Đơn giá không hợp lệ!");
+
+    // Cập nhật lại thông tin
+    receipt.productName = newProductName.trim();
+    receipt.quantity = newQuantity;
+    receipt.price = newPrice;
+
+    // Lưu lại vào localStorage
+    localStorage.setItem("importReceipts", JSON.stringify(importReceipts));
+
+    // Làm mới bảng hiển thị
+    renderAddInfo();
+
+    alert("Cập nhật phiếu nhập thành công!");
+  }
+
+  window.markImportReceiptDone = function (id) {
+    const receipt = importReceipts.find(r => r.id === id);
+    if (!receipt) return alert("Không tìm thấy phiếu nhập!");
+
+    if (confirm("Xác nhận hoàn thành phiếu nhập này? Sau khi hoàn thành sẽ không thể chỉnh sửa.")) {
+      receipt.status = "Hoàn thành"; // ✅ đổi lại đây
+      localStorage.setItem("importReceipts", JSON.stringify(importReceipts));
+      renderAddInfo();
+      alert("✅ Phiếu nhập đã được đánh dấu hoàn thành!");
+    }
+  };
+
 
   window.deleteImportReceipt = function (id) {
     if (
