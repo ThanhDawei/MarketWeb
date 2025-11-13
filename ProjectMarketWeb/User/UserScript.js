@@ -567,6 +567,74 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ----- Invoices -----
   let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
+  
+  if (invoices.length === 0) {
+    invoices = [
+        // Mỗi {} là một hóa đơn của khách
+        {
+            id: 1736784100001,
+            date: "12/11/2025, 10:05:21",
+            user: "user1", // Tên người dùng đã mua
+            address: "123 Nguyễn Huệ, Quận 1, TP.HCM",
+            items: [ // Danh sách các món hàng trong hóa đơn
+                { name: "iPhone 15 Pro Max", price: 29990000, quantity: 1 }
+            ],
+            total: 29990000
+        },
+        {
+            id: 1736784200002,
+            date: "12/11/2025, 15:45:10",
+            user: "nguyenvana",
+            address: "456 Lê Lợi, Quận 3, TP.HCM",
+            items: [
+                { name: "AirPods Pro 2", price: 5990000, quantity: 1 },
+                { name: "Ốp lưng iPhone 15 Pro", price: 490000, quantity: 1 }
+            ],
+            total: 6480000
+        }
+    ];
+    // Lưu dữ liệu mẫu này vào "sổ tay" localStorage
+    localStorage.setItem("invoices", JSON.stringify(invoices));
+  }
+  
+  // ----- Import Receipts (Phiếu Nhập Hàng) -----
+  let importReceipts = JSON.parse(localStorage.getItem("importReceipts")) || [];
+
+  if (importReceipts.length === 0) {
+  importReceipts = [
+    // Mỗi {} là một phiếu nhập hàng
+    {
+      id: "PN1736784000001", // Mã phiếu (tự nghĩ ra)
+      date: "10/11/2025, 08:30:00", // Ngày nhập
+      productName: "iPhone 15 Pro Max", // Tên sản phẩm phải khớp với sản phẩm đã có
+      quantity: 20, // Số lượng nhập vào kho
+      price: 25000000, // Giá nhập (thường thấp hơn giá bán)
+      category: "Điện thoại",
+      importedBy: "Admin"
+    },
+    {
+      id: "PN1736784000002",
+      date: "10/11/2025, 08:32:15",
+      productName: "Samsung Galaxy S24 Ultra",
+      quantity: 25,
+      price: 23000000,
+      category: "Điện thoại",
+      importedBy: "Admin"
+    },
+    {
+      id: "PN1736784000003",
+      date: "11/11/2025, 14:00:00",
+      productName: "MacBook Pro M3 14 inch",
+      quantity: 10,
+      price: 38000000,
+      category: "Laptop",
+      importedBy: "Admin"
+    }
+  ];
+
+  // Lưu dữ liệu mẫu này vào "sổ tay" localStorage
+  localStorage.setItem("importReceipts", JSON.stringify(importReceipts));
+  }
 
   // ----- Pagination & Render Products -----
   let currentPage = 1;
