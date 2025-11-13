@@ -755,7 +755,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     alert("Đã xóa người dùng!");
   };
 
-  // === QUẢN LÝ SẢN PHẨM (CẬP NHẬT: THÊM TÍNH NĂNG TÌM KIẾM NÂNG CAO) ===
+// === QUẢN LÝ SẢN PHẨM (CẬP NHẬT VỚI CỘT LỢI NHUẬN) ===
   /**
    * Render giao diện Quản lý Sản phẩm.
    * @param {string} nameQuery Chuỗi tìm kiếm tên sản phẩm.
@@ -784,6 +784,8 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       minPrice = parseInt(parts[0]) || 0;
       maxPrice = parts[1] ? parseInt(parts[1]) : Infinity;
     }
+    
+    // === CẬP NHẬT renderProductTable (Dùng khi lọc) ===
     function renderProductTable(filteredProducts) {
       const tbody = document.querySelector("#productContent table tbody");
       if (!tbody) return;
@@ -793,6 +795,22 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
         const originalIndex = products.findIndex(
           (p) => p.name === product.name
         );
+        
+        // --- LOGIC TÍNH LỢI NHUẬN (CHO BỘ LỌC) ---
+        let profit = 0;
+        const sellingPrice = product.value;
+        const importPriceStr = findLatestImportPrice(product.name); 
+
+        if (importPriceStr !== "") {
+          // Logic 1: Sản phẩm nhập thủ công (có giá nhập)
+          const importPrice = parseInt(importPriceStr, 10);
+          profit = sellingPrice - importPrice;
+        } else {
+          // Logic 2: Sản phẩm "khai báo sẵn" (không tìm thấy giá nhập)
+          profit = sellingPrice * 0.05; // 5% giá bán
+        }
+        // ----------------------------------------
+        
         html += `
         <tr>
           <td>${originalIndex + 1}</td>
@@ -803,6 +821,11 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           </td>
           <td>${escapeHtml(product.name)}</td>
           <td>${formatPrice(product.value)}đ</td>
+          
+          <td style="font-weight: 600; color: ${profit < 0 ? '#e53e3e' : '#38a169'};">
+            ${formatPrice(profit)}đ
+          </td>
+          
           <td>${product.quantity}</td>
           <td>${escapeHtml(product.category)}</td>
           <td>
@@ -813,10 +836,12 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       });
 
       if (!html)
-        html = `<tr><td colspan="7" class="empty-state">Không có sản phẩm phù hợp.</td></tr>`;
+        // CẬP NHẬT COLSPAN
+        html = `<tr><td colspan="8" class="empty-state">Không có sản phẩm phù hợp.</td></tr>`;
 
       tbody.innerHTML = html;
     }
+    
     const filteredProducts = products.filter((p) => {
       const matchesName =
         lowerCaseNameQuery === "" ||
@@ -874,6 +899,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
         return matchesName && matchesCategory && matchesPrice;
       });
 
+      // Gọi hàm render đã được cập nhật
       renderProductTable(filteredProducts);
     };
 
@@ -918,7 +944,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
               <th>Hình ảnh</th>
               <th>Tên sản phẩm</th>
               <th>Giá</th>
-              <th>Số lượng (Trên kệ)</th>
+              <th>Lợi nhuận</th> <th>Số lượng (Trên kệ)</th>
               <th>Danh mục</th>
               <th>Thao tác</th>
             </tr>
@@ -926,9 +952,25 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <tbody>
     `;
 
+    // === CẬP NHẬT VÒNG LẶP RENDER BAN ĐẦU ===
     filteredProducts.forEach((product, index) => {
       // Tìm lại index gốc để dùng cho thao tác Sửa/Xóa chính xác
       const originalIndex = products.findIndex((p) => p.name === product.name);
+
+      // --- LOGIC TÍNH LỢI NHUẬN (CHO RENDER BAN ĐẦU) ---
+      let profit = 0;
+      const sellingPrice = product.value;
+      const importPriceStr = findLatestImportPrice(product.name); 
+
+      if (importPriceStr !== "") {
+        // Logic 1: Sản phẩm nhập thủ công (có giá nhập)
+        const importPrice = parseInt(importPriceStr, 10);
+        profit = sellingPrice - importPrice;
+      } else {
+        // Logic 2: Sản phẩm "khai báo sẵn" (không tìm thấy giá nhập)
+        profit = sellingPrice * 0.05; // 5% giá bán
+      }
+      // ----------------------------------------
 
       html += `
         <tr>
@@ -940,6 +982,11 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           </td>
           <td>${escapeHtml(product.name)}</td>
           <td>${formatPrice(product.value)}đ</td>
+          
+          <td style="font-weight: 600; color: ${profit < 0 ? '#e53e3e' : '#38a169'};">
+            ${formatPrice(profit)}đ
+          </td>
+
           <td>${product.quantity}</td>
           <td>${escapeHtml(product.category)}</td>
           <td>
