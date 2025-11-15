@@ -2925,6 +2925,40 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+
+// ===== PAYMENT METHOD LOGIC =====
+  const paymentMethodSelect = document.getElementById("payment-method");
+  const paymentDetails = document.getElementById("payment-details");
+  const bankTransferQR = document.getElementById("bank-transfer-qr");
+  const momoQR = document.getElementById("momo-qr");
+  const creditCardForm = document.getElementById("credit-card-form");
+
+  if (paymentMethodSelect) {
+    paymentMethodSelect.addEventListener("change", () => {
+      const selectedMethod = paymentMethodSelect.value;
+
+      // Hide all payment details initially
+      paymentDetails.style.display = "none";
+      bankTransferQR.style.display = "none";
+      momoQR.style.display = "none";
+      creditCardForm.style.display = "none";
+
+      // Show relevant section based on selected method
+      if (selectedMethod === "bank") {
+        paymentDetails.style.display = "block";
+        bankTransferQR.style.display = "block";
+      } else if (selectedMethod === "momo") {
+        paymentDetails.style.display = "block";
+        momoQR.style.display = "block";
+      } else if (selectedMethod === "credit") {
+        paymentDetails.style.display = "block";
+        creditCardForm.style.display = "block";
+      }
+      
+    });
+  }
+
+
   // ----- Close popups on outside click -----
   document.addEventListener("click", (ev) => {
     if (ev.target === loginPopup) loginPopup.style.display = "none";

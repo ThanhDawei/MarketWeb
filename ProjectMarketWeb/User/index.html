@@ -224,18 +224,18 @@
     </div>
 
     <!-- CHECKOUT POPUP -->
-    <div id="checkout-popup" class="popup" style="display: none">
+    <div id="checkout-popup" class="popup" style="display: none; overflow-y: auto;">
       <div class="popup-content">
         <span id="close-checkout-popup" class="close">&times;</span>
         <h2>Xác nhận thanh toán</h2>
         <div id="checkout-items"></div>
-        <div id="checkout-total"></div>
-        <div class="input-group">
+        <div id="checkout-total" style="color: #ee4d2d"></div>
+        <div class="input-group" style="margin-bottom: 0px;">
           <div style="color:#555; font-weight:600; margin:4px 0;">
             <span id="checkout-customer-name">(Khách)</span>
             <span id="checkout-customer-phone" style="margin-left:8px;">(Chưa có)</span>
           </div>
-          <label>Địa chỉ giao hàng:</label>
+          <label>📍 Địa chỉ giao hàng:</label>
           <div>
             <label>
               <input type="radio" name="address-option" id="use-saved-address" value="saved" />
@@ -252,7 +252,50 @@
           <textarea id="checkout-address" placeholder="Nhập địa chỉ nhận hàng (Số nhà, đường, quận, thành phố)" rows="3" style="width:100%; margin-top:8px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;"></textarea>
         </div>
         <div class="input-group">
-          <label><input type="checkbox" id="save-address-checkbox" /> Lưu địa chỉ vào hồ sơ</label>
+          <label style="text-align: right;"><input type="checkbox" id="save-address-checkbox" /> Lưu địa chỉ vào hồ sơ</label>
+        </div>
+        <div class="input-group">
+          <label for="payment-method">💳 Phương thức thanh toán:</label>
+          <select id="payment-method" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;">
+            <option value="cod">Thanh toán khi nhận hàng</option>
+            <option value="bank">Chuyển khoản ngân hàng</option>
+            <option value="momo">Chuyển tiền ví Momo</option>
+            <option value="credit">Thẻ tín dụng/ghi nợ</option>
+          </select>
+        </div>
+
+        <div id="payment-details" style="margin-top: 16px; display: none;">
+          <!-- QR Code for Bank Transfer -->
+          <div id="bank-transfer-qr" style="display: none; text-align: center;">
+            <img src="../image/ChuyenKhoanNganHang.png" alt="QR Code Chuyển khoản ngân hàng" style="width: 150px; height: auto;" />
+          </div>
+
+          <!-- QR Code for Momo -->
+          <div id="momo-qr" style="display: none; text-align: center;">
+            <img src="../image/MoMo.png" alt="QR Code Ví Momo" style="width: 150px; height: auto;" />
+          </div>
+
+          <!-- Credit/Debit Card Form -->
+          <div id="credit-card-form" style="display: none;">
+            <div class="input-group">
+              <label for="card-number">Số thẻ:</label>
+              <input type="text" id="card-number" placeholder="Nhập số thẻ" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;" />
+            </div>
+            <div class="input-group" style="display: flex; gap: 16px;">
+              <div style="flex: 1;">
+                <label for="expiry-date">Ngày hết hạn (MM/YY):</label>
+                <input type="text" id="expiry-date" placeholder="MM/YY" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;" />
+              </div>
+              <div style="flex: 1;">
+                <label for="cvv">Mã CVV:</label>
+                <input type="text" id="cvv" placeholder="CVV" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;" />
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="cardholder-name">Họ và tên chủ thẻ:</label>
+              <input type="text" id="cardholder-name" placeholder="Nhập họ và tên" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;" />
+            </div>
+          </div>
         </div>
         <button id="confirm-checkout" class="login-button">Xác nhận</button>
         <button id="cancel-checkout" class="btn-register">Hủy</button>
