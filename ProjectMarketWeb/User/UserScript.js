@@ -1931,6 +1931,23 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("cart", JSON.stringify(cart));
         renderCart();
       }
+
+      // Reset các tùy chọn sau khi thanh toán thành công
+      if (checkoutAddressEl) checkoutAddressEl.value = "";
+      if (saveAddressCheckbox) saveAddressCheckbox.checked = false;
+      if (useSavedAddressRadio) useSavedAddressRadio.checked = false;
+      if (enterNewAddressRadio) enterNewAddressRadio.checked = false;
+      if (paymentMethodSelect) {
+        paymentMethodSelect.value = "cod"; // về Thanh toán khi nhận hàng
+      }
+      if (paymentDetails) paymentDetails.style.display = "none";
+      if (bankTransferQR) bankTransferQR.style.display = "none";
+      if (momoQR) momoQR.style.display = "none";
+      if (creditCardForm) {
+        creditCardForm.style.display = "none";
+        const inputs = creditCardForm.querySelectorAll("input");
+        inputs.forEach(input => input.value = ""); // xóa dữ liệu thẻ tín dụng
+      }
     });
   }
 
