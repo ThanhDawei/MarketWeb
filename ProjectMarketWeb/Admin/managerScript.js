@@ -62,7 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const manageInvoiceBtn = document.getElementById("manageInvoiceBtn");
   const addInfoBtn = document.getElementById("addInfoBtn");
   const manageStockBtn = document.getElementById("manageStockBtn");
-
+  const manageProfitBtn = document.getElementById("manageProfitBtn");
+  const profitContent = document.getElementById("profitContent");
   const userContent = document.getElementById("userContent");
   const productContent = document.getElementById("productContent");
   const invoiceContent = document.getElementById("invoiceContent");
@@ -124,6 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (invoiceContent) invoiceContent.style.display = "none";
     if (addInfoContent) addInfoContent.style.display = "none";
     if (stockContent) stockContent.style.display = "none";
+    if (profitContent) profitContent.style.display = "none";
   }
   function calculateUserStats() {
     const stats = {};
@@ -242,17 +244,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function findLatestImportPrice(productName) {
     if (!productName) return "";
+
+    const lowerCaseName = productName.trim().toLowerCase();
+
+    // Duyệt ngược từ phiếu nhập mới nhất
     for (let i = importReceipts.length - 1; i >= 0; i--) {
-      const r = importReceipts[i];
-      if (
-        r &&
-        r.productName &&
-        r.productName.trim().toLowerCase() === productName.trim().toLowerCase()
-      ) {
-        return typeof r.price !== "undefined" ? r.price : "";
+      const receipt = importReceipts[i];
+
+      // Kiểm tra receipt và items có tồn tại
+      if (!receipt || !Array.isArray(receipt.items)) continue;
+
+      // TÌM TRONG MẢNG ITEMS của phiếu nhập
+      for (let j = 0; j < receipt.items.length; j++) {
+        const item = receipt.items[j];
+
+        // So sánh tên sản phẩm
+        if (
+          item &&
+          item.productName &&
+          item.productName.trim().toLowerCase() === lowerCaseName
+        ) {
+          // Trả về giá của mặt hàng này
+          return typeof item.price !== "undefined" ? item.price : "";
+        }
       }
     }
-    return "";
+
+    return ""; // Không tìm thấy
   }
   // === HÀM TẠO VÀ CÀI ĐẶT TRƯỜNG DANH MỤC CHO PHIẾU NHẬP (MỚI) ===
   function renderImportCategoryField(currentCategory = "") {
@@ -421,7 +439,289 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     return receipt ? receipt.category : "Chưa phân loại";
   }
+  function calculateSellingPrice(importPrice, profitMargin) {
+    return Math.round(importPrice * (1 + profitMargin / 100));
+  }
+  function renderProfitManagement() {
+    hideAllContent();
+    if (!profitContent) return;
+    profitContent.style.display = "block";
 
+    // Lấy danh sách sản phẩm trên kệ
+    const shelfProducts = products.map((product) => {
+      const importPrice = findLatestImportPrice(product.name);
+      const currentPrice = product.value;
+
+      // Tính % lợi nhuận hiện tại
+      let currentProfitMargin = 0;
+      if (importPrice && importPrice !== "") {
+        const importPriceNum = parseInt(importPrice, 10);
+        currentProfitMargin = (
+          ((currentPrice - importPriceNum) / importPriceNum) *
+          100
+        ).toFixed(2);
+      }
+
+      // Lấy % lợi nhuận đã lưu (nếu có)
+      const savedMargin = product.profitMargin || currentProfitMargin;
+
+      return {
+        ...product,
+        importPrice: importPrice || "Chưa có",
+        currentProfitMargin: currentProfitMargin,
+        savedProfitMargin: savedMargin,
+      };
+    });
+
+    let html = `
+    <div class="management-header">
+      <h2><i class="fa-solid fa-chart-line"></i> Quản lý Lợi nhuận</h2>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button onclick="applyProfitToAll()" class="btn-add">
+          <i class="fa-solid fa-percent"></i> Áp dụng % chung
+        </button>
+        <button onclick="refreshProfitManagement()" class="btn-refresh">
+          <i class="fa-solid fa-rotate"></i> Làm mới
+        </button>
+      </div>
+    </div>
+    
+    <div class="stats-container" style="margin-bottom: 20px;">
+      <div class="stat-card">
+        <i class="fa-solid fa-box stat-icon"></i>
+        <div>
+          <h3>${products.length}</h3>
+          <p>Sản phẩm trên kệ</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <i class="fa-solid fa-money-bill-trend-up stat-icon"></i>
+        <div>
+          <h3>${formatPrice(
+            products.reduce((sum, p) => {
+              const importPrice = parseInt(findLatestImportPrice(p.name) || 0);
+              return sum + (p.value - importPrice) * p.quantity;
+            }, 0)
+          )}đ</h3>
+          <p>Tổng lợi nhuận dự kiến</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Tên sản phẩm</th>
+            <th>Giá nhập</th>
+            <th>Giá bán hiện tại</th>
+            <th>% Lợi nhuận hiện tại</th>
+            <th>Điều chỉnh % Lợi nhuận</th>
+            <th>Giá bán mới</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+    shelfProducts.forEach((product, index) => {
+      const importPriceNum = parseInt(product.importPrice) || 0;
+      const newPrice =
+        importPriceNum > 0
+          ? calculateSellingPrice(
+              importPriceNum,
+              parseFloat(product.savedProfitMargin)
+            )
+          : product.value;
+
+      const profitColor =
+        parseFloat(product.currentProfitMargin) >= 0 ? "#38a169" : "#e53e3e";
+
+      html += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${escapeHtml(product.name)}</td>
+        <td>${
+          product.importPrice !== "Chưa có"
+            ? formatPrice(product.importPrice) + "đ"
+            : product.importPrice
+        }</td>
+        <td><strong>${formatPrice(product.value)}đ</strong></td>
+        <td style="font-weight: 600; color: ${profitColor};">
+          ${product.currentProfitMargin}%
+        </td>
+        <td>
+          <input 
+            type="number" 
+            id="profit-${index}" 
+            value="${product.savedProfitMargin}"
+            step="0.1"
+            min="0"
+            max="1000"
+            onchange="updateNewPrice(${index})"
+            style="width: 80px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center;"
+          /> %
+        </td>
+        <td>
+          <strong id="newPrice-${index}" style="color: #667eea; font-size: 16px;">
+            ${formatPrice(newPrice)}đ
+          </strong>
+        </td>
+        <td>
+          <button onclick="applyProfitMargin(${index})" class="btn-edit">
+            <i class="fa-solid fa-check"></i> Áp dụng
+          </button>
+        </td>
+      </tr>
+    `;
+    });
+
+    html += `
+        </tbody>
+      </table>
+    </div>
+    
+    <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+      <strong>📌 Lưu ý:</strong>
+      <ul style="margin: 10px 0 0 20px;">
+        <li>% Lợi nhuận được tính dựa trên giá nhập gần nhất</li>
+        <li>Sản phẩm chưa có giá nhập sẽ không thể điều chỉnh tự động</li>
+        <li>Giá bán mới = Giá nhập × (1 + % Lợi nhuận / 100)</li>
+        <li>Thay đổi % lợi nhuận sẽ cập nhật giá bán trên kệ ngay lập tức</li>
+      </ul>
+    </div>
+  `;
+
+    profitContent.innerHTML = html;
+  }
+  window.updateNewPrice = function (index) {
+    const product = products[index];
+    if (!product) return;
+
+    const profitInput = document.getElementById(`profit-${index}`);
+    const newPriceDisplay = document.getElementById(`newPrice-${index}`);
+
+    if (!profitInput || !newPriceDisplay) return;
+
+    const importPrice = parseInt(findLatestImportPrice(product.name) || 0);
+
+    if (importPrice <= 0) {
+      alert("Sản phẩm chưa có giá nhập. Không thể tính toán tự động!");
+      profitInput.value = 0;
+      return;
+    }
+
+    const profitMargin = parseFloat(profitInput.value) || 0;
+    const newPrice = calculateSellingPrice(importPrice, profitMargin);
+
+    newPriceDisplay.textContent = formatPrice(newPrice) + "đ";
+  };
+  window.applyProfitMargin = function (index) {
+    const product = products[index];
+    if (!product) return;
+
+    const profitInput = document.getElementById(`profit-${index}`);
+    if (!profitInput) return;
+
+    const importPrice = parseInt(findLatestImportPrice(product.name) || 0);
+
+    if (importPrice <= 0) {
+      alert(
+        "⚠️ Sản phẩm chưa có giá nhập. Không thể áp dụng % lợi nhuận tự động!"
+      );
+      return;
+    }
+
+    const profitMargin = parseFloat(profitInput.value) || 0;
+
+    if (profitMargin < 0) {
+      alert("⚠️ % Lợi nhuận không thể âm!");
+      return;
+    }
+
+    if (
+      !confirm(
+        `Áp dụng lợi nhuận ${profitMargin}% cho sản phẩm "${
+          product.name
+        }"?\n\nGiá nhập: ${formatPrice(
+          importPrice
+        )}đ\nGiá bán mới: ${formatPrice(
+          calculateSellingPrice(importPrice, profitMargin)
+        )}đ`
+      )
+    ) {
+      return;
+    }
+
+    const newPrice = calculateSellingPrice(importPrice, profitMargin);
+
+    // Cập nhật giá và % lợi nhuận
+    products[index].value = newPrice;
+    products[index].profitMargin = profitMargin;
+
+    // Lưu vào localStorage
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+
+    // Render lại
+    renderProfitManagement();
+
+    alert(
+      `✅ Đã cập nhật giá bán cho "${product.name}"!\nGiá mới: ${formatPrice(
+        newPrice
+      )}đ`
+    );
+  };
+  window.applyProfitToAll = function () {
+    const margin = prompt("Nhập % lợi nhuận chung cho TẤT CẢ sản phẩm:", "20");
+
+    if (margin === null) return;
+
+    const profitMargin = parseFloat(margin);
+
+    if (isNaN(profitMargin) || profitMargin < 0) {
+      alert("⚠️ % Lợi nhuận không hợp lệ!");
+      return;
+    }
+
+    if (
+      !confirm(
+        `Áp dụng lợi nhuận ${profitMargin}% cho TẤT CẢ ${products.length} sản phẩm?\n\nCẢNH BÁO: Hành động này sẽ thay đổi giá bán của tất cả sản phẩm có giá nhập!`
+      )
+    ) {
+      return;
+    }
+
+    let updatedCount = 0;
+    let skippedCount = 0;
+
+    products.forEach((product, index) => {
+      const importPrice = parseInt(findLatestImportPrice(product.name) || 0);
+
+      if (importPrice > 0) {
+        const newPrice = calculateSellingPrice(importPrice, profitMargin);
+        products[index].value = newPrice;
+        products[index].profitMargin = profitMargin;
+        updatedCount++;
+      } else {
+        skippedCount++;
+      }
+    });
+
+    // Lưu vào localStorage
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+
+    // Render lại
+    renderProfitManagement();
+
+    alert(
+      `✅ Hoàn tất!\n\n- Đã cập nhật: ${updatedCount} sản phẩm\n- Bỏ qua (chưa có giá nhập): ${skippedCount} sản phẩm`
+    );
+  };
+  window.refreshProfitManagement = function () {
+    products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+    renderProfitManagement();
+  };
   // === QUẢN LÝ KHO (CẬP NHẬT: THÊM TÍNH NĂNG TÌM KIẾM NÂNG CAO) ===
   /**
    * Render giao diện Quản lý tồn kho.
@@ -1011,7 +1311,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
         <h2><i class="fa-solid fa-box"></i> Quản lý Sản phẩm</h2>
         <div style="display: flex; align-items: center; gap: 10px;">
             <button onclick="addNewProduct()" class="btn-add">
-                <i class="fa-solid fa-plus"></i> Thêm sản phẩm (Từ kho)
+                <i class="fa-solid fa-plus"></i> Thêm sản phẩm
             </button>
             <button onclick="refreshProducts()" class="btn-refresh">
                 <i class="fa-solid fa-rotate"></i> Làm mới
@@ -2449,6 +2749,9 @@ Tổng tiền: ${formatPrice(invoice.total)}đ
 
   if (manageStockBtn) {
     manageStockBtn.addEventListener("click", () => renderStockManagement());
+  }
+  if (manageProfitBtn) {
+    manageProfitBtn.addEventListener("click", renderProfitManagement);
   }
 
   // === GẮN SỰ KIỆN CHO FORM SẢN PHẨM (GIỮ NGUYÊN) ===
