@@ -394,7 +394,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return Object.values(stock);
   }
-
+  function getAvailableStockProducts() {
+    const stock = calculateStock();
+    // Chỉ lấy sản phẩm có quantity > 0
+    return stock.filter((item) => item.quantity > 0);
+  }
   // === HÀM LẤY DANH MỤC CỦA SẢN PHẨM TỪ KHO/PHIẾU NHẬP (MỚI) ===
   function findProductCategory(productName) {
     // Tìm danh mục từ bản ghi tồn kho
@@ -1840,7 +1844,9 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     event.preventDefault();
 
     // 1. Lấy dữ liệu input (Tên SP, SL, Đơn giá, Danh mục)
-    const productName = document.getElementById("importProductName").value.trim();
+    const productName = document
+      .getElementById("importProductName")
+      .value.trim();
     const quantity = parseInt(document.getElementById("importQuantity").value);
     const price = parseInt(document.getElementById("importPrice").value);
     const category = document.getElementById("importCategory").value.trim();
@@ -1951,7 +1957,9 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           
           <div style="margin-bottom: 15px; font-size: 14px; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
               <p><strong>Ngày nhập:</strong> ${receipt.date}</p>
-              <p><strong>Người nhập:</strong> ${escapeHtml(receipt.importedBy)}</p>
+              <p><strong>Người nhập:</strong> ${escapeHtml(
+                receipt.importedBy
+              )}</p>
               <p><strong>Trạng thái:</strong> <span style="font-weight: 600; color: ${
                 receipt.status === "Hoàn thành" ? "green" : "orange"
               };">${receipt.status}</span></p>
@@ -2178,7 +2186,9 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       const statusOptions = allStatuses
         .map(
           (s) =>
-            `<option value="${s}" ${s === status ? "selected" : ""}>${s}</option>`
+            `<option value="${s}" ${
+              s === status ? "selected" : ""
+            }>${s}</option>`
         )
         .join("");
 
@@ -2252,9 +2262,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
         <div class="stat-card">
           <i class="fa-solid fa-ban stat-icon"></i>
           <div>
-            <h3>${
-              invoices.filter((inv) => inv.status === "Đã hủy").length
-            }</h3>
+            <h3>${invoices.filter((inv) => inv.status === "Đã hủy").length}</h3>
             <p>Đơn hàng đã hủy</p>
           </div>
         </div>
