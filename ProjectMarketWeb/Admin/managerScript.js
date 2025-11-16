@@ -1,57 +1,87 @@
-const PRODUCTS_KEY = "products";
+// === KHAI BÁO BIẾN TOÀN CỤC VÀ KHÓA LOCALSTORAGE ===
+const PRODUCTS_KEY = "products"; // Sản phẩm trên kệ (Inventory)
+const PRODUCT_DEFINITIONS_KEY = "productDefinitions"; // Định nghĩa sản phẩm (Catalog)
+const STORAGE_KEY = "userAccounts";
+const INVOICES_KEY = "invoices";
+const IMPORT_RECEIPTS_KEY = "importReceipts";
+
+// Tải dữ liệu từ LocalStorage
 let products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+let productDefinitions =
+  JSON.parse(localStorage.getItem(PRODUCT_DEFINITIONS_KEY)) || [];
+let users = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let invoices = JSON.parse(localStorage.getItem(INVOICES_KEY)) || [];
+let importReceipts =
+  JSON.parse(localStorage.getItem(IMPORT_RECEIPTS_KEY)) || [];
+
+// Biến trạng thái cho Popup
+window.editingProductIndex = -1;
+window.isAddingDefinition = false; // Cờ mới: true khi "Thêm định nghĩa"
+
 document.addEventListener("DOMContentLoaded", () => {
-  const STORAGE_KEY = "userAccounts";
-  const INVOICES_KEY = "invoices";
-  const IMPORT_RECEIPTS_KEY = "importReceipts";
-
-  let users = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  let invoices = JSON.parse(localStorage.getItem(INVOICES_KEY)) || [];
-  let importReceipts =
-    JSON.parse(localStorage.getItem(IMPORT_RECEIPTS_KEY)) || [];
-
   // === THÊM CSS CHO TRẠNG THÁI HÓA ĐƠN ===
   const adminStyles = document.createElement("style");
   adminStyles.textContent = `
-    .invoice-status-select {
-      padding: 6px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+    /* ... (Giữ nguyên CSS) ... */
+    .invoice-status-select { padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; font-weight: 600; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-position: right 10px center; background-repeat: no-repeat; background-size: 12px; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%23666"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>'); padding-right: 30px; }
+    .status-new { background-color: #e0f2fe; color: #0c4a6e; border-color: #7dd3fc; }
+    .status-processing { background-color: #fef9c3; color: #713f12; border-color: #fde047; }
+    .status-delivered { background-color: #dcfce7; color: #14532d; border-color: #86efac; }
+    .status-delivering { background-color: #fcecdcff; color: #533a14ff; border-color: #efb986ff; }
+    .status-canceled { background-color: #fee2e2; color: #7f1d1d; border-color: #fca5a5; }
+
+    /* (MỚI) CSS CHO SẢN PHẨM BỊ ẨN */
+    .product-row-hidden { 
+      opacity: 0.6; 
+      background-color: #fcfcfc; 
+    }
+    .product-row-hidden td { 
+      color: #777; 
+    }
+    .product-row-hidden .product-img-mini {
+      filter: grayscale(80%);
+    }
+
+    /* (MỚI) CSS CHO BỘ LỌC */
+    .filter-controls { 
+      display: flex; 
+      gap: 10px; 
+      margin-bottom: 20px; 
+      flex-wrap: wrap; 
+      align-items: center;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+    }
+    .filter-controls input[type="text"],
+    .filter-controls input[type="date"],
+    .filter-controls select {
+      padding: 8px; 
+      border: 1px solid #ccc; 
+      border-radius: 4px; 
+    }
+    .filter-controls label {
       font-weight: 600;
-      outline: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-position: right 10px center;
-      background-repeat: no-repeat;
-      background-size: 12px;
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%23666"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>');
-      padding-right: 30px; /* Thêm không gian cho mũi tên */
+      font-size: 14px;
+      margin-right: -5px;
     }
-    .status-new {
-      background-color: #e0f2fe; /* blue-100 */
-      color: #0c4a6e; /* blue-800 */
-      border-color: #7dd3fc; /* blue-300 */
+    .filter-controls .btn-filter {
+      padding: 8px 12px;
+      background-color: #667eea;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
     }
-    .status-processing {
-      background-color: #fef9c3; /* yellow-100 */
-      color: #713f12; /* yellow-800 */
-      border-color: #fde047; /* yellow-300 */
-    }
-    .status-delivered {
-      background-color: #dcfce7; /* green-100 */
-      color: #14532d; /* green-800 */
-      border-color: #86efac; /* green-300 */
-    }
-    .status-delivering {
-      background-color: #fcecdcff; /* brown-100 */
-      color: #533a14ff; /* brown-800 */
-      border-color: #efb986ff; /* brown-300 */
-    }
-    .status-canceled {
-      background-color: #fee2e2; /* red-100 */
-      color: #7f1d1d; /* red-800 */
-      border-color: #fca5a5; /* red-300 */
+    .filter-controls .btn-reset {
+      padding: 8px 12px;
+      background-color: #718096;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
     }
   `;
   document.head.appendChild(adminStyles);
@@ -71,9 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const stockContent = document.getElementById("stockContent");
   const stockTableBody = document.getElementById("stockTableBody");
 
-  window.editingProductIndex = -1;
-
-  // Helper Functions
+  // === HÀM TIỆN ÍCH CƠ BẢN (GIỮ NGUYÊN) ===
   function formatPrice(value) {
     return parseInt(value || 0).toLocaleString("vi-VN");
   }
@@ -104,21 +132,343 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /**
-   * (HÀM MỚI) Kiểm tra xem sản phẩm đã từng được mua hay chưa.
-   * @param {string} productName Tên sản phẩm cần kiểm tra.
-   * @returns {boolean} True nếu đã từng được mua, false nếu chưa.
-   */
-  function hasProductBeenPurchased(productName) {
+  function getBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  }
+
+  const placeholderImg = `data:image/svg+xml;utf8,${encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="#f2f2f2"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-size="28">No Image</text></svg>'
+  )}`;
+
+  // === (HÀM MỚI) HỖ TRỢ PHÂN TÍCH NGÀY THÁNG VIỆT NAM ===
+  function parseVNDate(dateString) {
+    if (!dateString) return null;
+    try {
+      const datePart = dateString.split(",")[0].trim(); // "17/11/2025"
+      const parts = datePart.split("/"); // ["17", "11", "2025"]
+      if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1; // Tháng trong JS bắt đầu từ 0
+        const year = parseInt(parts[2], 10);
+        if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+          const dateObj = new Date(year, month, day);
+          if (
+            dateObj.getFullYear() === year &&
+            dateObj.getMonth() === month &&
+            dateObj.getDate() === day
+          ) {
+            return dateObj;
+          }
+        }
+      }
+      return null;
+    } catch (e) {
+      console.error("Lỗi phân tích ngày:", dateString, e);
+      return null;
+    }
+  }
+  // ========================================================
+
+  // (KHỐI DỮ LIỆU MẪU - TỪ FILE CỦA BẠN)
+  localStorage.setItem(
+    "productDefinitions",
+    JSON.stringify([
+      {
+        name: "Laptop Dell XPS 13 9340",
+        category: "Laptop",
+        description:
+          "Laptop cao cấp siêu mỏng nhẹ với màn hình InfinityEdge, hiệu năng mạnh mẽ cho công việc và giải trí.",
+        specs:
+          "CPU: Intel Core Ultra 7, RAM: 32GB LPDDR5x, Ổ cứng: 1TB SSD NVMe, Màn hình: 13.4 inch 3K+",
+        image: "../image/DellXPS13.jpg",
+      },
+      {
+        name: "Apple Watch Series 9 45mm",
+        category: "Đồng hồ thông minh",
+        description:
+          "Đồng hồ thông minh thế hệ mới nhất từ Apple với chip S9 SiP, hỗ trợ Double Tap, màn hình sáng hơn và tích hợp Siri trên thiết bị.",
+        specs:
+          "Chip: S9 SiP, Kích thước: 45mm, Chống nước: 50m, Tính năng: Double Tap, Cảm biến: Oxy trong máu, ECG",
+        image: "../image/AppleWatchS9.jpg",
+      },
+      {
+        name: "RAM Corsair Vengeance RGB 32GB (2x16GB) DDR5",
+        category: "Linh kiện PC",
+        description:
+          "Kit RAM DDR5 hiệu năng cao với đèn LED RGB, tối ưu cho các hệ thống PC gaming và workstation hiện đại.",
+        specs:
+          "Dung lượng: 32GB (2x16GB), Loại: DDR5, Tốc độ: 6000MHz, LED: RGB",
+        image: "../image/CorsairVengeance32GB.jpg",
+      },
+      {
+        name: "iPad Pro 12.9 inch M2 256GB",
+        category: "Máy tính bảng",
+        description:
+          "Máy tính bảng mạnh mẽ nhất của Apple với chip M2, màn hình Liquid Retina XDR và hỗ trợ Apple Pencil 2.",
+        specs:
+          "Chip: Apple M2, Kích thước: 12.9 inch, Màn hình: Liquid Retina XDR, Dung lượng: 256GB, Màu: Xám không gian",
+        image: "../image/iPadProM2.jpg",
+      },
+      {
+        name: "Apple AirPods Pro 2 (USB-C)",
+        category: "Tai nghe",
+        description:
+          "Tai nghe không dây chống ồn chủ động (ANC) cao cấp, chất âm vượt trội và hộp sạc USB-C.",
+        specs:
+          "Chip: H2, Chống ồn: Chủ động (ANC), Hộp sạc: USB-C, Tính năng: Âm thanh không gian",
+        image: "../image/AirPodsPro2.jpg",
+      },
+      {
+        name: "Sạc dự phòng Anker 20000mAh",
+        category: "Phụ kiện",
+        description:
+          "Sạc dự phòng dung lượng cao 20.000mAh, tích hợp cáp USB-C và màn hình hiển thị phần trăm pin.",
+        specs:
+          "Dung lượng: 20000mAh, Công suất: 22.5W, Cổng ra: USB-C (tích hợp), USB-A",
+        image: "../image/Anker20000mAh.jpg",
+      },
+      {
+        name: "Cáp Belkin USB-C to Lightning",
+        category: "Phụ kiện",
+        description:
+          "Cáp sạc và truyền dữ liệu bện dù siêu bền, hỗ trợ sạc nhanh cho iPhone.",
+        specs:
+          "Đầu vào: USB-C, Đầu ra: Lightning, Chiều dài: 1m, Chất liệu: Bện dù, Màu: Đen",
+        image: "../image/CableUSBCtoLightning.jpg",
+      },
+      {
+        name: "Gimbal DJI Osmo Mobile 6",
+        category: "Phụ kiện",
+        description:
+          "Gimbal chống rung 3 trục cho điện thoại thông minh, thiết kế nhỏ gọn, dễ sử dụng với nhiều tính năng quay phim sáng tạo.",
+        specs:
+          "Chống rung: 3 trục, Kết nối: Bluetooth 5.1, Tính năng: ActiveTrack 6.0, Tải trọng: 170-290g",
+        image: "../image/DJIOM6.jpg",
+      },
+      {
+        name: "iPhone 15 Pro Max 256GB",
+        category: "Điện thoại",
+        description:
+          "iPhone cao cấp nhất với khung viền Titan, chip A17 Pro, hệ thống camera Pro mạnh mẽ và cổng sạc USB-C.",
+        specs:
+          "Chip: A17 Pro, Màn hình: 6.7 inch ProMotion, Camera: 48MP, Zoom quang: 5x, Chất liệu: Titan tự nhiên",
+        image: "../image/IP15PM.jpg",
+      },
+      {
+        name: "Ổ cứng WD My Passport 2TB",
+        category: "Phụ kiện lưu trữ",
+        description:
+          "Ổ cứng di động nhỏ gọn, độ bền cao, phù hợp sao lưu dữ liệu và mang theo khi di chuyển.",
+        specs:
+          "Dung lượng: 2TB, Chuẩn kết nối: USB 3.2 Gen 1, Tương thích: Windows/macOS",
+        image: "../image/WDMyPassport2TB.jpg",
+      },
+      {
+        name: "Router TP-Link Archer AX73",
+        category: "Thiết bị mạng",
+        description:
+          "Router WiFi 6 tốc độ cao, băng thông mạnh mẽ, phù hợp cho gia đình hoặc văn phòng.",
+        specs:
+          "WiFi: WiFi 6 AX5400, Băng tần: 2.4GHz & 5GHz, Cổng LAN: 4x Gigabit LAN, Anten: 6",
+        image: "../image/TPLinkArcherAX73.jpg",
+      },
+      {
+        name: "Tai nghe Sony WH-1000XM5",
+        category: "Tai nghe",
+        description:
+          "Tai nghe chống ồn chủ động hàng đầu, chất âm cao cấp và thời lượng pin ấn tượng.",
+        specs:
+          "Driver: 30mm, Chống ồn ANC, Pin: 30 giờ, Sạc nhanh: 3 phút cho 3 giờ dùng",
+        image: "../image/SonyWH1000XM5.jpg",
+      },
+      {
+        name: "Samsung Galaxy Tab S9",
+        category: "Máy tính bảng",
+        description:
+          "Tablet cao cấp màn hình AMOLED sắc nét, hỗ trợ S-Pen và hiệu năng mạnh mẽ.",
+        specs:
+          "Màn hình: 11 inch Dynamic AMOLED 2X, CPU: Snapdragon 8 Gen 2, RAM: 8GB, Bộ nhớ: 128GB",
+        image: "../image/SamsungTabS9.jpg",
+      },
+      {
+        name: "Samsung Galaxy Watch 6",
+        category: "Đồng hồ thông minh",
+        description:
+          "Smartwatch hiện đại với màn hình lớn, nhiều tính năng theo dõi sức khỏe và luyện tập.",
+        specs:
+          "Màn hình: Super AMOLED, Kích thước: 40/44mm, Tính năng: Theo dõi nhịp tim, SpO2, ECG",
+        image: "../image/SamsungGW6.jpg",
+      },
+      {
+        name: "SSD Samsung 990 PRO 1TB",
+        category: "Linh kiện máy tính",
+        description:
+          "SSD NVMe cao cấp với tốc độ đọc ghi cực nhanh, thích hợp cho game thủ và dân đồ họa.",
+        specs:
+          "Dung lượng: 1TB, Chuẩn: NVMe PCIe 4.0, Đọc: 7450 MB/s, Ghi: 6900 MB/s",
+        image: "../image/Samsung990PRO1TB.jpg",
+      },
+      {
+        name: "Ốp lưng iPhone 15 Pro",
+        category: "Phụ kiện điện thoại",
+        description:
+          "Ốp lưng bảo vệ thiết kế sang trọng, chống sốc tốt cho iPhone 15 Pro.",
+        specs:
+          "Dành cho: iPhone 15 Pro, Chất liệu: TPU/PC, Tính năng: Chống sốc, chống trượt",
+        image: "../image/OpLungIP15Pro.jpg",
+      },
+      {
+        name: "MacBook Air M3",
+        category: "Laptop",
+        description:
+          "Laptop siêu mỏng nhẹ với chip Apple M3 mạnh mẽ, thời lượng pin dài và màn hình Liquid Retina sắc nét.",
+        specs:
+          "CPU: Apple M3, RAM: 8GB, SSD: 256GB, Màn hình: 13.6 inch Liquid Retina",
+        image: "../image/MacM3.jpg",
+      },
+      {
+        name: "MacBook Pro 14 M3",
+        category: "Laptop",
+        description:
+          "Laptop hiệu năng cao với chip Apple M3, màn hình Liquid Retina XDR và thời lượng pin vượt trội.",
+        specs:
+          "CPU: Apple M3, RAM: 8GB, SSD: 512GB, Màn hình: 14.2 inch Liquid Retina XDR",
+        image: "../image/MBP14M3.jpg",
+      },
+      {
+        name: "Chuột Logitech MX Master 3S",
+        category: "Phụ kiện máy tính",
+        description:
+          "Chuột cao cấp cho dân văn phòng và sáng tạo nội dung, độ chính xác cao, cuộn siêu nhanh và hỗ trợ đa thiết bị.",
+        specs:
+          "Cảm biến: 8000 DPI, Kết nối: Bluetooth/Logi Bolt, Pin: 70 ngày, Tính năng: Silent Click, MagSpeed Scroll",
+        image: "../image/LogitechMXMaster3S.jpg",
+      },
+    ])
+  );
+  // ========================================================
+
+  // === (HÀM MỚI) TÍNH TOÁN TỒN KHO THỰC TẾ (ĐÃ SỬA LỖI) ===
+  function calculateInventory() {
+    // ... (Giữ nguyên hàm calculateInventory đã sửa lỗi) ...
+    const inventory = {};
+    importReceipts.forEach((receipt) => {
+      if (receipt.status === "Hoàn thành") {
+        receipt.items.forEach((item) => {
+          const key = item.productName.trim().toLowerCase();
+          const quantity = parseInt(item.quantity || 0);
+          if (!inventory[key]) {
+            inventory[key] = { imported: 0, sold: 0, stock: 0 };
+          }
+          inventory[key].imported += quantity;
+        });
+      }
+    });
+    invoices.forEach((invoice) => {
+      if (invoice.status !== "Đã hủy") {
+        invoice.items.forEach((item) => {
+          const key = item.name.trim().toLowerCase();
+          const quantity = parseInt(item.quantity || 0);
+          if (!inventory[key]) {
+            inventory[key] = { imported: 0, sold: 0, stock: 0 };
+          }
+          inventory[key].sold += quantity;
+        });
+      }
+    });
+    Object.keys(inventory).forEach((key) => {
+      inventory[key].stock = inventory[key].imported - inventory[key].sold;
+    });
+    return inventory;
+  }
+
+  // === (CẬP NHẬT) ĐỒNG BỘ TỒN KHO LÊN KỆ (Thêm logic Ẩn/Hiện) ===
+  function syncInventoryToShelf() {
+    const inventory = calculateInventory();
+    const oldProducts = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+    let newProductsArray = [];
+
+    // Duyệt qua tất cả CÁC ĐỊNH NGHĨA SẢN PHẨM
+    productDefinitions.forEach((def) => {
+      const key = def.name.trim().toLowerCase();
+      const stockInfo = inventory[key] || { stock: 0 };
+      const onShelfQuantity = stockInfo.stock;
+
+      const oldProduct = oldProducts.find(
+        (p) => p.name.trim().toLowerCase() === key
+      );
+
+      const latestImportPrice = parseInt(findLatestImportPrice(def.name) || 0);
+      let sellingPrice;
+
+      if (oldProduct && oldProduct.profitMargin > 0 && latestImportPrice > 0) {
+        sellingPrice = calculateSellingPrice(
+          latestImportPrice,
+          oldProduct.profitMargin
+        );
+      } else {
+        sellingPrice = latestImportPrice;
+      }
+
+      newProductsArray.push({
+        name: def.name,
+        category: def.category,
+        description: def.description,
+        specs: def.specs,
+        image: def.image || (oldProduct ? oldProduct.image : placeholderImg),
+        value: sellingPrice,
+        quantity: onShelfQuantity,
+
+        // === LOGIC CẬP NHẬT ===
+        isManuallyHidden: def.isManuallyHidden || false, // (1. Thêm dòng này)
+        isHidden: onShelfQuantity <= 0 || def.isManuallyHidden === true, // (2. Sửa dòng này)
+        // =======================
+
+        profitMargin: oldProduct ? oldProduct.profitMargin : 0,
+      });
+    });
+
+    // Cập nhật biến toàn cục và lưu
+    products = newProductsArray;
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+  }
+
+  // === Tải lại dữ liệu và Đồng bộ ngay khi tải trang ===
+  function reloadDataAndSync() {
+    users = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    invoices = JSON.parse(localStorage.getItem(INVOICES_KEY)) || [];
+    importReceipts =
+      JSON.parse(localStorage.getItem(IMPORT_RECEIPTS_KEY)) || [];
+    productDefinitions =
+      JSON.parse(localStorage.getItem(PRODUCT_DEFINITIONS_KEY)) || [];
+
+    // Đồng bộ tồn kho lên kệ (Quan trọng nhất)
+    syncInventoryToShelf();
+  }
+  // ========================================================
+
+  // === CÁC HÀM TIỆN ÍCH CŨ (GIỮ NGUYÊN) ===
+  function isProductInUse(productName) {
     const lowerCaseName = productName.trim().toLowerCase();
-    // 'invoices' là biến toàn cục đã được tải
-    return invoices.some((invoice) =>
+    const inInvoice = invoices.some((invoice) =>
       invoice.items.some(
         (item) => item.name.trim().toLowerCase() === lowerCaseName
       )
     );
+    if (inInvoice) return true;
+    const inReceipt = importReceipts.some((receipt) =>
+      receipt.items.some(
+        (item) => item.productName.trim().toLowerCase() === lowerCaseName
+      )
+    );
+    if (inReceipt) return true;
+    return false;
   }
-
   function hideAllContent() {
     if (userContent) userContent.style.display = "none";
     if (productContent) productContent.style.display = "none";
@@ -127,27 +477,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (stockContent) stockContent.style.display = "none";
     if (profitContent) profitContent.style.display = "none";
   }
-
-  // === SỬA LỖI 1: Thêm kiểm tra 'user && user.username' ===
   function calculateUserStats() {
     const stats = {};
-    // Khởi tạo thống kê cho tất cả người dùng
     users.forEach((user) => {
-      // Dùng username làm key
       if (user && user.username) {
-        // <<< SỬA LỖI: Kiểm tra user và username tồn tại
         stats[user.username.trim().toLowerCase()] = {
           orderCount: 0,
           totalRevenue: 0,
-          ...user, // Copy các thuộc tính khác (như address, phone)
+          ...user,
         };
       }
     });
-
-    // Tính toán số lượng hóa đơn
     invoices.forEach((invoice) => {
       if (invoice && invoice.user) {
-        // Thêm kiểm tra an toàn
         const usernameKey = invoice.user.trim().toLowerCase();
         if (stats[usernameKey]) {
           stats[usernameKey].orderCount += 1;
@@ -155,80 +497,48 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     });
-
     return Object.values(stats);
   }
-
-  // === TÍNH NĂNG MỚI: HÀM TÍNH TOÁN CHI TIẾT NHẬP/XUẤT/KỆ ===
-  /**
-   * Tính toán chi tiết nhập/xuất/kệ cho một sản phẩm cụ thể.
-   * @param {string} productName Tên sản phẩm.
-   * @returns {{imported: number, sold: number, onShelf: number, available: number}} Chi tiết.
-   */
   function calculateStockBreakdown(productName) {
     const key = productName.trim().toLowerCase();
     let imported = 0;
     let sold = 0;
     let onShelf = 0;
-
-    // 1. Tính tổng số lượng nhập vào (ĐÃ SỬA)
     importReceipts.forEach((receipt) => {
-      // LẶP QUA TỪNG MẶT HÀNG TRONG PHIẾU NHẬP
       receipt.items.forEach((item) => {
-        // So sánh tên sản phẩm của mặt hàng với tên cần tìm
         if (item.productName.trim().toLowerCase() === key) {
           imported += parseInt(item.quantity || 0);
         }
       });
     });
-
-    // 2. Tính tổng số lượng đã bán (Giữ nguyên, giả định invoices.items vẫn là mảng 1 cấp)
-    if (typeof invoices !== "undefined") {
-      invoices.forEach((invoice) => {
-        invoice.items.forEach((item) => {
-          if (item.name.trim().toLowerCase() === key) {
-            sold += parseInt(item.quantity || 0);
-          }
-        });
-      });
-    }
-
-    // 3. Tính tổng số lượng đã đưa lên kệ (Giữ nguyên)
-    if (typeof products !== "undefined") {
-      products.forEach((product) => {
-        if (product.name.trim().toLowerCase() === key) {
-          onShelf += parseInt(product.quantity || 0);
+    invoices.forEach((invoice) => {
+      invoice.items.forEach((item) => {
+        if (item.name.trim().toLowerCase() === key) {
+          sold += parseInt(item.quantity || 0);
         }
       });
+    });
+    const productOnShelf = products.find(
+      (p) => p.name.trim().toLowerCase() === key
+    );
+    if (productOnShelf) {
+      onShelf = parseInt(productOnShelf.quantity || 0);
     }
-
-    // Tồn kho khả dụng (theo logic của calculateStock: Nhập - Bán - Trên Kệ)
-    const available = imported - sold - onShelf;
-
+    const available = onShelf;
     return { imported, sold, onShelf, available };
   }
-  // ===================================================================
-
-  // === HÀM LẤY DANH MỤC ĐỘC NHẤT (Dùng chung cho Phiếu nhập và Bộ lọc) ===
   function getUniqueCategories() {
     const categories = new Set();
-    products.forEach((p) => categories.add(p.category));
-    importReceipts.forEach((r) => categories.add(r.category));
-
-    // Loại bỏ các giá trị null/undefined/empty string và sắp xếp
+    productDefinitions.forEach((p) => categories.add(p.category));
     const filteredCategories = Array.from(categories)
       .filter((c) => c && c.trim() !== "")
       .sort();
-
     return [...new Set(filteredCategories)];
   }
-
-  // === HÀM LẤY CÁC KHOẢNG GIÁ ĐỘC NHẤT (Dùng cho Bộ lọc) ===
   function getPriceRanges() {
     const prices = products.map((p) => p.value);
     const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
     const ranges = [];
-
     if (maxPrice > 0) {
       ranges.push({ label: "Dưới 100.000đ", min: 0, max: 100000 });
       if (maxPrice > 100000)
@@ -242,237 +552,125 @@ document.addEventListener("DOMContentLoaded", () => {
       if (maxPrice > 1000000)
         ranges.push({ label: "Trên 1.000.000đ", min: 1000000, max: Infinity });
     }
-
-    // Chuyển đổi các khoảng giá thành format string "min-max"
     return ranges.map((range) => ({
       label: range.label,
       value: `${range.min}-${range.max === Infinity ? "" : range.max}`,
     }));
   }
-
   function findLatestImportPrice(productName) {
     if (!productName) return "";
-
     const lowerCaseName = productName.trim().toLowerCase();
-
-    // Duyệt ngược từ phiếu nhập mới nhất
     for (let i = importReceipts.length - 1; i >= 0; i--) {
       const receipt = importReceipts[i];
-
-      // Kiểm tra receipt và items có tồn tại
-      if (!receipt || !Array.isArray(receipt.items)) continue;
-
-      // TÌM TRONG MẢNG ITEMS của phiếu nhập
-      for (let j = 0; j < receipt.items.length; j++) {
-        const item = receipt.items[j];
-
-        // So sánh tên sản phẩm
-        if (
-          item &&
-          item.productName &&
-          item.productName.trim().toLowerCase() === lowerCaseName
-        ) {
-          // Trả về giá của mặt hàng này
-          return typeof item.price !== "undefined" ? item.price : "";
-        }
-      }
-    }
-
-    return ""; // Không tìm thấy
-  }
-  // === HÀM TẠO VÀ CÀI ĐẶT TRƯỜNG DANH MỤC CHO PHIẾU NHẬP (MỚI) ===
-  function renderImportCategoryField(currentCategory = "") {
-    const categories = getUniqueCategories();
-
-    let categoryOptions = categories
-      .map((cat) => {
-        const selected = cat === currentCategory ? "selected" : "";
-        return `<option value="${escapeHtml(cat)}" ${selected}>${escapeHtml(
-          cat
-        )}</option>`;
-      })
-      .join("");
-
-    const isCustom = currentCategory && !categories.includes(currentCategory);
-
-    categoryOptions =
-      `<option value="">-- Chọn danh mục --</option><option value="Khác">-- Nhập danh mục mới --</option>` +
-      categoryOptions;
-
-    return `
-        <div id="importCategoryWrapper" style="margin-bottom: 15px;">
-            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Danh mục:</label>
-            <select id="importCategorySelect" onchange="window.checkImportCategoryInput()" required
-                style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none; margin-bottom: 5px;">
-                ${categoryOptions}
-            </select>
-            <input type="text" id="importCategoryInput" value="${
-              isCustom ? escapeHtml(currentCategory) : ""
-            }"
-                style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none; margin-top: 5px; display: ${
-                  isCustom ? "block" : "none"
-                };"
-                placeholder="Nhập danh mục mới...">
-            <input type="hidden" id="importCategory" value="${escapeHtml(
-              currentCategory
-            )}" required>
-        </div>
-    `;
-  }
-
-  // === HÀM XỬ LÝ SỰ KIỆN CHỌN DANH MỤC PHIẾU NHẬP (MỚI) ===
-  window.checkImportCategoryInput = function () {
-    const select = document.getElementById("importCategorySelect");
-    const input = document.getElementById("importCategoryInput");
-    const hidden = document.getElementById("importCategory");
-
-    if (select && input && hidden) {
-      if (select.value === "Khác") {
-        input.style.display = "block";
-        input.required = true;
-        input.value = "";
-        hidden.value = "";
-        input.oninput = () => (hidden.value = input.value.trim());
-      } else if (select.value === "") {
-        input.style.display = "none";
-        input.required = false;
-        input.value = "";
-        hidden.value = "";
-      } else {
-        input.style.display = "none";
-        input.required = false;
-        input.value = select.value;
-        hidden.value = select.value;
-      }
-    }
-  };
-
-  // === HÀM CHUYỂN FILE ẢNH SANG BASE64 ĐỂ LƯU VĨNH VIỄN ===
-  function getBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  }
-
-  // Placeholder image an toàn (dùng khi không có file)
-  const placeholderImg = `data:image/svg+xml;utf8,${encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="#f2f2f2"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-size="28">No Image</text></svg>'
-  )}`;
-  // === HÀM TÍNH TOÁN TỒN KHO TỪ PHIẾU NHẬP VÀ HÓA ĐƠN (GIỮ NGUYÊN) ===
-  /**
-   * Tính toán tồn kho thực tế bằng cách tổng hợp phiếu nhập và trừ đi hóa đơn bán hàng.
-   * @returns {Array<{productName: string, category: string, quantity: number}>} Danh sách tồn kho.
-   */
-  function calculateStock() {
-    let stock = {};
-
-    // 1. Tính tổng số lượng nhập vào (từ Phiếu nhập hàng)
-    // Cần LẶP QUA MẢNG ITEMS của mỗi phiếu nhập
-    importReceipts.forEach((receipt) => {
-      receipt.items.forEach((item) => {
-        const key = item.productName.trim().toLowerCase();
-        const category = item.category || "Chưa phân loại";
-        const quantityAdded = parseInt(item.quantity || 0);
-
-        if (!stock[key]) {
-          stock[key] = {
-            productName: item.productName,
-            category: category,
-            quantity: 0,
-          };
-        }
-        // Cộng dồn số lượng của mặt hàng hiện tại
-        stock[key].quantity += quantityAdded;
-
-        // Cập nhật danh mục (sử dụng danh mục từ item, không phải từ receipt)
-        stock[key].category = category;
-      });
-    });
-
-    // 2. Trừ số lượng đã bán (từ Hóa đơn)
-    // Giả định: Cấu trúc invoices.items.item.name và item.quantity là đúng
-    if (typeof invoices !== "undefined") {
-      // Kiểm tra biến invoices có tồn tại không
-      invoices.forEach((invoice) => {
-        invoice.items.forEach((item) => {
-          const key = item.name.trim().toLowerCase();
-          if (stock[key]) {
-            stock[key].quantity -= parseInt(item.quantity || 0);
+      if (
+        receipt &&
+        receipt.status === "Hoàn thành" &&
+        Array.isArray(receipt.items)
+      ) {
+        for (let j = 0; j < receipt.items.length; j++) {
+          const item = receipt.items[j];
+          if (
+            item &&
+            item.productName &&
+            item.productName.trim().toLowerCase() === lowerCaseName
+          ) {
+            return typeof item.price !== "undefined" ? item.price : "";
           }
-        });
-      });
-    }
-
-    // 3. Trừ đi số lượng đã được thêm lên kệ (products list)
-    // Giả định: Cấu trúc products.product.name và product.quantity là đúng
-    if (typeof products !== "undefined") {
-      // Kiểm tra biến products có tồn tại không
-      products.forEach((product) => {
-        const key = product.name.trim().toLowerCase();
-        if (stock[key]) {
-          stock[key].quantity -= parseInt(product.quantity || 0);
         }
-      });
+      }
     }
-
-    return Object.values(stock);
-  }
-  function getAvailableStockProducts() {
-    const stock = calculateStock();
-    // Chỉ lấy sản phẩm có quantity > 0
-    return stock.filter((item) => item.quantity > 0);
-  }
-  // === HÀM LẤY DANH MỤC CỦA SẢN PHẨM TỪ KHO/PHIẾU NHẬP (MỚI) ===
-  function findProductCategory(productName) {
-    // Tìm danh mục từ bản ghi tồn kho
-    const stockItem = calculateStock().find(
-      (item) =>
-        item.productName.trim().toLowerCase() ===
-        productName.trim().toLowerCase()
-    );
-    if (
-      stockItem &&
-      stockItem.category &&
-      stockItem.category !== "Chưa phân loại"
-    )
-      return stockItem.category;
-
-    // Tìm danh mục từ bất kỳ phiếu nhập nào
-    const receipt = importReceipts.find(
-      (r) =>
-        r.productName.trim().toLowerCase() === productName.trim().toLowerCase()
-    );
-    return receipt ? receipt.category : "Chưa phân loại";
+    return "";
   }
   function calculateSellingPrice(importPrice, profitMargin) {
     return Math.round(importPrice * (1 + profitMargin / 100));
   }
-  function renderProfitManagement() {
-    hideAllContent();
-    if (!profitContent) return;
-    profitContent.style.display = "block";
+  // ========================================================
 
-    // Lấy danh sách sản phẩm trên kệ
+  // === (CỤM HÀM MỚI) BỘ LỌC QUẢN LÝ LỢI NHUẬN ===
+  function renderProfitTable(filteredProducts) {
+    const tableBody = document.getElementById("profitTableBody");
+    if (!tableBody) return;
+    let html = "";
+    let stt = 1;
+    filteredProducts.forEach((product) => {
+      const index = products.findIndex((p) => p.name === product.name);
+      if (index === -1) return;
+      if (product.isHidden) return;
+      const importPriceNum = parseInt(product.importPrice) || 0;
+      const newPrice =
+        importPriceNum > 0
+          ? calculateSellingPrice(
+              importPriceNum,
+              parseFloat(product.savedProfitMargin)
+            )
+          : product.value;
+      const profitColor =
+        parseFloat(product.currentProfitMargin) >= 0 ? "#38a169" : "#e53e3e";
+      html += `
+        <tr>
+          <td>${stt++}</td>
+          <td>${escapeHtml(product.name)}</td>
+          <td>${
+            product.importPrice !== "Chưa có"
+              ? formatPrice(product.importPrice) + "đ"
+              : product.importPrice
+          }</td>
+          <td><strong>${formatPrice(product.value)}đ</strong></td>
+          <td style="font-weight: 600; color: ${profitColor};">
+            ${product.currentProfitMargin}%
+          </td>
+          <td>
+            <input 
+              type="number" 
+              id="profit-${index}" 
+              value="${product.savedProfitMargin}"
+              step="0.1"
+              min="0"
+              max="1000"
+              onchange="updateNewPrice(${index})"
+              style="width: 80px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center;"
+              ${importPriceNum <= 0 ? "disabled" : ""}
+            /> %
+          </td>
+          <td>
+            <strong id="newPrice-${index}" style="color: #667eea; font-size: 16px;">
+              ${formatPrice(newPrice)}đ
+            </strong>
+          </td>
+          <td>
+            <button onclick="applyProfitMargin(${index})" class="btn-edit" ${
+        importPriceNum <= 0 ? "disabled" : ""
+      }>
+              <i class="fa-solid fa-check"></i> Áp dụng
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+    if (!html) {
+      html = `<tr><td colspan="8" class="empty-state">Không tìm thấy sản phẩm phù hợp.</td></tr>`;
+    }
+    tableBody.innerHTML = html;
+  }
+  window.filterProfit = function () {
+    const query = document
+      .getElementById("profitSearchInput")
+      .value.toLowerCase()
+      .trim();
     const shelfProducts = products.map((product) => {
       const importPrice = findLatestImportPrice(product.name);
       const currentPrice = product.value;
-
-      // Tính % lợi nhuận hiện tại
       let currentProfitMargin = 0;
       if (importPrice && importPrice !== "") {
         const importPriceNum = parseInt(importPrice, 10);
-        currentProfitMargin = (
-          ((currentPrice - importPriceNum) / importPriceNum) *
-          100
-        ).toFixed(2);
+        if (importPriceNum > 0) {
+          currentProfitMargin = (
+            ((currentPrice - importPriceNum) / importPriceNum) *
+            100
+          ).toFixed(2);
+        }
       }
-
-      // Lấy % lợi nhuận đã lưu (nếu có)
       const savedMargin = product.profitMargin || currentProfitMargin;
-
       return {
         ...product,
         importPrice: importPrice || "Chưa có",
@@ -480,7 +678,37 @@ document.addEventListener("DOMContentLoaded", () => {
         savedProfitMargin: savedMargin,
       };
     });
-
+    const filtered = shelfProducts.filter(
+      (p) => p.name.toLowerCase().includes(query) && !p.isHidden
+    );
+    renderProfitTable(filtered);
+  };
+  function renderProfitManagement() {
+    reloadDataAndSync();
+    hideAllContent();
+    if (!profitContent) return;
+    profitContent.style.display = "block";
+    const shelfProducts = products.map((product) => {
+      const importPrice = findLatestImportPrice(product.name);
+      const currentPrice = product.value;
+      let currentProfitMargin = 0;
+      if (importPrice && importPrice !== "") {
+        const importPriceNum = parseInt(importPrice, 10);
+        if (importPriceNum > 0) {
+          currentProfitMargin = (
+            ((currentPrice - importPriceNum) / importPriceNum) *
+            100
+          ).toFixed(2);
+        }
+      }
+      const savedMargin = product.profitMargin || currentProfitMargin;
+      return {
+        ...product,
+        importPrice: importPrice || "Chưa có",
+        currentProfitMargin: currentProfitMargin,
+        savedProfitMargin: savedMargin,
+      };
+    });
     let html = `
     <div class="management-header">
       <h2><i class="fa-solid fa-chart-line"></i> Quản lý Lợi nhuận</h2>
@@ -494,26 +722,26 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     </div>
     
+    <div class="filter-controls">
+      <label for="profitSearchInput">🔍 Tìm theo Tên SP:</label>
+      <input 
+        type="text" 
+        id="profitSearchInput" 
+        onkeyup="window.filterProfit()" 
+        placeholder="Nhập tên sản phẩm..."
+        style="width: 300px;"
+      />
+    </div>
+    
     <div class="stats-container" style="margin-bottom: 20px;">
-      <div class="stat-card">
-        <i class="fa-solid fa-box stat-icon"></i>
-        <div>
-          <h3>${products.length}</h3>
-          <p>Sản phẩm trên kệ</p>
+        <div class="stat-card">
+            <i class="fa-solid fa-box stat-icon"></i>
+            <div>
+            <h3>${
+              products.filter((p) => !p.isHidden).length
+            }</h3> <p>Sản phẩm trên kệ</p>
+            </div>
         </div>
-      </div>
-      <div class="stat-card">
-        <i class="fa-solid fa-money-bill-trend-up stat-icon"></i>
-        <div>
-          <h3>${formatPrice(
-            products.reduce((sum, p) => {
-              const importPrice = parseInt(findLatestImportPrice(p.name) || 0);
-              return sum + (p.value - importPrice) * p.quantity;
-            }, 0)
-          )}đ</h3>
-          <p>Tổng lợi nhuận dự kiến</p>
-        </div>
-      </div>
     </div>
     
     <div class="table-container">
@@ -530,124 +758,48 @@ document.addEventListener("DOMContentLoaded", () => {
             <th>Thao tác</th>
           </tr>
         </thead>
-        <tbody>
-  `;
-
-    shelfProducts.forEach((product, index) => {
-      const importPriceNum = parseInt(product.importPrice) || 0;
-      const newPrice =
-        importPriceNum > 0
-          ? calculateSellingPrice(
-              importPriceNum,
-              parseFloat(product.savedProfitMargin)
-            )
-          : product.value;
-
-      const profitColor =
-        parseFloat(product.currentProfitMargin) >= 0 ? "#38a169" : "#e53e3e";
-
-      html += `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${escapeHtml(product.name)}</td>
-        <td>${
-          product.importPrice !== "Chưa có"
-            ? formatPrice(product.importPrice) + "đ"
-            : product.importPrice
-        }</td>
-        <td><strong>${formatPrice(product.value)}đ</strong></td>
-        <td style="font-weight: 600; color: ${profitColor};">
-          ${product.currentProfitMargin}%
-        </td>
-        <td>
-          <input 
-            type="number" 
-            id="profit-${index}" 
-            value="${product.savedProfitMargin}"
-            step="0.1"
-            min="0"
-            max="1000"
-            onchange="updateNewPrice(${index})"
-            style="width: 80px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center;"
-          /> %
-        </td>
-        <td>
-          <strong id="newPrice-${index}" style="color: #667eea; font-size: 16px;">
-            ${formatPrice(newPrice)}đ
-          </strong>
-        </td>
-        <td>
-          <button onclick="applyProfitMargin(${index})" class="btn-edit">
-            <i class="fa-solid fa-check"></i> Áp dụng
-          </button>
-        </td>
-      </tr>
-    `;
-    });
-
-    html += `
+        <tbody id="profitTableBody">
         </tbody>
       </table>
     </div>
-    
-    <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-      <strong>📌 Lưu ý:</strong>
-      <ul style="margin: 10px 0 0 20px;">
-        <li>% Lợi nhuận được tính dựa trên giá nhập gần nhất</li>
-        <li>Sản phẩm chưa có giá nhập sẽ không thể điều chỉnh tự động</li>
-        <li>Giá bán mới = Giá nhập × (1 + % Lợi nhuận / 100)</li>
-        <li>Thay đổi % lợi nhuận sẽ cập nhật giá bán trên kệ ngay lập tức</li>
-      </ul>
-    </div>
   `;
-
     profitContent.innerHTML = html;
+    const initialFilteredProducts = shelfProducts.filter((p) => !p.isHidden);
+    renderProfitTable(initialFilteredProducts);
   }
   window.updateNewPrice = function (index) {
     const product = products[index];
     if (!product) return;
-
     const profitInput = document.getElementById(`profit-${index}`);
     const newPriceDisplay = document.getElementById(`newPrice-${index}`);
-
     if (!profitInput || !newPriceDisplay) return;
-
     const importPrice = parseInt(findLatestImportPrice(product.name) || 0);
-
     if (importPrice <= 0) {
       alert("Sản phẩm chưa có giá nhập. Không thể tính toán tự động!");
       profitInput.value = 0;
       return;
     }
-
     const profitMargin = parseFloat(profitInput.value) || 0;
     const newPrice = calculateSellingPrice(importPrice, profitMargin);
-
     newPriceDisplay.textContent = formatPrice(newPrice) + "đ";
   };
   window.applyProfitMargin = function (index) {
     const product = products[index];
     if (!product) return;
-
     const profitInput = document.getElementById(`profit-${index}`);
     if (!profitInput) return;
-
     const importPrice = parseInt(findLatestImportPrice(product.name) || 0);
-
     if (importPrice <= 0) {
       alert(
         "⚠️ Sản phẩm chưa có giá nhập. Không thể áp dụng % lợi nhuận tự động!"
       );
       return;
     }
-
     const profitMargin = parseFloat(profitInput.value) || 0;
-
     if (profitMargin < 0) {
       alert("⚠️ % Lợi nhuận không thể âm!");
       return;
     }
-
     if (
       !confirm(
         `Áp dụng lợi nhuận ${profitMargin}% cho sản phẩm "${
@@ -661,19 +813,11 @@ document.addEventListener("DOMContentLoaded", () => {
     ) {
       return;
     }
-
     const newPrice = calculateSellingPrice(importPrice, profitMargin);
-
-    // Cập nhật giá và % lợi nhuận
     products[index].value = newPrice;
     products[index].profitMargin = profitMargin;
-
-    // Lưu vào localStorage
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-
-    // Render lại
     renderProfitManagement();
-
     alert(
       `✅ Đã cập nhật giá bán cho "${product.name}"!\nGiá mới: ${formatPrice(
         newPrice
@@ -682,30 +826,25 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   window.applyProfitToAll = function () {
     const margin = prompt("Nhập % lợi nhuận chung cho TẤT CẢ sản phẩm:", "20");
-
     if (margin === null) return;
-
     const profitMargin = parseFloat(margin);
-
     if (isNaN(profitMargin) || profitMargin < 0) {
       alert("⚠️ % Lợi nhuận không hợp lệ!");
       return;
     }
-
     if (
       !confirm(
-        `Áp dụng lợi nhuận ${profitMargin}% cho TẤT CẢ ${products.length} sản phẩm?\n\nCẢNH BÁO: Hành động này sẽ thay đổi giá bán của tất cả sản phẩm có giá nhập!`
+        `Áp dụng lợi nhuận ${profitMargin}% cho TẤT CẢ ${
+          products.filter((p) => !p.isHidden).length
+        } sản phẩm đang hiển thị?\n\nCẢNH BÁO: Hành động này sẽ thay đổi giá bán của tất cả sản phẩm có giá nhập!`
       )
     ) {
       return;
     }
-
     let updatedCount = 0;
     let skippedCount = 0;
-
     products.forEach((product, index) => {
       const importPrice = parseInt(findLatestImportPrice(product.name) || 0);
-
       if (importPrice > 0) {
         const newPrice = calculateSellingPrice(importPrice, profitMargin);
         products[index].value = newPrice;
@@ -715,38 +854,38 @@ document.addEventListener("DOMContentLoaded", () => {
         skippedCount++;
       }
     });
-
-    // Lưu vào localStorage
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-
-    // Render lại
     renderProfitManagement();
-
     alert(
       `✅ Hoàn tất!\n\n- Đã cập nhật: ${updatedCount} sản phẩm\n- Bỏ qua (chưa có giá nhập): ${skippedCount} sản phẩm`
     );
   };
   window.refreshProfitManagement = function () {
-    products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+    reloadDataAndSync();
     renderProfitManagement();
   };
-  // === QUẢN LÝ KHO (CẬP NHẬT: THÊM TÍNH NĂNG TÌM KIẾM NÂNG CAO) ===
-  /**
-   * Render giao diện Quản lý tồn kho.
-   * @param {string} nameQuery Chuỗi tìm kiếm tên sản phẩm.
-   * @param {string} categoryQuery Chuỗi tìm kiếm danh mục.
-   */
+  // ========================================================
+
+  // === QUẢN LÝ KHO (GIỮ NGUYÊN) ===
   window.renderStockManagement = function (nameQuery = "", categoryQuery = "") {
+    reloadDataAndSync();
     hideAllContent();
     if (!stockContent) return;
     stockContent.style.display = "block";
-
-    const allStock = calculateStock();
+    const inventory = calculateInventory();
     const uniqueCategories = getUniqueCategories();
-
-    // --- LOGIC LỌC DỮ LIỆU TỒN KHO ---
+    const allStockItems = Object.keys(inventory).map((key) => {
+      const def = productDefinitions.find(
+        (d) => d.name.trim().toLowerCase() === key
+      );
+      return {
+        productName: def ? def.name : key,
+        category: def ? def.category : "Chưa phân loại",
+        quantity: inventory[key].stock,
+      };
+    });
     const lowerCaseNameQuery = nameQuery.trim().toLowerCase();
-    const filteredStock = allStock.filter((item) => {
+    const filteredStock = allStockItems.filter((item) => {
       const matchesName =
         lowerCaseNameQuery === "" ||
         item.productName.trim().toLowerCase().includes(lowerCaseNameQuery);
@@ -754,8 +893,6 @@ document.addEventListener("DOMContentLoaded", () => {
         categoryQuery === "" || item.category === categoryQuery;
       return matchesName && matchesCategory;
     });
-
-    // --- GIAO DIỆN BỘ LỌC ---
     const categoryOptions = uniqueCategories
       .map(
         (cat) =>
@@ -767,47 +904,50 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderStockTable(filteredStock) {
       const tbody = document.getElementById("stockTableBody");
       if (!tbody) return;
-
       let html = "";
       let idCounter = 1;
-
       filteredStock
         .sort((a, b) => b.quantity - a.quantity)
         .forEach((item) => {
-          if (item.quantity > 0) {
-            const isLowStock = item.quantity <= 10;
-            html += `
+          const isLowStock = item.quantity > 0 && item.quantity <= 20;
+          const isOutOfStock = item.quantity <= 0;
+          let badgeClass = "badge-success";
+          if (isLowStock) badgeClass = "badge-warning";
+          if (isOutOfStock) badgeClass = "badge-danger";
+          html += `
           <tr>
             <td>${idCounter++}</td>
             <td>${escapeHtml(item.productName)}</td>
             <td>${escapeHtml(item.category)}</td>
-            <td><span class="badge ${
-              isLowStock ? "badge-warning" : "badge-success"
-            }">${item.quantity}</span></td>
+            <td><span class="badge ${badgeClass}">${item.quantity}</span></td>
             <td><button class="btn-view" onclick="viewStockDetail('${escapeHtml(
               item.productName
-            )}')"><i class="fa-solid fa-eye"></i> Xem</button></td>
+            )}')"><i class="fa-solid fa-eye"></i> Xem chi tiết</button></td>
           </tr>`;
-          }
         });
-
       if (!html) {
         html = `<tr><td colspan="5" class="empty-state">Kho hàng trống hoặc không tìm thấy kết quả.</td></tr>`;
       }
-
       tbody.innerHTML = html;
     }
-    // Hàm global để kích hoạt việc lọc tồn kho
     window.filterStock = function () {
       const nameInput = document.getElementById("stockSearchInput").value;
       const categorySelect = document.getElementById(
         "stockCategorySelect"
       ).value;
-
-      const allStock = calculateStock();
+      const inventory = calculateInventory();
+      const allStockItems = Object.keys(inventory).map((key) => {
+        const def = productDefinitions.find(
+          (d) => d.name.trim().toLowerCase() === key
+        );
+        return {
+          productName: def ? def.name : key,
+          category: def ? def.category : "Chưa phân loại",
+          quantity: inventory[key].stock,
+        };
+      });
       const lowerCaseNameQuery = nameInput.trim().toLowerCase();
-
-      const filteredStock = allStock.filter((item) => {
+      const filteredStock = allStockItems.filter((item) => {
         const matchesName =
           lowerCaseNameQuery === "" ||
           item.productName.trim().toLowerCase().includes(lowerCaseNameQuery);
@@ -815,19 +955,17 @@ document.addEventListener("DOMContentLoaded", () => {
           categorySelect === "" || item.category === categorySelect;
         return matchesName && matchesCategory;
       });
-
       renderStockTable(filteredStock);
     };
-
     let html = `
         <div class="management-header">
-            <h2><i class="fa-solid fa-warehouse"></i> Quản lý tồn kho</h2>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <button onclick="window.renderStockManagement()" class="btn-refresh">
-                    <i class="fa-solid fa-rotate"></i> Làm mới
-                </button>
-            </div>
+        <h2><i class="fa-solid fa-warehouse"></i> Quản lý tồn kho (Tổng nhập - Tổng bán)</h2>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button onclick="window.renderStockManagement()" class="btn-refresh">
+                <i class="fa-solid fa-rotate"></i> Làm mới
+            </button>
         </div>
+    </div>
         
         <div class="filter-controls" style="display: flex; gap: 10px; margin-bottom: 20px;">
             <input type="text" id="stockSearchInput" onkeyup="window.filterStock()" 
@@ -850,132 +988,67 @@ document.addEventListener("DOMContentLoaded", () => {
                         <th>STT</th>
                         <th>Tên sản phẩm</th>
                         <th>Danh mục</th>
-                        <th>Số lượng tồn (Khả dụng)</th>
+                        <th>Số lượng tồn (Thực tế)</th>
                         <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody id="stockTableBody">
-    `;
-
-    let idCounter = 1;
-
-    filteredStock
-      .sort((a, b) => b.quantity - a.quantity)
-      .forEach((item) => {
-        // Chỉ hiển thị sản phẩm có tồn kho lớn hơn 0
-        if (item.quantity > 0) {
-          const isLowStock = item.quantity <= 10;
-          html += `
-                <tr>
-                    <td>${idCounter++}</td>
-                    <td>${escapeHtml(item.productName)}</td>
-                    <td>${escapeHtml(item.category)}</td>
-                    <td>
-                        <span class="badge ${
-                          isLowStock ? "badge-warning" : "badge-success"
-                        }">
-                            ${item.quantity}
-                        </span>
-                    </td>
-                    <td>
-                        <button class="btn-view" onclick="viewStockDetail('${escapeHtml(
-                          item.productName
-                        )}')">
-                            <i class="fa-solid fa-eye"></i> Xem
-                        </button>
-                    </td>
-                </tr>
-            `;
-        }
-      });
-
-    html += `
                 </tbody>
             </table>
         </div>
     `;
-
     stockContent.innerHTML = html;
-
-    if (
-      !document.getElementById("stockTableBody") ||
-      document.getElementById("stockTableBody").children.length === 0
-    ) {
-      document.getElementById(
-        "stockTableBody"
-      ).innerHTML = `<tr><td colspan="5" class="empty-state">Kho hàng trống hoặc không tìm thấy kết quả.</td></tr>`;
-    }
+    renderStockTable(filteredStock);
   };
-
-  // === CẬP NHẬT window.viewStockDetail ĐỂ HIỂN THỊ CHI TIẾT TỒN KHO ===
   window.viewStockDetail = function (productName) {
-    const stockItem = calculateStock().find(
-      (item) => item.productName === productName
-    );
-
-    if (!stockItem) {
-      alert("Không tìm thấy thông tin sản phẩm!");
-      return;
-    }
-
-    // === TÍNH NĂNG MỚI: Chi tiết tồn kho (Sử dụng hàm mới) ===
     const breakdown = calculateStockBreakdown(productName);
-    // ======================================
-
+    const def = productDefinitions.find(
+      (d) => d.name.trim().toLowerCase() === productName.trim().toLowerCase()
+    );
     const message = `
 ┌────────────────────────────
    CHI TIẾT TỒN KHO
 └────────────────────────────┘
-
-Sản phẩm: ${stockItem.productName}
-Danh mục: ${stockItem.category}
-
+Sản phẩm: ${productName}
+Danh mục: ${def ? def.category : "N/A"}
 ┌────────────────────────────
 BẢNG KÊ NHẬP/XUẤT & TỒN
 └────────────────────────────┘
-Tổng nhập (từ Phiếu nhập): ${breakdown.imported}
-Tổng bán (từ Hóa đơn):     ${breakdown.sold}
-Đã đưa lên kệ:             ${breakdown.onShelf}
+Tổng nhập (từ tất cả Phiếu nhập): ${breakdown.imported}
+Tổng bán (từ tất cả Hóa đơn):     ${breakdown.sold}
 ────────────────────────────
-TỒN KHO KHẢ DỤNG: ${stockItem.quantity}
-(Tổng nhập - Tổng bán - Trên kệ)
-
+TỒN KHO TRÊN KỆ: ${breakdown.onShelf}
+(Số lượng này đã được đồng bộ = Tổng nhập hoàn thành - Tổng bán)
 ${
-  stockItem.quantity <= 10 ? "⚠️ CẢNH BÁO: Tồn kho thấp!" : "✅ Tồn kho ổn định"
+  breakdown.onShelf <= 0
+    ? "⚠️ HẾT HÀNG"
+    : breakdown.onShelf <= 20
+    ? "⚠️ CẢNH BÁO: Tồn kho thấp!"
+    : "✅ Tồn kho ổn định"
 }
     `;
-
     alert(message);
   };
-  // ===================================================================
+  // ========================================================
 
-  // === QUẢN LÝ NGƯỜI DÙNG (CẬP NHẬT: THÊM BỘ LỌC + SỬA LỖI + BỎ NÚT SỬA) ===
+  // === QUẢN LÝ NGƯỜI DÙNG (GIỮ NGUYÊN) ===
   function renderUserManagement(usernameQuery = "", phoneQuery = "") {
+    reloadDataAndSync();
     hideAllContent();
     if (!userContent) return;
     userContent.style.display = "block";
-
-    // Hàm calculateUserStats đã được sửa lỗi (Fix 1)
     const userStats = calculateUserStats();
-
-    // --- LOGIC LỌC (Đã an toàn) ---
     const lowerUsernameQuery = usernameQuery.trim().toLowerCase();
     const lowerPhoneQuery = phoneQuery.trim().toLowerCase();
-
     const filteredUserStats = userStats.filter((user) => {
-      // (user.username || "") đảm bảo an toàn nếu username là null/undefined
       const username = (user.username || "").trim().toLowerCase();
       const phone = (user.phone || "").trim().toLowerCase();
-
       const matchesUsername =
         lowerUsernameQuery === "" || username.includes(lowerUsernameQuery);
       const matchesPhone =
         lowerPhoneQuery === "" || phone.includes(lowerPhoneQuery);
-
       return matchesUsername && matchesPhone;
     });
-    // --- KẾT THÚC LOGIC LỌC ---
-
     let html = `
       <div class="management-header">
         <h2><i class="fa-solid fa-users"></i> Quản lý Người dùng</h2>
@@ -983,22 +1056,18 @@ ${
           <i class="fa-solid fa-rotate"></i> Làm mới
         </button>
       </div>
-
       <div class="filter-controls" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
         <input type="text" id="userSearchInput" placeholder="🔍 Tìm theo Tên đăng nhập..." value="${escapeHtml(
           usernameQuery
         )}" 
             style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 250px;">
-            
         <input type="text" id="userPhoneInput" placeholder="📞 Tìm theo SĐT..." value="${escapeHtml(
           phoneQuery
         )}" 
             style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 200px;">
-            
         <button onclick="window.filterUsers()" class="btn-add" style="background-color: #667eea;">
             <i class="fa-solid fa-search"></i> Tìm
         </button>
-        
         <button onclick="window.resetUserFilter()" class="btn-delete" style="background-color: #718096;">
             <i class="fa-solid fa-times"></i> Reset
         </button>
@@ -1017,27 +1086,19 @@ ${
           </thead>
           <tbody>
     `;
-
-    // Dùng `filteredUserStats`
     filteredUserStats.forEach((user, filteredIndex) => {
-      // === SỬA LỖI 2: Tìm index gốc một cách an toàn ===
-      const sName = (user && user.username)
-        ? user.username.trim().toLowerCase()
-        : null;
+      const sName =
+        user && user.username ? user.username.trim().toLowerCase() : null;
       const originalUserIndex = users.findIndex((u) => {
-        const uName = (u && u.username)
-          ? u.username.trim().toLowerCase()
-          : null;
+        const uName = u && u.username ? u.username.trim().toLowerCase() : null;
         return uName && sName && uName === sName;
       });
-      // ===============================================
-
-      // Nếu không tìm thấy (gần như không thể xảy ra), thì bỏ qua
       if (originalUserIndex === -1) return;
-
       html += `
         <tr>
-          <td>${filteredIndex + 1}</td> <td>${escapeHtml(user.username || "N/A")} 
+          <td>${filteredIndex + 1}</td> <td>${escapeHtml(
+        user.username || "N/A"
+      )} 
   ${
     user.locked
       ? '<span style="color:#e53e3e; font-weight:bold;">(Đã khóa)</span>'
@@ -1056,120 +1117,77 @@ ${
             <button onclick="resetUserPassword(${originalUserIndex})" class="btn-add" style="background-color: #f6ad55; margin-right: 5px;">
               <i class="fa-solid fa-key"></i> Reset Mật khẩu
             </button>
-            
             <button onclick="toggleUserLock(${originalUserIndex})" class="btn-lock" 
-              style="background-color: #718096;">
-                <i class="fa-solid fa-lock"></i> Khóa
+              style="background-color: ${user.locked ? "#48bb78" : "#718096"};">
+                <i class="fa-solid ${
+                  user.locked ? "fa-lock-open" : "fa-lock"
+                }"></i> ${user.locked ? "Mở" : "Khóa"}
             </button>
           </td>
         </tr>
       `;
     });
-
-    // Thêm thông báo nếu không tìm thấy kết quả
     if (filteredUserStats.length === 0) {
       html += `<tr><td colspan="6" class="empty-state">Không tìm thấy người dùng phù hợp.</td></tr>`;
     }
-
     html += `
           </tbody>
         </table>
       </div>
       <div class="stats-container">
-        <div class="stat-card">
-          <i class="fa-solid fa-users stat-icon"></i>
-          <div>
-            <h3>${users.length}</h3>
-            <p>Tổng người dùng</p>
-          </div>
         </div>
-        <div class="stat-card">
-          <i class="fa-solid fa-file-invoice stat-icon"></i>
-          <div>
-            <h3>${invoices.length}</h3>
-            <p>Tổng hóa đơn</p>
-          </div>
-        </div>
-      </div>
     `;
-
     userContent.innerHTML = html;
   }
-
-  // === CÁC HÀM HỖ TRỢ LỌC NGƯỜI DÙNG (MỚI) ===
   window.filterUsers = function () {
     const usernameQuery = document.getElementById("userSearchInput").value;
     const phoneQuery = document.getElementById("userPhoneInput").value;
     renderUserManagement(usernameQuery, phoneQuery);
   };
-
   window.resetUserFilter = function () {
-    renderUserManagement("", ""); // Gọi lại hàm render với query rỗng
+    renderUserManagement("", "");
   };
-  // ==========================================
-
   window.refreshUsers = function () {
-    // Cập nhật lại 3 biến data chính
-    users = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    invoices = JSON.parse(localStorage.getItem(INVOICES_KEY)) || [];
+    reloadDataAndSync();
     renderUserManagement();
   };
-
-  // === CẬP NHẬT: window.viewUserDetail để hiển thị MODAL ===
   window.viewUserDetail = function (index) {
-    // 1. Lấy người dùng từ mảng `users` gốc bằng `index`
     const userFromUsers = users[index];
     if (!userFromUsers) {
       alert("Không tìm thấy thông tin người dùng!");
       return;
     }
-
-    // 2. Tính toán thống kê
     const userStats = calculateUserStats();
-
-    // 3. Tìm thông tin thống kê của ĐÚNG người dùng đó (một cách an toàn)
-    const userFromUsersName = (userFromUsers && userFromUsers.username)
-      ? userFromUsers.username.trim().toLowerCase()
-      : null;
-
+    const userFromUsersName =
+      userFromUsers && userFromUsers.username
+        ? userFromUsers.username.trim().toLowerCase()
+        : null;
     if (!userFromUsersName) {
       alert("Lỗi: Người dùng này không có tên đăng nhập hợp lệ.");
       return;
     }
-
     const user = userStats.find((stat) => {
-      const statName = (stat && stat.username)
-        ? stat.username.trim().toLowerCase()
-        : null;
+      const statName =
+        stat && stat.username ? stat.username.trim().toLowerCase() : null;
       return statName && statName === userFromUsersName;
     });
-
     if (!user) {
       alert("Không tìm thấy thông tin thống kê cho người dùng này!");
       return;
     }
-    // === KẾT THÚC TÌM KIẾM ===
-
-    // === YÊU CẦU MỚI: HIỂN THỊ MODAL THAY VÌ ALERT ===
     showAdminUserDetailModal(user);
   };
-
-  // === HÀM MỚI: HIỂN THỊ MODAL CHI TIẾT NGƯỜI DÙNG ===
   window.closeAdminUserDetailModal = function () {
     const modal = document.getElementById("adminUserDetailModal");
     if (modal) {
       modal.classList.remove("show");
-      // Remove after transition
       setTimeout(() => {
         modal.remove();
       }, 300);
     }
   };
-
   window.showAdminUserDetailModal = function (user) {
-    // Close any existing modal
     closeAdminUserDetailModal();
-
     const modalHtml = `
       <div class="admin-user-detail-modal-overlay" id="adminUserDetailModal">
         <div class="admin-user-detail-modal-content">
@@ -1177,7 +1195,6 @@ ${
             <h2><i class="fa-solid fa-user"></i> Chi tiết người dùng</h2>
             <span class="admin-close-modal">&times;</span>
           </div>
-          
           <div class="admin-user-detail-section">
             <h3>Thông tin tài khoản</h3>
             <p><strong>Tên đăng nhập:</strong> <span>${escapeHtml(
@@ -1187,7 +1204,6 @@ ${
               user.password || "N/A"
             )}</span></p>
           </div>
-
           <div class="admin-user-detail-section">
             <h3>Thông tin liên hệ</h3>
             <p><strong>Số điện thoại:</strong> <span class="${
@@ -1197,7 +1213,6 @@ ${
               user.address ? "" : "value-na"
             }">${escapeHtml(user.address || "Chưa cập nhật")}</span></p>
           </div>
-
           <div class="admin-user-detail-section">
             <h3>Thống kê</h3>
             <p><strong>Số đơn hàng:</strong> <span>${
@@ -1207,22 +1222,16 @@ ${
               user.totalRevenue || 0
             )}đ</span></p>
           </div>
-
           <div class="admin-user-detail-modal-actions">
             <button class="admin-btn-close-modal">Đóng</button>
           </div>
         </div>
       </div>
     `;
-
     document.body.insertAdjacentHTML("beforeend", modalHtml);
-
     const modal = document.getElementById("adminUserDetailModal");
-    
-    // Add close events
     const closeModalBtn = modal.querySelector(".admin-close-modal");
     const closeBtn = modal.querySelector(".admin-btn-close-modal");
-
     closeModalBtn.onclick = closeAdminUserDetailModal;
     closeBtn.onclick = closeAdminUserDetailModal;
     modal.onclick = function (e) {
@@ -1230,25 +1239,19 @@ ${
         closeAdminUserDetailModal();
       }
     };
-
-    // Show modal with animation
     setTimeout(() => {
-       modal.classList.add("show");
-    }, 10); // Small delay to trigger transition
+      modal.classList.add("show");
+    }, 10);
   };
-
   window.resetUserPassword = function (index) {
     const userToReset = users[index];
     if (!userToReset) return;
-
     if (
       !confirm(
         `Bạn có chắc muốn reset mật khẩu của người dùng "${userToReset.username}" về "123456"?`
       )
     )
       return;
-
-    // Cập nhật mật khẩu mặc định
     users[index].password = "123456";
     localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
     renderUserManagement();
@@ -1256,25 +1259,18 @@ ${
       `✅ Đã reset mật khẩu cho người dùng "${userToReset.username}". Mật khẩu mới là "123456"!`
     );
   };
-
-  // HÀM editUser ĐÃ BỊ XÓA THEO YÊU CẦU
-
   window.toggleUserLock = function (index) {
     const user = users[index];
     if (!user) return;
-
-    user.locked = !user.locked; // Đảo trạng thái khóa
+    user.locked = !user.locked;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-
     renderUserManagement();
-
     if (user.locked) {
       alert(`🔒 Người dùng "${user.username}" đã bị khóa.`);
     } else {
       alert(`🔓 Người dùng "${user.username}" đã được mở khóa.`);
     }
   };
-
   window.deleteUser = function (index) {
     if (!confirm("Bạn có chắc muốn xóa người dùng này?")) return;
     users.splice(index, 1);
@@ -1282,19 +1278,15 @@ ${
     renderUserManagement();
     alert("Đã xóa người dùng!");
   };
+  // ========================================================
 
-  // === QUẢN LÝ SẢN PHẨM (GIỮ NGUYÊN) ===
-  /**
-   * Render giao diện Quản lý Sản phẩm.
-   * @param {string} nameQuery Chuỗi tìm kiếm tên sản phẩm.
-   * @param {string} categoryQuery Chuỗi tìm kiếm danh mục.
-   * @param {string} priceRangeQuery Khoảng giá ('min-max').
-   */
+  // === (CẬP NHẬT) QUẢN LÝ SẢN PHẨM (Sửa thành Ẩn/Hiện) ===
   function renderProductManagement(
     nameQuery = "",
     categoryQuery = "",
     priceRangeQuery = ""
   ) {
+    reloadDataAndSync(); // Đảm bảo `products` là mới nhất
     hideAllContent();
     if (!productContent) return;
     productContent.style.display = "block";
@@ -1302,7 +1294,6 @@ ${
     const uniqueCategories = getUniqueCategories();
     const priceRanges = getPriceRanges();
 
-    // --- LOGIC LỌC DỮ LIỆU SẢN PHẨM ---
     const lowerCaseNameQuery = nameQuery.trim().toLowerCase();
     let minPrice = 0;
     let maxPrice = Infinity;
@@ -1313,88 +1304,6 @@ ${
       maxPrice = parts[1] ? parseInt(parts[1]) : Infinity;
     }
 
-    // === CẬP NHẬT renderProductTable (Dùng khi lọc) ===
-    function renderProductTable(filteredProducts) {
-      const tbody = document.querySelector("#productContent table tbody");
-      if (!tbody) return;
-
-      let html = "";
-      filteredProducts.forEach((product) => {
-        const originalIndex = products.findIndex(
-          (p) => p.name === product.name
-        );
-        const isHidden = product.isHidden || false; // THÊM MỚI
-
-        // --- LOGIC TÍNH LỢI NHUẬN (CHO BỘ LỌC) ---
-        let profit = 0;
-        const sellingPrice = product.value;
-        const importPriceStr = findLatestImportPrice(product.name);
-
-        if (importPriceStr !== "") {
-          const importPrice = parseInt(importPriceStr, 10);
-          profit = sellingPrice - importPrice;
-        } else {
-          profit = sellingPrice * 0.05; // 5% giá bán
-        }
-        // ----------------------------------------
-
-        html += `
-        <tr ${
-          isHidden ? 'style="opacity: 0.7; background-color: #fafafa;"' : ""
-        }>
-          <td>${originalIndex + 1}</td>
-          <td>
-            <div class="product-img-mini" style="background-image: url('${
-              product.image || ""
-            }')"></div>
-          </td>
-          <td>
-            ${escapeHtml(product.name)}
-            ${
-              isHidden
-                ? '<span style="color: #e53e3e; font-weight: 600; display: block; font-size: 12px;">(Đã ẩn)</span>'
-                : ""
-            }
-          </td>
-          <td>${formatPrice(product.value)}đ</td>
-          
-          <td style="font-weight: 600; color: ${
-            profit < 0 ? "#e53e3e" : "#38a169"
-          };">
-            ${formatPrice(profit)}đ
-          </td>
-          
-          <td>${product.quantity}</td>
-          <td>${escapeHtml(product.category)}</td>
-          <td>
-            <button onclick="viewProductDetail(${originalIndex})" class="btn-view" style="margin-right: 5px;">
-                <i class="fa-solid fa-eye"></i> Xem
-            </button>
-            <button onclick="editProduct(${originalIndex})" class="btn-edit" style="margin-right: 5px;">
-                <i class="fa-solid fa-pen"></i> Sửa
-            </button>
-            
-            <button onclick="toggleProductVisibility(${originalIndex})" 
-                    style="background-color: ${
-                      isHidden ? "#48bb78" : "#e53e3e"
-                    }; color: white; margin-right: 5px; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">
-              <i class="fa-solid ${isHidden ? "fa-eye" : "fa-eye-slash"}"></i> 
-              ${isHidden ? "Hiện" : "Ẩn"}
-            </button>
-            
-            <button onclick="deleteProduct(${originalIndex})" class="btn-delete">
-                <i class="fa-solid fa-trash"></i> Xóa
-            </button>
-          </td>
-        </tr>`;
-      });
-
-      if (!html)
-        html = `<tr><td colspan="8" class="empty-state">Không có sản phẩm phù hợp.</td></tr>`;
-
-      tbody.innerHTML = html;
-    }
-
     const filteredProducts = products.filter((p) => {
       const matchesName =
         lowerCaseNameQuery === "" ||
@@ -1403,10 +1312,91 @@ ${
         categoryQuery === "" || p.category === categoryQuery;
       const matchesPrice = p.value >= minPrice && p.value <= maxPrice;
 
+      // (CẬP NHẬT) BỎ LỌC isHidden, hiển thị tất cả
       return matchesName && matchesCategory && matchesPrice;
     });
 
-    // --- GIAO DIỆN BỘ LỌC ---
+    // --- CẬP NHẬT renderProductTable (Dùng khi lọc) ---
+    function renderProductTable(filteredProducts) {
+      const tbody = document.querySelector("#productContent table tbody");
+      if (!tbody) return;
+
+      let html = "";
+      filteredProducts.forEach((product, index) => {
+        const originalIndex = products.findIndex(
+          (p) => p.name === product.name
+        );
+        if (originalIndex === -1) return; // Đề phòng lỗi
+
+        let profit = 0;
+        const sellingPrice = product.value;
+        const importPriceStr = findLatestImportPrice(product.name);
+
+        if (importPriceStr !== "") {
+          const importPrice = parseInt(importPriceStr, 10);
+          if (importPrice > 0) profit = sellingPrice - importPrice;
+        }
+
+        let qtyDisplay = product.quantity;
+        if (product.quantity > 0 && product.quantity <= 20) {
+          qtyDisplay = `<span style="color: #e53e3e; font-weight: 600; display: block;">${product.quantity}</span>
+                                <span style="color: #e53e3e; font-size: 11px;">(Sắp hết)</span>`;
+        }
+
+        // (CẬP NHẬT) Thêm class nếu bị ẩn
+        const rowClass = product.isHidden ? "product-row-hidden" : "";
+
+        // (CẬP NHẬT) Logic cho nút Ẩn/Hiện
+        const isManuallyHidden = product.isManuallyHidden;
+        const toggleBtnIcon = isManuallyHidden ? "fa-eye" : "fa-eye-slash";
+        const toggleBtnText = isManuallyHidden ? "Hiện" : "Ẩn";
+        const toggleBtnBgColor = isManuallyHidden ? "#48bb78" : "#f56565"; // Xanh lá / Đỏ
+
+        html += `
+            <tr class="${rowClass}">
+              <td>${index + 1}</td>
+              <td>
+                <div class="product-img-mini" style="background-image: url('${
+                  product.image || ""
+                }')"></div>
+              </td>
+              <td>
+                ${escapeHtml(product.name)}
+                ${
+                  product.isHidden
+                    ? '<span style="color: #e53e3e; font-size: 12px; display: block;">(Đang ẩn)</span>'
+                    : ""
+                }
+              </td>
+              <td>${formatPrice(product.value)}đ</td>
+              <td style="font-weight: 600; color: ${
+                profit < 0 ? "#e53e3e" : "#38a169"
+              };">
+                ${formatPrice(profit)}đ
+              </td>
+              <td>${qtyDisplay}</td>
+              <td>${escapeHtml(product.category)}</td>
+              <td>
+                <button onclick="viewProductDetail(${originalIndex})" class="btn-view" style="margin-right: 5px;">
+                    <i class="fa-solid fa-eye"></i> Xem
+                </button>
+                <button onclick="editProduct(${originalIndex})" class="btn-edit" style="margin-right: 5px;">
+                    <i class="fa-solid fa-pen"></i> Sửa
+                </button>
+                
+                <button onclick="toggleProductVisibility(${originalIndex})" class="btn-lock" style="background-color: ${toggleBtnBgColor};">
+                    <i class="fa-solid ${toggleBtnIcon}"></i> ${toggleBtnText}
+                </button>
+              </td>
+            </tr>`;
+      });
+
+      if (!html)
+        html = `<tr><td colspan="8" class="empty-state">Không có sản phẩm nào trên kệ.</td></tr>`;
+      tbody.innerHTML = html;
+    }
+
+    // --- GIAO DIỆN BỘ LỌC (GIỮ NGUYÊN) ---
     const categoryOptions = uniqueCategories
       .map(
         (cat) =>
@@ -1415,7 +1405,6 @@ ${
           }>${escapeHtml(cat)}</option>`
       )
       .join("");
-
     const priceOptions = priceRanges
       .map(
         (range) =>
@@ -1425,7 +1414,7 @@ ${
       )
       .join("");
 
-    // Hàm global để kích hoạt việc lọc sản phẩm
+    // Hàm global để lọc (CẬP NHẬT: Bỏ lọc isHidden)
     window.filterProducts = function () {
       const nameInput = document.getElementById("productSearchInput").value;
       const categorySelect = document.getElementById(
@@ -1442,26 +1431,27 @@ ${
         maxPrice = parts[1] ? parseInt(parts[1]) : Infinity;
       }
 
-      const filteredProducts = products.filter((p) => {
+      const filtered = products.filter((p) => {
         const matchesName =
           lowerCaseNameQuery === "" ||
           p.name.trim().toLowerCase().includes(lowerCaseNameQuery);
         const matchesCategory =
           categorySelect === "" || p.category === categorySelect;
         const matchesPrice = p.value >= minPrice && p.value <= maxPrice;
+
         return matchesName && matchesCategory && matchesPrice;
       });
 
-      // Gọi hàm render đã được cập nhật
-      renderProductTable(filteredProducts);
+      renderProductTable(filtered);
     };
 
+    // --- HTML CHÍNH CỦA TAB ---
     let html = `
       <div class="management-header">
-        <h2><i class="fa-solid fa-box"></i> Quản lý Sản phẩm</h2>
+        <h2><i class="fa-solid fa-box"></i> Quản lý Sản phẩm (Trên kệ)</h2>
         <div style="display: flex; align-items: center; gap: 10px;">
-            <button onclick="addNewProduct()" class="btn-add">
-                <i class="fa-solid fa-plus"></i> Thêm sản phẩm
+            <button onclick="addNewProductDefinition()" class="btn-add">
+                <i class="fa-solid fa-plus"></i> Thêm Định Nghĩa SP
             </button>
             <button onclick="refreshProducts()" class="btn-refresh">
                 <i class="fa-solid fa-rotate"></i> Làm mới
@@ -1475,13 +1465,11 @@ ${
               nameQuery
             )}" 
             style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 300px;">
-            
         <select id="productCategorySelect" onchange="window.filterProducts()" 
             style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 200px;">
             <option value="">-- Tất cả Danh mục --</option>
             ${categoryOptions}
         </select>
-        
         <select id="productPriceSelect" onchange="window.filterProducts()" 
             style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 200px;">
             <option value="">-- Tất cả Khoảng giá --</option>
@@ -1496,328 +1484,374 @@ ${
               <th>STT</th>
               <th>Hình ảnh</th>
               <th>Tên sản phẩm</th>
-              <th>Giá</th>
-              <th>Lợi nhuận</th> <th>Số lượng (Trên kệ)</th>
+              <th>Giá bán</th>
+              <th>Lợi nhuận (Ước tính)</th>
+              <th>Số lượng (Trên kệ)</th>
               <th>Danh mục</th>
               <th>Thao tác</th>
             </tr>
           </thead>
           <tbody>
-    `;
-
-    // === CẬP NHẬT VÒNG LẶP RENDER BAN ĐẦU ===
-    filteredProducts.forEach((product) => {
-      // Tìm lại index gốc để dùng cho thao tác Sửa/Xóa chính xác
-      const originalIndex = products.findIndex((p) => p.name === product.name);
-      const isHidden = product.isHidden || false; // THÊM MỚI
-
-      // --- LOGIC TÍNH LỢI NHUẬN (CHO RENDER BAN ĐẦU) ---
-      let profit = 0;
-      const sellingPrice = product.value;
-      const importPriceStr = findLatestImportPrice(product.name);
-
-      if (importPriceStr !== "") {
-        const importPrice = parseInt(importPriceStr, 10);
-        profit = sellingPrice - importPrice;
-      } else {
-        profit = sellingPrice * 0.05; // 5% giá bán
-      }
-      // ----------------------------------------
-
-      html += `
-        <tr ${
-          isHidden ? 'style="opacity: 0.7; background-color: #fafafa;"' : ""
-        }>
-          <td>${originalIndex + 1}</td>
-          <td>
-            <div class="product-img-mini" style="background-image: url('${
-              product.image || ""
-            }')"></div>
-          </td>
-          <td>
-            ${escapeHtml(product.name)}
-            ${
-              isHidden
-                ? '<span style="color: #e53e3e; font-weight: 600; display: block; font-size: 12px;">(Đã ẩn)</span>'
-                : ""
-            }
-          </td>
-          <td>${formatPrice(product.value)}đ</td>
-          
-          <td style="font-weight: 600; color: ${
-            profit < 0 ? "#e53e3e" : "#38a169"
-          };">
-            ${formatPrice(profit)}đ
-          </td>
-
-          <td>${product.quantity}</td>
-          <td>${escapeHtml(product.category)}</td>
-          <td>
-            <button onclick="viewProductDetail(${originalIndex})" class="btn-view" style="margin-right: 5px;">
-                <i class="fa-solid fa-eye"></i> Xem
-            </button>
-            <button onclick="editProduct(${originalIndex})" class="btn-edit" style="margin-right: 5px;">
-              <i class="fa-solid fa-pen"></i> Sửa
-            </button>
-            
-            <button onclick="toggleProductVisibility(${originalIndex})" 
-                    style="background-color: ${
-                      isHidden ? "#48bb78" : "#e53e3e"
-                    }; color: white; margin-right: 5px; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">
-              <i class="fa-solid ${isHidden ? "fa-eye" : "fa-eye-slash"}"></i> 
-              ${isHidden ? "Hiện" : "Ẩn"}
-            </button>
-
-            <button onclick="deleteProduct(${originalIndex})" class="btn-delete">
-              <i class="fa-solid fa-trash"></i> Xóa
-            </button>
-          </td>
-        </tr>
-      `;
-    });
-
-    html += `
           </tbody>
         </table>
       </div>
       <div class="stats-container">
-        <div class="stat-card">
-          <i class="fa-solid fa-box stat-icon"></i>
-          <div>
-            <h3>${products.length}</h3>
-            <p>Tổng sản phẩm</p>
-          </div>
         </div>
-        <div class="stat-card">
-          <i class="fa-solid fa-warehouse stat-icon"></i>
-          <div>
-            <h3>${products.reduce((sum, p) => sum + p.quantity, 0)}</h3>
-            <p>Tổng số lượng trên kệ</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <i class="fa-solid fa-dollar-sign stat-icon"></i>
-          <div>
-            <h3>${formatPrice(
-              products.reduce((sum, p) => sum + p.value * p.quantity, 0)
-            )}đ</h3>
-            <p>Tổng giá trị trên kệ</p>
-          </div>
-        </div>
-      </div>
     `;
 
     productContent.innerHTML = html;
+    renderProductTable(filteredProducts);
   }
 
   window.refreshProducts = function () {
-    products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+    reloadDataAndSync();
     renderProductManagement();
   };
+  // ========================================================
 
-  // === CẬP NHẬT window.addNewProduct (ĐỂ DỌN DẸP VÀ MỞ KHÓA CÁC TRƯỜNG) ===
-  window.addNewProduct = function () {
-    const popup = document.getElementById("product-form-popup");
-    const stockProducts = getAvailableStockProducts();
-    const productSelectHtml = stockProducts
-      .map(
-        (p) =>
-          `<option value="${escapeHtml(p.productName)}">${escapeHtml(
-            p.productName
-          )} (Kho: ${p.quantity})</option>`
-      )
-      .join("");
-
-    let nameElement = document.getElementById("name");
-
-    if (nameElement) {
-      if (nameElement.tagName !== "SELECT") {
-        const selectElement = document.createElement("select");
-        selectElement.id = "name";
-        selectElement.required = true;
-        selectElement.style.cssText =
-          "width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;";
-        nameElement.replaceWith(selectElement);
-        nameElement = selectElement;
-      }
+  // =======================================================================
+  // === CỤM CODE THÊM/SỬA ĐỊNH NGHĨA SẢN PHẨM (ĐÃ SỬA LỖI) ===
+  // =======================================================================
+  function renderImportCategoryField(currentCategory = "") {
+    if (typeof getUniqueCategories !== "function") {
+      console.error("Lỗi: Hàm getUniqueCategories() không tồn tại.");
+      return "<div>Lỗi tải danh mục</div>";
     }
-
-    if (nameElement && nameElement.tagName === "SELECT") {
-      nameElement.innerHTML =
-        `<option value="">-- Chọn sản phẩm trong kho --</option>` +
-        productSelectHtml;
-      nameElement.disabled = false;
-
-      const valueInput = document.getElementById("value");
-      const quantityInput = document.getElementById("quantity");
-      const qtyNote = document.getElementById("quantityAvailableNote");
-      function updateValueFromSelect() {
-        const selected = nameElement.value;
-        const price = selected ? findLatestImportPrice(selected) : "";
-        if (valueInput) valueInput.value = price !== "" ? price : "";
-        // Cập nhật giới hạn số lượng theo tồn kho khả dụng
-        if (quantityInput) {
-          const available = selected
-            ? Math.max(0, calculateStockBreakdown(selected).available)
-            : 0;
-          quantityInput.max = available;
-          quantityInput.placeholder = available > 0 ? `Tối đa: ${available}` : "Hết hàng khả dụng";
-          if (qtyNote) {
-            qtyNote.style.display = selected ? "block" : "none";
-            qtyNote.textContent = selected ? `Khả dụng: ${available} (tối đa có thể đưa lên kệ)` : "";
-          }
+    const categories = getUniqueCategories();
+    let categoryOptions = categories
+      .map((cat) => {
+        const selected = cat === currentCategory ? "selected" : "";
+        return `<option value="${escapeHtml(cat)}" ${selected}>${escapeHtml(
+          cat
+        )}</option>`;
+      })
+      .join("");
+    const isCustom = currentCategory && !categories.includes(currentCategory);
+    categoryOptions =
+      `<option value="">-- Chọn danh mục --</option><option value="Khác">-- Nhập danh mục mới --</option>` +
+      categoryOptions;
+    return `
+        <div id="importCategoryWrapper" style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Danh mục:</label>
+            <select id="importCategorySelect" onchange="window.checkImportCategoryInput()" required
+                style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none; margin-bottom: 5px;">
+                ${categoryOptions}
+            </select>
+            <input type="text" id="importCategoryInput" value="${
+              isCustom ? escapeHtml(currentCategory) : ""
+            }"
+                style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none; margin-top: 5px; display: ${
+                  isCustom ? "block" : "none"
+                };"
+                placeholder="Nhập danh mục mới...">
+            <input type="hidden" id="importCategory" value="${escapeHtml(
+              currentCategory
+            )}" required>
+        </div>
+    `;
+  }
+  window.checkImportCategoryInput = function () {
+    try {
+      const select = document.getElementById("importCategorySelect");
+      const input = document.getElementById("importCategoryInput");
+      const hidden = document.getElementById("importCategory");
+      if (select && input && hidden) {
+        if (select.value === "Khác") {
+          input.style.display = "block";
+          input.required = true;
+          input.value = "";
+          hidden.value = "";
+          input.oninput = () => (hidden.value = input.value.trim());
+        } else if (select.value === "") {
+          input.style.display = "none";
+          input.required = false;
+          input.value = "";
+          hidden.value = "";
+        } else {
+          input.style.display = "none";
+          input.required = false;
+          input.value = select.value;
+          hidden.value = select.value;
         }
       }
-      nameElement.removeEventListener("change", updateValueFromSelect);
-      nameElement.addEventListener("change", updateValueFromSelect);
-      updateValueFromSelect();
+    } catch (err) {
+      console.error("Lỗi trong checkImportCategoryInput:", err);
     }
-
-    if (popup) {
-      // === MỞ KHÓA CÁC TRƯỜNG KHI THÊM MỚI ===
-      document.getElementById("value").disabled = false;
-      document.getElementById("quantity").disabled = false;
-      document.getElementById("description").disabled = false;
-      document.getElementById("specs").disabled = false;
-      // Ẩn ghi chú chỉ đọc của giá bán khi ở chế độ Thêm mới
+  };
+  window.addNewProductDefinition = function () {
+    try {
+      const popup = document.getElementById("product-form-popup");
+      if (!popup) {
+        alert("Lỗi: Không tìm thấy #product-form-popup");
+        return;
+      }
+      window.editingProductIndex = -1;
+      window.isAddingDefinition = true;
+      popup.querySelector("h2").textContent = "Thêm Định Nghĩa Sản Phẩm Mới";
+      const nameFieldContainer = document.getElementById("name").parentElement;
+      nameFieldContainer.innerHTML = `
+        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Tên sản phẩm:</label>
+        <input type="text" id="name" required 
+               style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;"
+               placeholder="Nhập tên sản phẩm mới...">
+    `;
+      document.getElementById("name").required = true;
+      const existingWrapper = document.getElementById("importCategoryWrapper");
+      if (!existingWrapper) {
+        const categoryHTML = renderImportCategoryField("");
+        const nameElement = document.getElementById("name");
+        nameElement.parentElement.insertAdjacentHTML("afterend", categoryHTML);
+      }
+      const valueEl = document.getElementById("value");
+      const qtyEl = document.getElementById("quantity");
+      if (valueEl) {
+        valueEl.parentElement.style.display = "none";
+        valueEl.required = false;
+      }
+      if (qtyEl) {
+        qtyEl.parentElement.style.display = "none";
+        qtyEl.required = false;
+      }
       const valueNote = document.getElementById("valueReadOnlyNote");
       if (valueNote) valueNote.style.display = "none";
       const qtyNote = document.getElementById("quantityAvailableNote");
       if (qtyNote) qtyNote.style.display = "none";
-      const qtyNoteInit = document.getElementById("quantityAvailableNote");
-      if (qtyNoteInit) qtyNoteInit.style.display = "none";
-      // ========================================
-
-      // === DỌN DẸP FORM ===
-      document.getElementById("value").value = "";
-      document.getElementById("quantity").value = "";
+      document.getElementById("description").disabled = false;
+      document.getElementById("specs").disabled = false;
       document.getElementById("description").value = "";
       document.getElementById("specs").value = "";
-      // ====================
-
-      document.getElementById("category-wrapper")?.remove();
-      const categoryInput = document.getElementById("category");
-      if (categoryInput && categoryInput.type !== "hidden")
-        categoryInput.remove();
-
-      const imageInput = document.getElementById("image");
-      if (imageInput) imageInput.value = "";
-
-      window.editingProductIndex = -1;
-      popup.querySelector("h2").textContent = "Thêm sản phẩm lên kệ (Từ kho)";
+      document.getElementById("image").value = "";
       popup.style.display = "flex";
+      window.checkImportCategoryInput();
+    } catch (err) {
+      console.error("Lỗi khi mở popup addNewProductDefinition:", err);
+      alert("Đã xảy ra lỗi khi mở popup. Vui lòng kiểm tra Console.");
     }
   };
-
-  // === CẬP NHẬT window.editProduct (KHÓA GIÁ/SỐ LƯỢNG, THÊM MÔ TẢ/THÔNG SỐ) ===
+  window.addProductDefinition = async function (event) {
+    try {
+      event.preventDefault();
+      if (typeof getBase64 !== "function") {
+        alert("Lỗi: Hàm getBase64() bị thiếu.");
+        return;
+      }
+      if (typeof placeholderImg === "undefined") {
+        alert("Lỗi: Biến placeholderImg bị thiếu.");
+        return;
+      }
+      const name = document.getElementById("name").value.trim();
+      const category = document.getElementById("importCategory").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const specs = document.getElementById("specs").value.trim();
+      const imageFile = document.getElementById("image").files[0];
+      const popup = document.getElementById("product-form-popup");
+      if (!name || !category) {
+        alert("⚠️ Vui lòng điền Tên sản phẩm và Danh mục!");
+        return;
+      }
+      if (!Array.isArray(productDefinitions)) {
+        alert(
+          "Lỗi nghiêm trọng: Biến 'productDefinitions' không phải là mảng. Đang khởi tạo lại..."
+        );
+        console.error(
+          "Biến 'productDefinitions' không phải là mảng:",
+          productDefinitions
+        );
+        productDefinitions = [];
+      }
+      const existingDef = productDefinitions.find(
+        (d) => d.name.trim().toLowerCase() === name.toLowerCase()
+      );
+      if (existingDef) {
+        alert(`❌ Lỗi: Đã tồn tại định nghĩa sản phẩm với tên "${name}".`);
+        return;
+      }
+      let imageBase64 = placeholderImg;
+      if (imageFile) {
+        try {
+          imageBase64 = await getBase64(imageFile);
+        } catch (err) {
+          console.error("Lỗi chuyển ảnh sang base64:", err);
+          imageBase64 = placeholderImg;
+        }
+      }
+      const newDefinition = {
+        name,
+        category,
+        description,
+        specs,
+        image: imageBase64,
+        isManuallyHidden: false, // (MỚI) Khởi tạo
+      };
+      productDefinitions.push(newDefinition);
+      localStorage.setItem(
+        PRODUCT_DEFINITIONS_KEY,
+        JSON.stringify(productDefinitions)
+      );
+      if (typeof resetProductPopup === "function") {
+        resetProductPopup();
+      } else {
+        popup.style.display = "none";
+      }
+      alert(
+        "✅ Thêm định nghĩa sản phẩm thành công!\n\nBây giờ bạn có thể nhập hàng cho sản phẩm này trong 'Phiếu nhập hàng'."
+      );
+    } catch (err) {
+      console.error("Lỗi khi lưu định nghĩa sản phẩm:", err);
+      alert(
+        "❌ Đã xảy ra lỗi nghiêm trọng khi lưu. Vui lòng kiểm tra Console.\n" +
+          err.message
+      );
+    }
+  };
   window.editProduct = function (index) {
     const product = products[index];
     if (!product) return;
-
     const popup = document.getElementById("product-form-popup");
-    
-    // TÌM VÀ THAY THẾ TRƯỜNG NAME CŨ (SELECT) bằng a disabled input
-    let nameElement = document.getElementById("name");
-    if (nameElement) {
-        // Nếu đang là thẻ SELECT (từ form Thêm mới), chuyển lại thành INPUT
-        if (nameElement.tagName === "SELECT") {
-            const inputElement = document.createElement("input");
-            inputElement.type = "text";
-            inputElement.id = "name";
-            inputElement.required = true;
-            inputElement.style.cssText = "width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;";
-            nameElement.replaceWith(inputElement);
-            nameElement = inputElement;
-        }
-    } else {
-        // Nếu không tìm thấy phần tử 'name', không thể tiếp tục
-        console.error("Không tìm thấy phần tử #name trong form.");
+    if (!popup) return;
+    window.editingProductIndex = index;
+    window.isAddingDefinition = false;
+    popup.querySelector("h2").textContent = "Sửa Thông Tin Sản Phẩm";
+    const nameFieldContainer = document.getElementById("name").parentElement;
+    nameFieldContainer.innerHTML = `
+        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Tên sản phẩm:</label>
+        <input type="text" id="name" value="${escapeHtml(
+          product.name
+        )}" disabled 
+               style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none; background-color: #f4f4f4;">
+    `;
+    const categoryWrapper = document.getElementById("importCategoryWrapper");
+    if (categoryWrapper) categoryWrapper.style.display = "none";
+    document.getElementById("value").parentElement.style.display = "block";
+    document.getElementById("quantity").parentElement.style.display = "block";
+    document.getElementById("value").value = product.value;
+    document.getElementById("quantity").value = product.quantity;
+    document.getElementById("value").disabled = true;
+    document.getElementById("quantity").disabled = true;
+    document.getElementById("name").required = false; // Bỏ required khi sửa
+    document.getElementById("value").required = false;
+    document.getElementById("quantity").required = false;
+    const valueNote = document.getElementById("valueReadOnlyNote");
+    if (valueNote) valueNote.style.display = "block";
+    const qtyNote = document.getElementById("quantityAvailableNote");
+    if (qtyNote) {
+      qtyNote.style.display = "block";
+      qtyNote.textContent =
+        "Số lượng được quản lý tự động (Tổng nhập - Tổng bán).";
+    }
+    document.getElementById("description").disabled = false;
+    document.getElementById("specs").disabled = false;
+    document.getElementById("description").value = product.description || "";
+    document.getElementById("specs").value = product.specs || "";
+    document.getElementById("image").value = "";
+    popup.style.display = "flex";
+  };
+  window.editProductDefinition = async function (event) {
+    try {
+      event.preventDefault();
+      const description = document.getElementById("description").value.trim();
+      const specs = document.getElementById("specs").value.trim();
+      const imageFile = document.getElementById("image").files[0];
+      const popup = document.getElementById("product-form-popup");
+      const product = products[window.editingProductIndex];
+      if (!product) {
+        alert("❌ Lỗi: Không tìm thấy sản phẩm để sửa!");
         return;
-    }
-
-    // Điền giá trị và khóa trường tên sản phẩm
-    nameElement.value = product.name;
-    nameElement.disabled = true; 
-
-    if (popup) {
-      // ĐIỀN DỮ LIỆU CŨ VÀO FORM
-      document.getElementById("value").value = product.value;
-      document.getElementById("quantity").value = product.quantity;
-
-      // ĐIỀN DỮ LIỆU MỚI (MÔ TẢ/THÔNG SỐ)
-      document.getElementById("description").value = product.description || "";
-      document.getElementById("specs").value = product.specs || "";
-      
-      // Khóa giá bán khi sửa; cho phép sửa số lượng
-      document.getElementById("value").disabled = true;
-      document.getElementById("quantity").disabled = false;
-      document.getElementById("description").disabled = false;
-      document.getElementById("specs").disabled = false;
-      // Hiển thị ghi chú rằng giá bán được quản lý ở Quản lý Lợi nhuận
-      const valueNote = document.getElementById("valueReadOnlyNote");
-      if (valueNote) valueNote.style.display = "block";
-
-      // Cập nhật giới hạn số lượng tối đa theo (đang có trên kệ + tồn khả dụng)
-      const breakdown = calculateStockBreakdown(product.name);
-      const available = Math.max(0, breakdown.available);
-      const maxAllowed = product.quantity + available;
-      const quantityInput = document.getElementById("quantity");
-      if (quantityInput) {
-        quantityInput.max = maxAllowed;
-        quantityInput.placeholder = `Tối đa: ${maxAllowed}`;
       }
-      const qtyNote = document.getElementById("quantityAvailableNote");
-      if (qtyNote) {
-        qtyNote.style.display = "block";
-        qtyNote.textContent = `Khả dụng thêm: ${available} | Tối đa: ${maxAllowed}`;
+      let newImageBase64 = product.image;
+      if (imageFile) {
+        if (typeof getBase64 !== "function") {
+          alert("Lỗi: Hàm getBase64() bị thiếu.");
+          return;
+        }
+        try {
+          newImageBase64 = await getBase64(imageFile);
+        } catch (error) {
+          alert("⚠️ Lỗi xử lý hình ảnh. Vui lòng thử lại.");
+          return;
+        }
       }
-
-      const imageInput = document.getElementById("image");
-      if (imageInput) imageInput.value = "";
-
-      window.editingProductIndex = index;
-      popup.querySelector("h2").textContent = "Sửa sản phẩm trên kệ";
-      popup.style.display = "flex";
+      product.description = description;
+      product.specs = specs;
+      product.image = newImageBase64;
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+      if (!Array.isArray(productDefinitions)) {
+        console.error("Biến 'productDefinitions' không phải là mảng.");
+      } else {
+        const def = productDefinitions.find(
+          (d) =>
+            d.name.trim().toLowerCase() === product.name.trim().toLowerCase()
+        );
+        if (def) {
+          def.description = description;
+          def.specs = specs;
+          def.image = newImageBase64;
+          localStorage.setItem(
+            PRODUCT_DEFINITIONS_KEY,
+            JSON.stringify(productDefinitions)
+          );
+        }
+      }
+      window.editingProductIndex = -1;
+      if (typeof resetProductPopup === "function") {
+        resetProductPopup();
+      } else {
+        popup.style.display = "none";
+      }
+      renderProductManagement();
+      alert("✅ Cập nhật thông tin sản phẩm thành công!");
+    } catch (err) {
+      console.error("Lỗi khi sửa sản phẩm:", err);
+      alert(
+        "❌ Đã xảy ra lỗi nghiêm trọng khi sửa. Vui lòng kiểm tra Console.\n" +
+          err.message
+      );
     }
   };
 
-  // === CẬP NHẬT window.deleteProduct (THEO YÊU CẦU MỚI) ===
-  window.deleteProduct = function (index) {
-    const product = products[index];
-    if (!product) return;
+  // === (HÀM MỚI) ĐỂ ẨN/HIỆN SẢN PHẨM THỦ CÔNG ===
+  window.toggleProductVisibility = function (productIndex) {
+    const product = products[productIndex];
+    if (!product) {
+      alert("Lỗi: Không tìm thấy sản phẩm!");
+      return;
+    }
 
-    // Kiểm tra xem sản phẩm đã được mua chưa
-    const isPurchased = hasProductBeenPurchased(product.name);
+    // Tìm định nghĩa gốc của sản phẩm
+    const def = productDefinitions.find(
+      (d) => d.name.trim().toLowerCase() === product.name.trim().toLowerCase()
+    );
 
-    if (isPurchased) {
-      // Đã mua: Chỉ cho phép ẨN
-      if (
-        confirm(
-          `Sản phẩm "${product.name}" ĐÃ được đặt hàng.\nBạn không thể XÓA, chỉ có thể ẨN sản phẩm này.\n\nBạn có muốn ẨN sản phẩm này không?`
-        )
-      ) {
-        products[index].isHidden = true; // Set to hidden
-        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-        renderProductManagement();
-        alert(`Đã ẩn sản phẩm "${product.name}".`);
-      }
+    if (!def) {
+      alert("Lỗi: Không tìm thấy định nghĩa gốc của sản phẩm!");
+      return;
+    }
+
+    // Bật/Tắt trạng thái ẩn thủ công
+    def.isManuallyHidden = !def.isManuallyHidden;
+
+    // Lưu lại thay đổi vào productDefinitions (dữ liệu gốc)
+    localStorage.setItem(
+      PRODUCT_DEFINITIONS_KEY,
+      JSON.stringify(productDefinitions)
+    );
+
+    // Đồng bộ lại kho và kệ
+    syncInventoryToShelf();
+
+    // Render lại bảng
+    renderProductManagement();
+
+    if (def.isManuallyHidden) {
+      alert(`Đã ẩn sản phẩm "${product.name}" khỏi kệ.`);
     } else {
-      // Chưa mua: Cho phép XÓA VĨNH VIỄN
-      if (
-        confirm(
-          `Sản phẩm "${product.name}" CHƯA được bán.\nBạn có chắc muốn XÓA VĨNH VIỄN sản phẩm này?`
-        )
-      ) {
-        products.splice(index, 1);
-        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-        renderProductManagement();
-        renderStockManagement(); // Cập nhật lại kho
-        alert("Đã xóa vĩnh viễn sản phẩm!");
-      }
+      alert(`Đã hiển thị lại sản phẩm "${product.name}" trên kệ.`);
     }
   };
 
-  // === (TÍNH NĂNG MỚI) CÁC HÀM CHO MODAL CHI TIẾT SẢN PHẨM ===
+  // === (LOẠI BỎ) Hàm deleteProduct cũ ===
+  // window.deleteProduct = function(index) { ... }
+
   window.viewProductDetail = function (index) {
     const product = products[index];
     if (!product) {
@@ -1826,7 +1860,6 @@ ${
     }
     showAdminProductDetailModal(product);
   };
-
   window.closeAdminProductDetailModal = function () {
     const modal = document.getElementById("adminProductDetailModal");
     if (modal) {
@@ -1836,23 +1869,18 @@ ${
       }, 300);
     }
   };
-
   window.showAdminProductDetailModal = function (product) {
     closeAdminProductDetailModal();
-
     const importPriceStr = findLatestImportPrice(product.name);
     const importPrice = importPriceStr ? parseInt(importPriceStr, 10) : 0;
     const sellingPrice = product.value;
     let profit = 0;
     let profitMargin = 0;
-
     if (importPrice > 0) {
       profit = sellingPrice - importPrice;
       profitMargin = ((profit / importPrice) * 100).toFixed(1);
     }
-
     const profitColor = profit >= 0 ? "#38a169" : "#e53e3e";
-
     const specsHtml = (product.specs || "")
       .split(",")
       .map((spec) => spec.trim())
@@ -1866,7 +1894,6 @@ ${
         )}</span></li>`;
       })
       .join("");
-
     const modalHtml = `
       <div class="admin-product-detail-modal-overlay" id="adminProductDetailModal">
         <div class="admin-product-detail-modal-content">
@@ -1874,15 +1901,12 @@ ${
             <h2><i class="fa-solid fa-circle-info"></i> Chi tiết sản phẩm</h2>
             <span class="admin-close-modal">&times;</span>
           </div>
-          
           <div class="admin-product-detail-body">
             <div class="admin-product-detail-image" style="background-image: url('${
               product.image || placeholderImg
             }');"></div>
             <div class="admin-product-detail-info">
-              
               <h3>${escapeHtml(product.name)}</h3>
-              
               <div class="admin-product-detail-section">
                 <h4><i class="fa-solid fa-money-bill-wave"></i> Giá & Kho</h4>
                 <p><strong>Giá bán:</strong> <span class="price-current">${formatPrice(
@@ -1893,9 +1917,7 @@ ${
                 }</span></p>
                 <p><strong>Lợi nhuận (ước tính):</strong> <span style="font-weight: 600; color: ${profitColor};">${formatPrice(
       profit
-    )}đ ${
-      profitMargin > 0 ? `(${profitMargin}%)` : ""
-    }</span></p>
+    )}đ ${profitMargin > 0 ? `(${profitMargin}%)` : ""}</span></p>
                 <p><strong>Số lượng trên kệ:</strong> <span>${
                   product.quantity
                 }</span></p>
@@ -1903,14 +1925,12 @@ ${
                   product.category
                 )}</span></p>
               </div>
-
               <div class="admin-product-detail-section">
                 <h4><i class="fa-solid fa-align-left"></i> Mô tả</h4>
                 <p class="description">${escapeHtml(
                   product.description || "Chưa có mô tả."
                 )}</p>
               </div>
-
               ${
                 specsHtml
                   ? `
@@ -1921,24 +1941,18 @@ ${
               `
                   : ""
               }
-
             </div>
           </div>
-
           <div class="admin-product-detail-modal-actions">
             <button class="admin-btn-close-modal">Đóng</button>
           </div>
         </div>
       </div>
     `;
-
     document.body.insertAdjacentHTML("beforeend", modalHtml);
-
     const modal = document.getElementById("adminProductDetailModal");
-
     const closeModalBtn = modal.querySelector(".admin-close-modal");
     const closeBtn = modal.querySelector(".admin-btn-close-modal");
-
     closeModalBtn.onclick = closeAdminProductDetailModal;
     closeBtn.onclick = closeAdminProductDetailModal;
     modal.onclick = function (e) {
@@ -1946,245 +1960,157 @@ ${
         closeAdminProductDetailModal();
       }
     };
-
     setTimeout(() => {
       modal.classList.add("show");
     }, 10);
   };
+  // =======================================================================
+  // === CỤM CODE THÊM/SỬA ĐỊNH NGHĨA SẢN PHẨM (KẾT THÚC) ===
+  // =======================================================================
 
-  // === HÀM MỚI: ẨN/HIỆN SẢN PHẨM ===
-  window.toggleProductVisibility = function (index) {
-    const product = products[index];
-    if (!product) {
-      alert("Lỗi: Không tìm thấy sản phẩm!");
-      return;
-    }
+  // === GẮN SỰ KIỆN ĐÓNG POPUP SẢN PHẨM (ĐÃ CẬP NHẬT) ===
+  const closePopupBtn = document.getElementById("close-product-form-popup");
+  const productPopup = document.getElementById("product-form-popup");
 
-    // Đảo ngược trạng thái
-    product.isHidden = !product.isHidden;
-
-    // Lưu lại
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-
-    // Render lại
-    renderProductManagement();
-
-    alert(
-      product.isHidden
-        ? `✅ Đã ẩn sản phẩm "${product.name}".`
-        : `✅ Đã hiển thị lại sản phẩm "${product.name}".`
+  function resetProductPopup() {
+    if (!productPopup) return;
+    productPopup.style.display = "none";
+    window.editingProductIndex = -1;
+    window.isAddingDefinition = false;
+    const nameFieldContainer = document.getElementById("name").parentElement;
+    nameFieldContainer.innerHTML = `
+      <label style="display: block; margin-bottom: 5px; font-weight: 600;">Tên sản phẩm:</label>
+      <input
+        type="text"
+        id="name"
+        placeholder="Nhập tên sản phẩm..."
+        style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;"
+        required
+      />
+  `;
+    const categoryWrappers = document.querySelectorAll(
+      "#importCategoryWrapper"
     );
-  };
-
-  // === HÀM LƯU VÀ RENDER (DÙNG CHUNG) ===
-  function saveAndRenderProducts(popup, stockContent) {
-    const PRODUCTS_KEY = "products";
-
-    // BƯỚC 1: LƯU VÀO LOCAL STORAGE
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-
-    // BƯỚC 2: CẬP NHẬT BIẾN TOÀN CỤC SAU KHI LƯU
-    products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
-
-    // BƯỚC 3: CẬP NHẬT GIAO DIỆN
-    if (popup) popup.style.display = "none";
-    renderProductManagement();
-
-    if (stockContent && stockContent.style.display !== "none") {
-      renderStockManagement();
-    }
+    categoryWrappers.forEach((wrapper) => wrapper.remove());
+    document.getElementById("value").parentElement.style.display = "block";
+    document.getElementById("quantity").parentElement.style.display = "block";
+    document.getElementById("value").disabled = false;
+    document.getElementById("quantity").disabled = false;
+    document.getElementById("name").required = true;
+    document.getElementById("value").required = true;
+    document.getElementById("quantity").required = true;
+    document.getElementById("description").disabled = false;
+    document.getElementById("specs").disabled = false;
+    document.getElementById("value").value = "";
+    document.getElementById("quantity").value = "";
+    document.getElementById("description").value = "";
+    document.getElementById("specs").value = "";
+    document.getElementById("image").value = "";
+    const valueNote = document.getElementById("valueReadOnlyNote");
+    if (valueNote) valueNote.style.display = "none";
+    const qtyNote = document.getElementById("quantityAvailableNote");
+    if (qtyNote) qtyNote.style.display = "none";
   }
 
-  // === HÀM THÊM SẢN PHẨM MỚI (CẬP NHẬT VỚI MÔ TẢ/THÔNG SỐ) ===
-  window.addProduct = async function (event) {
-    event.preventDefault();
-
-    const name = document.getElementById("name").value.trim(); // Lấy từ SELECT
-    const value = parseInt(document.getElementById("value").value);
-    const quantity = parseInt(document.getElementById("quantity").value);
-    const category = findProductCategory(name);
-
-    // LẤY TRƯỜNG MỚI
-    const description = document.getElementById("description").value.trim();
-    const specs = document.getElementById("specs").value.trim();
-
-    const imageFile = document.getElementById("image").files[0];
-    const popup = document.getElementById("product-form-popup");
-    const stockContent = document.getElementById("stockContent");
-
-    // --- VALIDATE CƠ BẢN ---
-    if (
-      !name ||
-      isNaN(value) ||
-      isNaN(quantity) ||
-      value <= 0 ||
-      quantity <= 0
-    ) {
-      alert(
-        "⚠️ Vui lòng điền đầy đủ thông tin và đảm bảo Giá/Số lượng hợp lệ (> 0)!"
-      );
-      if (typeof event.stopImmediatePropagation === "function")
-        event.stopImmediatePropagation();
-      return;
-    }
-
-    // --- KIỂM TRA TRÙNG TÊN ---
-    const existingProduct = products.find(
-      (p) => p.name.trim().toLowerCase() === name.toLowerCase()
-    );
-
-    if (existingProduct) {
-      alert(
-        `❌ Lỗi: Trên kệ đã có sản phẩm "${existingProduct.name}".\n\nVui lòng:\n- Dùng chức năng "Sửa" để cập nhật\n- Hoặc chọn tên khác`
-      );
-      if (typeof event.stopImmediatePropagation === "function")
-        event.stopImmediatePropagation();
-      return;
-    }
-
-    // --- KIỂM TRA TỒN KHO ---
-    const currentStock = calculateStock();
-    const stockItem = currentStock.find(
-      (item) => item.productName.trim().toLowerCase() === name.toLowerCase()
-    );
-
-    if (!stockItem) {
-      alert(
-        `❌ Lỗi Kho: Sản phẩm "${name}" chưa có trong kho. Vui lòng tạo phiếu nhập trước khi đưa lên kệ.`
-      );
-      if (typeof event.stopImmediatePropagation === "function")
-        event.stopImmediatePropagation();
-      return;
-    }
-
-    const availableStock = parseInt(stockItem.quantity || 0, 10);
-
-    if (availableStock <= 0) {
-      alert(
-        `❌ Lỗi Tồn Kho: Sản phẩm "${name}" hiện đang hết kho (0). Vui lòng nhập thêm.`
-      );
-      if (typeof event.stopImmediatePropagation === "function")
-        event.stopImmediatePropagation();
-      return;
-    }
-
-    if (quantity > availableStock) {
-      alert(
-        `❌ Lỗi Tồn Kho: Yêu cầu (${quantity}) vượt quá tồn kho khả dụng (${availableStock}).`
-      );
-      if (typeof event.stopImmediatePropagation === "function")
-        event.stopImmediatePropagation();
-      return;
-    }
-
-    // --- TẠO SẢN PHẨM MỚI ---
-    let imageBase64 = placeholderImg;
-    if (imageFile) {
-      try {
-        imageBase64 = await getBase64(imageFile);
-      } catch (err) {
-        console.error("Lỗi chuyển ảnh sang base64:", err);
-        imageBase64 = placeholderImg;
+  if (closePopupBtn) {
+    closePopupBtn.addEventListener("click", resetProductPopup);
+  }
+  if (productPopup) {
+    productPopup.addEventListener("click", (e) => {
+      if (e.target === productPopup) {
+        resetProductPopup();
       }
-    }
+    });
+  }
+  // ========================================================
 
-    const newProduct = {
-      name,
-      value,
-      quantity,
-      category,
-      image: imageBase64,
-      isHidden: false,
-      description: description || "", // Lưu trường mới
-      specs: specs || "", // Lưu trường mới
-    };
-    products.push(newProduct);
-
-    // Lưu và render
-    try {
-      saveAndRenderProducts(popup, stockContent);
-      alert("✅ Thêm sản phẩm thành công!");
-    } catch (err) {
-      console.error("Lỗi khi lưu sản phẩm:", err);
-      alert("❌ Lỗi khi lưu sản phẩm. Kiểm tra console.");
+  // === (CỤM HÀM MỚI) BỘ LỌC PHIẾU NHẬP HÀNG ===
+  function renderImportReceiptTable(filteredReceipts) {
+    const tableBody = document.getElementById("importReceiptsTableBody");
+    if (!tableBody) return;
+    let html = "";
+    filteredReceipts
+      .sort((a, b) => b.id - a.id)
+      .forEach((receipt) => {
+        html += `
+          <tr>
+            <td>#PN${receipt.id}</td>
+            <td>${receipt.date}</td>
+            <td>${escapeHtml(receipt.importedBy)}</td>
+            <td>
+                ${
+                  receipt.status === "Hoàn thành"
+                    ? '<span style="color: green; font-weight: 600;">Hoàn thành</span>'
+                    : '<span style="color: orange; font-weight: 600;">Chưa hoàn thành</span>'
+                }
+            </td>
+            <td>
+              <button onclick="viewImportReceipt('${
+                receipt.id
+              }')" class="btn-view">
+                <i class="fa-solid fa-eye"></i> Chi tiết
+              </button>
+              ${
+                receipt.status === "Chưa hoàn thành"
+                  ? `
+              <button onclick="editImportReceipt('${receipt.id}')" class="btn-edit">
+                <i class="fa-solid fa-pen"></i> Sửa
+              </button>
+              <button onclick="finalizeReceiptStatus('${receipt.id}')" class="btn-done">
+                <i class="fa-solid fa-check"></i> Hoàn thành
+              </button>
+              `
+                  : ""
+              }
+              <button onclick="deleteImportReceipt('${
+                receipt.id
+              }')" class="btn-delete">
+                <i class="fa-solid fa-trash"></i> Xóa
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    if (!html) {
+      html = `<tr><td colspan="5" class="empty-state">Không tìm thấy phiếu nhập phù hợp.</td></tr>`;
     }
+    tableBody.innerHTML = html;
+  }
+  window.filterImportReceipts = function () {
+    const importerQuery = document
+      .getElementById("importerSearchInput")
+      .value.toLowerCase()
+      .trim();
+    const startDateVal = document.getElementById("importStartDate").value;
+    const endDateVal = document.getElementById("importEndDate").value;
+    const startDate = startDateVal
+      ? new Date(startDateVal + "T00:00:00")
+      : null;
+    const endDate = endDateVal ? new Date(endDateVal + "T23:59:59") : null;
+    const filtered = importReceipts.filter((receipt) => {
+      const matchesImporter = receipt.importedBy
+        .toLowerCase()
+        .includes(importerQuery);
+      const receiptDate = parseVNDate(receipt.date);
+      if (!receiptDate) return false;
+      const matchesDate =
+        (!startDate || receiptDate >= startDate) &&
+        (!endDate || receiptDate <= endDate);
+      return matchesImporter && matchesDate;
+    });
+    renderImportReceiptTable(filtered);
   };
-  // === HÀM SỬA SẢN PHẨM (CẬP NHẬT LOGIC: CHỈ LƯU MÔ TẢ/THÔNG SỐ/ẢNH) ===
-  window.editProductSubmit = async function (event) {
-    event.preventDefault();
-    if (typeof event.stopImmediatePropagation === "function")
-      event.stopImmediatePropagation();
-
-    // LẤY TRƯỜNG MỚI ĐỂ LƯU
-    const description = document.getElementById("description").value.trim();
-    const specs = document.getElementById("specs").value.trim();
-    const quantityStr = document.getElementById("quantity").value;
-    const newQuantity = parseInt(quantityStr, 10);
-    const imageFile = document.getElementById("image").files[0];
-
-    const popup = document.getElementById("product-form-popup");
-    const stockContent = document.getElementById("stockContent");
-
-    // LẤY SẢN PHẨM ĐANG SỬA
-    const product = products[window.editingProductIndex];
-    if (!product) {
-      alert("❌ Không tìm thấy sản phẩm!");
-      return;
-    }
-
-    // Validate số lượng (cho phép sửa)
-    if (isNaN(newQuantity) || newQuantity < 0) {
-      alert("⚠️ Số lượng không hợp lệ. Vui lòng nhập số nguyên không âm!");
-      return;
-    }
-
-    // Ràng buộc: không vượt quá (hiện tại + khả dụng)
-    const breakdown = calculateStockBreakdown(product.name);
-    const available = Math.max(0, breakdown.available);
-    const maxAllowed = product.quantity + available;
-    if (newQuantity > maxAllowed) {
-      alert(
-        `⚠️ Số lượng vượt quá cho phép!\nTối đa: ${maxAllowed} (Khả dụng thêm: ${available})\nBạn nhập: ${newQuantity}`
-      );
-      return;
-    }
-
-    // --- CHUYỂN ẢNH SANG BASE64 (nếu có file mới) ---
-    let newImageBase64 = product.image; // Giữ lại ảnh cũ nếu không chọn file mới
-    if (imageFile) {
-      try {
-        newImageBase64 = await getBase64(imageFile);
-      } catch (error) {
-        console.error("Lỗi khi chuyển đổi ảnh sang Base64:", error);
-        alert("⚠️ Lỗi xử lý hình ảnh. Vui lòng thử lại.");
-        return;
-      }
-    }
-
-    // --- CẬP NHẬT SẢN PHẨM ---
-    // Giữ nguyên các trường bị khóa
-    product.name = product.name;
-    product.value = product.value;
-    product.quantity = newQuantity; // Cập nhật số lượng theo form
-    product.category = product.category;
-
-    // Cập nhật các trường được phép sửa
-    product.image = newImageBase64; // Cập nhật ảnh
-    product.description = description; // Cập nhật mô tả
-    product.specs = specs; // Cập nhật thông số
-
-    // --- LƯU VÀ CẬP NHẬT GIAO DIỆN ---
-    window.editingProductIndex = -1;
-    saveAndRenderProducts(popup, stockContent);
-    alert("✅ Cập nhật sản phẩm thành công!");
+  window.resetImportFilter = function () {
+    document.getElementById("importerSearchInput").value = "";
+    document.getElementById("importStartDate").value = "";
+    document.getElementById("importEndDate").value = "";
+    renderImportReceiptTable(importReceipts);
   };
-
-  // === PHIẾU NHẬP HÀNG (GIỮ NGUYÊN) ===
   function renderAddInfo() {
+    reloadDataAndSync();
     hideAllContent();
     if (!addInfoContent) return;
     addInfoContent.style.display = "block";
-
     let html = `
       <div class="management-header">
         <h2><i class="fa-solid fa-clipboard-list"></i> Phiếu nhập hàng</h2>
@@ -2198,6 +2124,25 @@ ${
         </div>
       </div>
       
+      <div class="filter-controls">
+        <label for="importerSearchInput">Người nhập:</label>
+        <input 
+          type="text" 
+          id="importerSearchInput" 
+          placeholder="Tìm theo người nhập..."
+        />
+        <label for="importStartDate">Từ ngày:</label>
+        <input type="date" id="importStartDate" />
+        <label for="importEndDate">Đến ngày:</label>
+        <input type="date" id="importEndDate" />
+        <button onclick="window.filterImportReceipts()" class="btn-filter">
+          <i class="fa-solid fa-search"></i> Lọc
+        </button>
+        <button onclick="window.resetImportFilter()" class="btn-reset">
+          <i class="fa-solid fa-times"></i> Reset
+        </button>
+      </div>
+
       <div class="table-container">
         <table class="admin-table">
           <thead>
@@ -2209,99 +2154,21 @@ ${
               <th>Thao tác</th>
             </tr>
           </thead>
-          <tbody>
-    `;
-
-    importReceipts.forEach((receipt) => {
-      html += `
-        <tr>
-          <td>#PN${receipt.id}</td>
-          <td>${receipt.date}</td>
-          <td>${escapeHtml(receipt.importedBy)}</td>
-          <td>
-              ${
-                receipt.status === "Hoàn thành"
-                  ? '<span style="color: green; font-weight: 600;">Hoàn thành</span>'
-                  : '<span style="color: orange; font-weight: 600;">Chưa hoàn thành</span>'
-              }
-          </td>
-          <td>
-            <button onclick="viewImportReceipt('${
-              receipt.id
-            }')" class="btn-view">
-              <i class="fa-solid fa-eye"></i> Chi tiết phiếu
-            </button>
-            ${
-              // Nút Sửa và Hoàn thành ngoài danh sách chỉ hiển thị nếu trạng thái là "Chưa hoàn thành"
-              receipt.status === "Chưa hoàn thành"
-                ? `
-            <button onclick="editImportReceipt('${receipt.id}')" class="btn-edit">
-              <i class="fa-solid fa-pen"></i> Sửa
-            </button>
-            <button onclick="finalizeReceiptStatus('${receipt.id}')" class="btn-done">
-              <i class="fa-solid fa-check"></i> Hoàn thành
-            </button>
-            `
-                : ""
-            }
-            <button onclick="deleteImportReceipt('${
-              receipt.id
-            }')" class="btn-delete">
-              <i class="fa-solid fa-trash"></i> Xóa
-            </button>
-          </td>
-        </tr>
-      `;
-    });
-
-    html += `
+          <tbody id="importReceiptsTableBody">
           </tbody>
         </table>
       </div>
       
       <div class="stats-container">
-        <div class="stat-card">
-          <i class="fa-solid fa-clipboard-list stat-icon"></i>
-          <div>
-            <h3>${importReceipts.length}</h3>
-            <p>Tổng phiếu nhập</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <i class="fa-solid fa-boxes-stacked stat-icon"></i>
-          <div>
-            <h3>${importReceipts.reduce((sum, receipt) => {
-              const totalItemsQuantity = receipt.items.reduce(
-                (itemSum, item) => itemSum + item.quantity,
-                0
-              );
-              return sum + totalItemsQuantity;
-            }, 0)}</h3>
-            <p>Tổng số lượng nhập</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <i class="fa-solid fa-money-bill-trend-up stat-icon"></i>
-          <div>
-            <h3>${formatPrice(
-              importReceipts.reduce((sum, receipt) => {
-                const totalItemsPrice = receipt.items.reduce(
-                  (itemSum, item) => itemSum + item.quantity * item.price,
-                  0
-                );
-                return sum + totalItemsPrice;
-              }, 0)
-            )}đ</h3>
-            <p>Tổng giá trị nhập</p>
-          </div>
-        </div>
       </div>
     `;
-
     addInfoContent.innerHTML = html;
+    renderImportReceiptTable(importReceipts);
   }
-
-  // --- HÀM 2: TẠO VÀ HIỂN THỊ PHIẾU NHẬP MỚI ---
+  window.refreshImportReceipts = function () {
+    reloadDataAndSync();
+    renderAddInfo();
+  };
   window.createAndShowNewReceiptForm = function () {
     const newReceipt = {
       id: Date.now().toString(),
@@ -2310,55 +2177,29 @@ ${
       status: "Chưa hoàn thành",
       items: [],
     };
-
     importReceipts.push(newReceipt);
     localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
-
-    currentReceiptId = newReceipt.id;
-
-    showImportProductForm(currentReceiptId);
+    renderAddInfo();
+    showImportProductForm(newReceipt.id);
   };
-
-  // --- HÀM 3: XỬ LÝ KHI CHỌN SẢN PHẨM TRONG SELECT ---
-  window.fillProductDetails = function (selectElement) {
-    const selectedProductName = selectElement.value;
-    const priceInput = document.getElementById("importPrice");
-
-    if (selectedProductName) {
-      const product = products.find((p) => p.name === selectedProductName);
-      if (product) {
-        priceInput.value = product.value;
-      }
-    } else {
-      priceInput.value = "";
-    }
-  };
-
-  // --- HÀM 4: HIỂN THỊ MODAL CHÍNH ---
   window.showImportProductForm = function (receiptId) {
     const currentReceipt = importReceipts.find((r) => r.id === receiptId);
     if (!currentReceipt) return alert("Lỗi: Không tìm thấy phiếu nhập!");
-
-    // Không cho phép sửa nếu đã Hoàn thành
     if (currentReceipt.status === "Hoàn thành") {
       alert("Không thể sửa phiếu nhập đã Hoàn thành.");
       return;
     }
-
     const existingModal = document.getElementById("importProductModal");
     if (existingModal) existingModal.remove();
-
-    // 1. TẠO HTML CHO SELECT TÊN SẢN PHẨM
-    let productOptions = '<option value="">-- Chọn sản phẩm --</option>';
-    if (typeof products !== "undefined" && products.length > 0) {
-      products.forEach((product) => {
-        productOptions += `<option value="${escapeHtml(
-          product.name
-        )}">${escapeHtml(product.name)}</option>`;
+    let productOptions =
+      '<option value="">-- Chọn định nghĩa sản phẩm --</option>';
+    productDefinitions
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .forEach((def) => {
+        productOptions += `<option value="${escapeHtml(def.name)}">${escapeHtml(
+          def.name
+        )}</option>`;
       });
-    }
-
-    // --- TẠO HTML CHO FORM NHẬP CHI TIẾT ---
     const importFormHtml = `
         <div class="import-product-form-container" style="padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 20px; background-color: #f9f9f9;">
             <h3 style="color: #667eea; margin-top: 0; border-bottom: 2px solid #667eea; padding-bottom: 10px;">
@@ -2369,7 +2210,6 @@ ${
                     <div>
                         <label style="display: block; margin-bottom: 5px; font-weight: 600;">Tên sản phẩm:</label>
                         <select id="importProductName" required 
-                            onchange="fillProductDetails(this)"
                             style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;">
                             ${productOptions}
                         </select>
@@ -2384,10 +2224,9 @@ ${
                         <label style="display: block; margin-bottom: 5px; font-weight: 600;">Đơn giá nhập:</label>
                         <input type="number" id="importPrice" required min="0"
                             style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;"
-                            placeholder="Tự động điền / Nhập đơn giá...">
+                            placeholder="Nhập đơn giá nhập...">
                     </div>
                 </div>
-                
                 <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
                     <button type="submit"
                         style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
@@ -2397,21 +2236,13 @@ ${
             </form>
         </div>
     `;
-
-    // 2. TẠO HTML CHO BẢNG DANH SÁCH MẶT HÀNG
     let itemsHtml = "";
     let totalItems = 0;
     let totalValue = 0;
-    const hasItems = currentReceipt.items.length > 0;
-    const buttonDisabled = hasItems
-      ? ""
-      : 'disabled style="opacity: 0.5; cursor: not-allowed;"';
-
     currentReceipt.items.forEach((item, index) => {
-      const itemPrice = item.quantity * item.price;
-      totalItems += item.quantity;
+      const itemPrice = (item.quantity || 0) * (item.price || 0);
+      totalItems += parseInt(item.quantity || 0);
       totalValue += itemPrice;
-
       itemsHtml += `
             <tr>
               <td>${escapeHtml(item.productName)}</td>
@@ -2426,20 +2257,13 @@ ${
             </tr>
         `;
     });
-
     let html = `
       <div class="productImport-modal-overlay" id="importProductModal" onclick="closeModal(event, '${receiptId}')">
         <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 900px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                 <h2 style="margin: 0;">Quản lý Phiếu nhập hàng </h2>
-                 <button onclick="closeModal(null, '${receiptId}')" class="btn-refresh" style="background-color: transparent; color: #333; border: none; font-size: 24px;">&times;</button>
-            </div>
-
-            ${importFormHtml}
-            
-            <h3 style="margin-top: 30px; margin-bottom: 10px;"><i class="fa-solid fa-list-check"></i> Danh sách mặt hàng đã nhập (${
-              currentReceipt.items.length
-            } loại)</h3>
+             ${importFormHtml}
+             <h3 style="margin-top: 30px; margin-bottom: 10px;"><i class="fa-solid fa-list-check"></i> Danh sách mặt hàng đã nhập (${
+               currentReceipt.items.length
+             } loại)</h3>
             <h3>Mã phiếu: #PN${receiptId}</h3>
             <div class="table-container">
               <table class="admin-table">
@@ -2453,7 +2277,10 @@ ${
                   </tr>
                 </thead>
                 <tbody id="importItemsTableBody">
-                  ${itemsHtml}
+                  ${
+                    itemsHtml ||
+                    '<tr><td colspan="5" class="empty-state">Chưa có mặt hàng nào.</td></tr>'
+                  }
                 </tbody>
                 <tfoot>
                     <tr>
@@ -2465,35 +2292,27 @@ ${
                 </tfoot>
               </table>
             </div>
-            
-            <div style="margin-top: 20px; text-align: right;">
-                    <button onclick="finishReceiptEditing('${receiptId}')" class="btn-done" ${buttonDisabled}>
-                       <i class="fa-solid fa-save"></i> Xác nhận phiếu
+             <div style="margin-top: 20px; text-align: right;">
+                    <button onclick="finishReceiptEditing('${receiptId}')" class="btn-done">
+                       <i class="fa-solid fa-save"></i> Lưu & Đóng
                     </button>
              </div>
         </div>
       </div>
     `;
-
     document.body.insertAdjacentHTML("beforeend", html);
   };
-
-  // --- HÀM 5: ĐÓNG MODAL (CÓ LOGIC XÓA PHIẾU RỖNG) ---
   window.closeModal = function (event, receiptId) {
     const modal = document.getElementById("importProductModal");
-
     const isClosingEvent =
       !event ||
-      event.target.id === "importProductModal" ||
-      !event.target.closest(".modal-box");
-
+      (event.target.id === "importProductModal" &&
+        !event.target.closest(".modal-box"));
     if (isClosingEvent) {
       if (receiptId) {
         const index = importReceipts.findIndex((r) => r.id === receiptId);
         if (index !== -1) {
           const currentReceipt = importReceipts[index];
-
-          // CHỈ XÓA nếu phiếu ở trạng thái "Chưa hoàn thành" VÀ không có mặt hàng
           if (
             currentReceipt.status === "Chưa hoàn thành" &&
             currentReceipt.items.length === 0
@@ -2510,35 +2329,34 @@ ${
       if (modal) modal.remove();
     }
   };
-
-  // --- HÀM 6: THÊM MẶT HÀNG VÀO PHIẾU ---
   window.submitImportItem = function (event, receiptId) {
     event.preventDefault();
-
     const productName = document
       .getElementById("importProductName")
       .value.trim();
     const quantity = parseInt(document.getElementById("importQuantity").value);
     const price = parseInt(document.getElementById("importPrice").value);
-
-    const selectedProduct = products.find((p) => p.name === productName);
-    const category = selectedProduct
-      ? selectedProduct.category
+    const selectedProductDef = productDefinitions.find(
+      (d) => d.name === productName
+    );
+    const category = selectedProductDef
+      ? selectedProductDef.category
       : "Chưa phân loại";
-
-    if (!productName || productName === "" || quantity <= 0 || price <= 0) {
+    if (
+      !productName ||
+      productName === "" ||
+      isNaN(quantity) ||
+      quantity <= 0 ||
+      isNaN(price) ||
+      price < 0
+    ) {
       alert(
-        "Vui lòng chọn sản phẩm và điền đầy đủ thông tin hợp lệ (SL, Đơn giá > 0)!"
+        "Vui lòng chọn sản phẩm và điền đầy đủ thông tin hợp lệ (SL > 0, Đơn giá >= 0)!"
       );
       return;
     }
-
     const currentReceipt = importReceipts.find((r) => r.id === receiptId);
-    if (!currentReceipt) {
-      alert("Lỗi: Không tìm thấy phiếu nhập để thêm mặt hàng!");
-      return;
-    }
-
+    if (!currentReceipt) return;
     const newItem = {
       productName: productName,
       quantity: quantity,
@@ -2546,122 +2364,72 @@ ${
       category: category,
     };
     currentReceipt.items.push(newItem);
-
     localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
-
     showImportProductForm(receiptId);
-
-    setTimeout(() => {
-      document.getElementById("importProductName").value = "";
-      document.getElementById("importQuantity").value = "";
-      document.getElementById("importPrice").value = "";
-    }, 50);
-
     alert("✅ Đã thêm mặt hàng thành công!");
   };
-
-  // --- HÀM 7: XÓA MẶT HÀNG KHỎI PHIẾU NHẬP ---
   window.deleteItemInReceipt = function (receiptId, itemIndex) {
     const confirmDelete = confirm(
       "Bạn có chắc chắn muốn xóa mặt hàng này khỏi phiếu nhập không?"
     );
     if (confirmDelete) {
       const currentReceipt = importReceipts.find((r) => r.id === receiptId);
-
-      if (!currentReceipt) {
-        alert("Lỗi: Không tìm thấy phiếu nhập!");
-        return;
-      }
-
-      if (currentReceipt.status === "Hoàn thành") {
-        alert("Không thể xóa mặt hàng khỏi phiếu đã Hoàn thành.");
-        return;
-      }
-
+      if (!currentReceipt || currentReceipt.status === "Hoàn thành") return;
       currentReceipt.items.splice(itemIndex, 1);
-
       localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
-
       showImportProductForm(receiptId);
-
       alert("✅ Đã xóa mặt hàng thành công.");
     }
   };
-
-  // --- HÀM 8: HOÀN TẤT PHIẾU TRONG MODAL (CHỈ LƯU VÀ ĐÓNG) ---
   window.finishReceiptEditing = function (receiptId) {
     const currentReceipt = importReceipts.find((r) => r.id === receiptId);
-
-    if (!currentReceipt) {
-      alert("Lỗi: Không tìm thấy phiếu nhập!");
-      return;
-    }
-
+    if (!currentReceipt) return;
     if (currentReceipt.items.length === 0) {
-      alert("❌ Phiếu nhập phải có ít nhất một sản phẩm mới được lưu!");
+      alert(
+        "Phiếu nhập rỗng. Phiếu này sẽ bị xóa nếu bạn đóng. Vui lòng thêm ít nhất 1 mặt hàng."
+      );
       return;
     }
-
     localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
-
-    closeModal();
+    closeModal(null, receiptId);
     renderAddInfo();
-
-    alert(
-      `✅ Đã lưu tất cả mặt hàng cho phiếu nhập #${receiptId}. Phiếu hiện đang ở trạng thái CHƯA HOÀN THÀNH.`
-    );
+    alert(`✅ Đã lưu phiếu nhập #${receiptId}. (Trạng thái: Chưa hoàn thành)`);
   };
-
-  // --- HÀM 9: HOÀN THÀNH PHIẾU (CHUYỂN TRẠNG THÁI NGOÀI DANH SÁCH) ---
   window.finalizeReceiptStatus = function (receiptId) {
     const currentReceipt = importReceipts.find((r) => r.id === receiptId);
-
-    if (!currentReceipt) {
-      alert("Lỗi: Không tìm thấy phiếu nhập!");
-      return;
-    }
-
-    if (currentReceipt.status === "Hoàn thành") {
-      alert("Phiếu đã ở trạng thái Hoàn thành.");
-      return;
-    }
-
+    if (!currentReceipt) return;
+    if (currentReceipt.status === "Hoàn thành") return;
     if (currentReceipt.items.length === 0) {
       alert("❌ Phiếu nhập rỗng không thể hoàn thành!");
       return;
     }
-
     currentReceipt.status = "Hoàn thành";
     localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
-
+    syncInventoryToShelf();
     renderAddInfo();
-
-    alert(`✅ Phiếu nhập hàng #${receiptId} đã được chính thức Hoàn thành.`);
+    alert(
+      `✅ Phiếu nhập hàng #${receiptId} đã Hoàn thành.\nĐã cập nhật tồn kho.`
+    );
   };
-
-  // --- HÀM 10: CHỈNH SỬA PHIẾU (CHỈ DÀNH CHO PHIẾU CHƯA HOÀN THÀNH) ---
   window.editImportReceipt = function (receiptId) {
     const currentReceipt = importReceipts.find((r) => r.id === receiptId);
-
     if (!currentReceipt || currentReceipt.status !== "Chưa hoàn thành") {
       alert("Lỗi: Phiếu này đã Hoàn thành và không thể chỉnh sửa.");
       return;
     }
     showImportProductForm(receiptId);
   };
-
-  // --- HÀM 11: HIỂN THỊ CHI TIẾT PHIẾU (VIEW ONLY) ---
+  window.viewImportReceipt = function (id) {
+    showViewImportReceiptModal(id);
+  };
   window.showViewImportReceiptModal = function (id) {
     const receipt = importReceipts.find((r) => r.id === id);
     if (!receipt) return alert("Không tìm thấy phiếu nhập!");
-
     let itemsHtml = "";
     let totalReceiptPrice = 0;
-
     receipt.items.forEach((item) => {
       const itemPrice = item.quantity * item.price;
       totalReceiptPrice += itemPrice;
-
       itemsHtml += `
             <tr>
               <td>${escapeHtml(item.productName)}</td>
@@ -2671,16 +2439,13 @@ ${
             </tr>
         `;
     });
-
     const html = `
       <div class="productImport-modal-overlay" id="viewImportReceiptModal" onclick="closeViewReceiptModal(event)">
         <div class="modal-box" onclick="event.stopPropagation()">
-
           <h2 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
               CHI TIẾT PHIẾU NHẬP - #PN${receipt.id}
               <span onclick="closeViewReceiptModal()" style="cursor: pointer; font-size: 28px; color: #999;">&times;</span>
           </h2>
-          
           <div style="margin-bottom: 15px; font-size: 14px; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
               <p><strong>Ngày nhập:</strong> ${receipt.date}</p>
               <p><strong>Người nhập:</strong> ${escapeHtml(
@@ -2690,178 +2455,145 @@ ${
                 receipt.status === "Hoàn thành" ? "green" : "orange"
               };">${receipt.status}</span></p>
           </div>
-
           <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Tên sản phẩm</th>
-                <th>Số lượng</th>
-                <th>Giá nhập</th>
-                <th>Thành tiền</th>
-              </tr>
-            </thead>
-            <tbody>
-                ${itemsHtml}
-            </tbody>
+            <thead> <tr> <th>Tên sản phẩm</th> <th>Số lượng</th> <th>Giá nhập</th> <th>Thành tiền</th> </tr> </thead>
+            <tbody> ${itemsHtml} </tbody>
           </table>
-          
           <div style="margin-top: 20px; text-align: right; font-size: 18px;">
               <strong>TỔNG GIÁ TRỊ PHIẾU:</strong> <span style="color: #764ba2; font-weight: 700;">${formatPrice(
                 totalReceiptPrice
               )}đ</span>
           </div>
-
         </div>
       </div>
     `;
-
     document.body.insertAdjacentHTML("beforeend", html);
   };
-
-  // 3. Tạo hàm đóng Modal
   window.closeViewReceiptModal = function (event) {
     if (
       !event ||
-      event.target.id === "viewImportReceiptModal" ||
-      !event.target
+      (event.target.id === "viewImportReceiptModal" &&
+        !event.target.closest(".modal-box"))
     ) {
       const modal = document.getElementById("viewImportReceiptModal");
       if (modal) modal.remove();
     }
   };
-
-  // 4. Cập nhật nút trong renderAddInfo để gọi hàm mới này
-  // Thay thế hàm viewImportReceipt cũ bằng hàm sau:
-  window.viewImportReceipt = function (id) {
-    showViewImportReceiptModal(id);
-  };
-
-  window.editImportReceipt = function (id) {
-    const receipt = importReceipts.find((r) => r.id === id);
-
-    if (!receipt) {
-      alert("Không tìm thấy phiếu nhập!");
-      return;
-    }
-
-    // 1. Cập nhật ID phiếu đang được thao tác (nếu bạn dùng biến currentReceiptId)
-    window.currentReceiptId = id;
-
-    // 2. Mở Modal hiển thị danh sách mặt hàng để sửa
-    showImportProductForm(id);
-  };
-
-  window.editItemInReceipt = function (receiptId, itemIndex) {
-    const receipt = importReceipts.find((r) => r.id === receiptId);
-    if (!receipt || !receipt.items[itemIndex]) {
-      alert("Lỗi: Không tìm thấy mặt hàng để sửa!");
-      return;
-    }
-
-    const itemToEdit = receipt.items[itemIndex];
-
-    // Sử dụng PROMPT để đơn giản hóa việc chỉnh sửa (có thể thay bằng Modal nhỏ)
-    const newProductName = prompt("Sửa Tên sản phẩm:", itemToEdit.productName);
-    if (newProductName === null) return;
-
-    const newQuantity = parseInt(prompt("Sửa Số lượng:", itemToEdit.quantity));
-    if (isNaN(newQuantity) || newQuantity <= 0)
-      return alert("Số lượng không hợp lệ!");
-
-    const newPrice = parseFloat(prompt("Sửa Đơn giá:", itemToEdit.price));
-    if (isNaN(newPrice) || newPrice <= 0) return alert("Đơn giá không hợp lệ!");
-
-    const newCategory = prompt("Sửa Danh mục:", itemToEdit.category);
-    if (newCategory === null) return;
-
-    // Cập nhật thông tin
-    itemToEdit.productName = newProductName.trim();
-    itemToEdit.quantity = newQuantity;
-    itemToEdit.price = newPrice;
-    itemToEdit.category = newCategory.trim();
-
-    // 1. Lưu lại vào localStorage
-    localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
-
-    // 2. Tái tạo lại nội dung bảng trong Modal đang mở (giống như trong submitImportItem)
-    const tableBody = document.getElementById("importItemsTableBody");
-    if (tableBody) {
-      // Gọi lại showImportProductForm để làm mới toàn bộ nội dung trong modal
-      // Cách nhanh hơn: đóng modal cũ và mở lại modal mới (hoặc viết lại logic render riêng)
-      // Cách hiệu quả: Cập nhật thủ công (đã làm trong submitImportItem)
-
-      // Vì đây là sửa, ta sẽ đóng và mở lại modal để cập nhật toàn bộ nội dung
-      closeModal(); // Đóng modal cũ (importProductModal)
-      showImportProductForm(receiptId); // Mở lại modal mới
-    }
-
-    alert("✅ Đã cập nhật mặt hàng thành công!");
-  };
-
-  window.deleteItemInReceipt = function (receiptId, itemIndex) {
-    if (!confirm("Bạn có chắc chắn muốn xóa mặt hàng này khỏi phiếu nhập?"))
-      return;
-
-    const receipt = importReceipts.find((r) => r.id === receiptId);
-    if (!receipt || !receipt.items[itemIndex]) {
-      alert("Lỗi: Không tìm thấy mặt hàng để xóa!");
-      return;
-    }
-
-    // Xóa mặt hàng khỏi mảng items bằng index
-    receipt.items.splice(itemIndex, 1);
-
-    // Lưu lại vào localStorage
-    localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
-
-    // Cập nhật giao diện Modal
-    closeModal();
-    showImportProductForm(receiptId);
-
-    alert("Đã xóa mặt hàng thành công!");
-  };
-
-  window.markImportReceiptDone = function (id) {
-    const receipt = importReceipts.find((r) => r.id === id);
-    if (!receipt) return alert("Không tìm thấy phiếu nhập!");
-
-    if (
-      confirm(
-        "Xác nhận hoàn thành phiếu nhập này? Sau khi hoàn thành sẽ không thể chỉnh sửa."
-      )
-    ) {
-      receipt.status = "Hoàn thành"; // ✅ đổi lại đây
-      localStorage.setItem("importReceipts", JSON.stringify(importReceipts));
-      renderAddInfo();
-      alert("✅ Phiếu nhập đã được đánh dấu hoàn thành!");
-    }
-  };
-
   window.deleteImportReceipt = function (id) {
-    if (
-      !confirm(
-        "Bạn có chắc muốn xóa phiếu nhập này? Việc này sẽ giảm số lượng tồn kho khả dụng."
-      )
-    )
-      return;
-
+    const receipt = importReceipts.find((r) => r.id === id);
+    if (!receipt) return;
+    let confirmMsg =
+      "Bạn có chắc muốn xóa phiếu nhập này? Hành động này không thể hoàn tác.";
+    if (receipt.status === "Hoàn thành") {
+      confirmMsg =
+        "⚠️ CẢNH BÁO: Bạn đang xóa một phiếu đã HOÀN THÀNH.\nViệc này sẽ cập nhật lại tồn kho (giảm số lượng đã nhập).\n\nBạn có chắc chắn muốn xóa?";
+    }
+    if (!confirm(confirmMsg)) return;
     importReceipts = importReceipts.filter((r) => r.id !== id);
     localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
+    syncInventoryToShelf();
     renderAddInfo();
-
-    // Cập nhật lại kho sau khi xóa
-    if (stockContent && stockContent.style.display !== "none") {
-      renderStockManagement();
-    }
     alert("Đã xóa phiếu nhập!");
   };
+  // ========================================================
 
-  // === QUẢN LÝ HÓA ĐƠN (GIỮ NGUYÊN) ===
+  // === (CỤM HÀM MỚI) BỘ LỌC QUẢN LÝ HÓA ĐƠN ===
+  function renderInvoiceTable(filteredInvoices) {
+    const tableBody = document.getElementById("invoicesTableBody");
+    if (!tableBody) return;
+    let html = "";
+    filteredInvoices
+      .sort((a, b) => b.id - a.id)
+      .forEach((invoice) => {
+        const itemsStr = invoice.items.map((it) => it.name).join(", ");
+        const status = invoice.status || "Mới đặt";
+        const statusClass = getStatusClass(status);
+        const allStatuses = [
+          "Mới đặt",
+          "Đang xử lý",
+          "Đang vận chuyển",
+          "Đã giao",
+          "Đã hủy",
+        ];
+        const statusOptions = allStatuses
+          .map(
+            (s) =>
+              `<option value="${s}" ${
+                s === status ? "selected" : ""
+              }>${s}</option>`
+          )
+          .join("");
+
+        html += `
+          <tr>
+            <td>#${invoice.id}</td>
+            <td>${invoice.date}</td>
+            <td>${escapeHtml(invoice.user)}</td>
+            <td title="${escapeHtml(itemsStr)}">${escapeHtml(
+          itemsStr.length > 50 ? itemsStr.substring(0, 50) + "..." : itemsStr
+        )}</td>
+            <td>${formatPrice(invoice.total)}đ</td>
+            <td>
+              <select 
+                class="invoice-status-select ${statusClass}" 
+                onchange="window.updateInvoiceStatus(${
+                  invoice.id
+                }, this.value, this)"
+              >
+                ${statusOptions}
+              </select>
+            </td>
+            <td>
+              <button onclick="viewInvoice(${invoice.id})" class="btn-view">
+                <i class="fa-solid fa-eye"></i> Xem
+              </button>
+              <button onclick="deleteInvoice(${invoice.id})" class="btn-delete">
+                <i class="fa-solid fa-trash"></i> Xóa
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    if (!html) {
+      html = `<tr><td colspan="7" class="empty-state">Không tìm thấy hóa đơn phù hợp.</td></tr>`;
+    }
+    tableBody.innerHTML = html;
+  }
+  window.filterInvoices = function () {
+    const customerQuery = document
+      .getElementById("customerSearchInput")
+      .value.toLowerCase()
+      .trim();
+    const startDateVal = document.getElementById("invoiceStartDate").value;
+    const endDateVal = document.getElementById("invoiceEndDate").value;
+    const startDate = startDateVal
+      ? new Date(startDateVal + "T00:00:00")
+      : null;
+    const endDate = endDateVal ? new Date(endDateVal + "T23:59:59") : null;
+    const filtered = invoices.filter((invoice) => {
+      const matchesCustomer = invoice.user
+        .toLowerCase()
+        .includes(customerQuery);
+      const invoiceDate = parseVNDate(invoice.date);
+      if (!invoiceDate) return false;
+      const matchesDate =
+        (!startDate || invoiceDate >= startDate) &&
+        (!endDate || invoiceDate <= endDate);
+      return matchesCustomer && matchesDate;
+    });
+    renderInvoiceTable(filtered);
+  };
+  window.resetInvoiceFilter = function () {
+    document.getElementById("customerSearchInput").value = "";
+    document.getElementById("invoiceStartDate").value = "";
+    document.getElementById("invoiceEndDate").value = "";
+    renderInvoiceTable(invoices);
+  };
   function renderInvoiceManagement() {
+    reloadDataAndSync();
     hideAllContent();
     if (!invoiceContent) return;
     invoiceContent.style.display = "block";
-
     let html = `
       <div class="management-header">
         <h2><i class="fa-solid fa-file-invoice"></i> Quản lý Hóa đơn</h2>
@@ -2869,6 +2601,26 @@ ${
           <i class="fa-solid fa-rotate"></i> Làm mới
         </button>
       </div>
+      
+      <div class="filter-controls">
+        <label for="customerSearchInput">Khách hàng:</label>
+        <input 
+          type="text" 
+          id="customerSearchInput" 
+          placeholder="Tìm theo tên khách hàng..."
+        />
+        <label for="invoiceStartDate">Từ ngày:</label>
+        <input type="date" id="invoiceStartDate" />
+        <label for="invoiceEndDate">Đến ngày:</label>
+        <input type="date" id="invoiceEndDate" />
+        <button onclick="window.filterInvoices()" class="btn-filter">
+          <i class="fa-solid fa-search"></i> Lọc
+        </button>
+        <button onclick="window.resetInvoiceFilter()" class="btn-reset">
+          <i class="fa-solid fa-times"></i> Reset
+        </button>
+      </div>
+
       <div class="table-container">
         <table class="admin-table">
           <thead>
@@ -2882,234 +2634,45 @@ ${
               <th>Thao tác</th>
             </tr>
           </thead>
-          <tbody>
-    `;
-
-    // Sắp xếp hóa đơn, cái mới nhất lên đầu
-    invoices.sort((a, b) => b.id - a.id);
-
-    invoices.forEach((invoice) => {
-      const itemsStr = invoice.items.map((it) => it.name).join(", ");
-      const status = invoice.status || "Mới đặt"; // Mặc định cho hóa đơn cũ
-      const statusClass = getStatusClass(status);
-
-      // <-- THÊM MỚI: Kiểm tra xem đây có phải trạng thái cuối cùng không
-      const isFinalStatus = status === "Đã giao" || status === "Đã hủy";
-
-      const allStatuses = [
-        "Mới đặt",
-        "Đang xử lý",
-        "Đang vận chuyển",
-        "Đã giao",
-        "Đã hủy",
-      ];
-      const statusOptions = allStatuses
-        .map(
-          (s) =>
-            `<option value="${s}" ${
-              s === status ? "selected" : ""
-            }>${s}</option>`
-        )
-        .join("");
-
-      html += `
-        <tr>
-          <td>#${invoice.id}</td>
-          <td>${invoice.date}</td>
-          <td>${escapeHtml(invoice.user)}</td>
-          <td title="${escapeHtml(itemsStr)}">${escapeHtml(
-        itemsStr.length > 50 ? itemsStr.substring(0, 50) + "..." : itemsStr
-      )}</td>
-          <td>${formatPrice(invoice.total)}đ</td>
-          
-          <td>
-            <select 
-              class="invoice-status-select ${statusClass}" 
-              onchange="window.updateInvoiceStatus(${
-                invoice.id
-              }, this.value, this)"
-            >
-              ${statusOptions}
-            </select>
-          </td>
-
-          <td>
-            <button onclick="viewInvoice(${invoice.id})" class="btn-view">
-              <i class="fa-solid fa-eye"></i> Xem
-            </button>
-            <button onclick="deleteInvoice(${invoice.id})" class="btn-delete">
-              <i class="fa-solid fa-trash"></i> Xóa
-            </button>
-          </td>
-        </tr>
-      `;
-    });
-
-    html += `
+          <tbody id="invoicesTableBody">
           </tbody>
         </table>
       </div>
       <div class="stats-container">
-        <div class="stat-card">
-          <i class="fa-solid fa-file-invoice stat-icon"></i>
-          <div>
-            <h3>${invoices.length}</h3>
-            <p>Tổng hóa đơn</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <i class="fa-solid fa-money-bill stat-icon"></i>
-          <div>
-            <h4>${formatPrice(
-              invoices.reduce((sum, inv) => sum + inv.total, 0)
-            )}đ</h4>
-            <p>Tổng doanh thu</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <i class="fa-solid fa-box-open stat-icon"></i>
-          <div>
-            <h3>${
-              invoices.filter(
-                (inv) =>
-                  (inv.status || "Mới đặt") === "Mới đặt" ||
-                  (inv.status || "Mới đặt") === "Đang xử lý"
-              ).length
-            }</h3>
-            <p>Đơn hàng mới</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <i class="fa-solid fa-ban stat-icon"></i>
-          <div>
-            <h3>${invoices.filter((inv) => inv.status === "Đã hủy").length}</h3>
-            <p>Đơn hàng đã hủy</p>
-          </div>
-        </div>
       </div>
     `;
-
     invoiceContent.innerHTML = html;
+    renderInvoiceTable(invoices);
   }
-
-  // === HÀM CẬP NHẬT TRẠNG THÁI HÓA ĐƠN (MỚI) ===
   window.updateInvoiceStatus = function (id, newStatus, selectElement) {
     const invoice = invoices.find((inv) => inv.id === id);
-
-    if (!invoice) {
-      alert("Lỗi: Không tìm thấy hóa đơn!");
-      return;
-    }
-
+    if (!invoice) return;
     const oldStatus = invoice.status || "Mới đặt";
-
-    // <-- THÊM MỚI: Ràng buộc không cho phép thay đổi trạng thái cuối cùng
-    if (oldStatus === "Đã giao" || oldStatus === "Đã hủy") {
+    if (
+      (oldStatus === "Đã giao" || oldStatus === "Đã hủy") &&
+      oldStatus !== newStatus
+    ) {
       alert(
         "Đơn hàng đã ở trạng thái cuối cùng (Đã giao/Đã hủy) và không thể thay đổi."
       );
-      // Đảm bảo dropdown trả về giá trị cũ
-      if (selectElement) {
-        selectElement.value = oldStatus;
-      }
-      return; // Dừng hàm ngay lập tức
+      if (selectElement) selectElement.value = oldStatus;
+      return;
     }
-    // KẾT THÚC THÊM MỚI
-
-    // Logic hoàn kho (CHỈ KHI ADMIN CHUYỂN TỪ TRẠNG THÁI KHÁC -> ĐÃ HỦY)
-    // Và logic trừ kho (CHỈ KHI ADMIN CHUYỂN TỪ ĐÃ HỦY -> TRẠNG THÁI KHÁC)
-
-    // 1. Nếu chuyển sang "Đã hủy" (từ trạng thái không phải "Đã hủy")
-    if (newStatus === "Đã hủy" && oldStatus !== "Đã hủy") {
-      if (
-        confirm(
-          "Việc hủy đơn hàng này sẽ hoàn trả sản phẩm về kho. Bạn có chắc chắn?"
-        )
-      ) {
-        try {
-          invoice.items.forEach((item) => {
-            const product = products.find((p) => p.name === item.name);
-            if (product) {
-              product.quantity += item.quantity;
-            }
-            // (Như lưu ý cũ: logic này đang hoàn trả về "sản phẩm trên kệ")
-          });
-          localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-        } catch (e) {
-          alert("Có lỗi xảy ra khi hoàn kho. Trạng thái chưa được thay đổi.");
-          selectElement.value = oldStatus; // Trả lại giá trị cũ
-          return;
-        }
-      } else {
-        selectElement.value = oldStatus; // Người dùng hủy, trả lại giá trị cũ
-        return;
-      }
-    }
-
-    // 2. Nếu chuyển từ "Đã hủy" sang trạng thái khác
-    if (oldStatus === "Đã hủy" && newStatus !== "Đã hủy") {
-      if (
-        confirm(
-          "Khôi phục đơn hàng này sẽ trừ lại số lượng sản phẩm từ kho (kệ). Bạn có chắc chắn?"
-        )
-      ) {
-        try {
-          // Kiểm tra kho trước khi trừ
-          for (const item of invoice.items) {
-            const product = products.find((p) => p.name === item.name);
-            if (!product || product.quantity < item.quantity) {
-              alert(
-                `Không đủ hàng cho sản phẩm "${item.name}". Kho (kệ) còn ${
-                  product ? product.quantity : 0
-                }.`
-              );
-              selectElement.value = oldStatus; // Trả lại giá trị cũ
-              return; // Dừng
-            }
-          }
-
-          // Nếu đủ hàng, tiến hành trừ kho
-          invoice.items.forEach((item) => {
-            const product = products.find((p) => p.name === item.name);
-            if (product) {
-              product.quantity -= item.quantity;
-            }
-          });
-          localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-        } catch (e) {
-          alert("Có lỗi xảy ra khi trừ kho. Trạng thái chưa được thay đổi.");
-          selectElement.value = oldStatus; // Trả lại giátrị cũ
-          return;
-        }
-      } else {
-        selectElement.value = oldStatus; // Người dùng hủy, trả lại giá trị cũ
-        return;
-      }
-    }
-
-    // Cập nhật trạng thái hóa đơn
     invoice.status = newStatus;
     localStorage.setItem(INVOICES_KEY, JSON.stringify(invoices));
-
-    // Cập nhật giao diện (màu sắc) cho dropdown
-    if (selectElement) {
-      selectElement.className = "invoice-status-select"; // Reset
-      selectElement.classList.add(getStatusClass(newStatus));
+    syncInventoryToShelf();
+    renderInvoiceManagement();
+    if (productContent && productContent.style.display !== "none") {
+      renderProductManagement();
     }
-
-    // Cập nhật lại số liệu thống kê nếu cần
-    renderInvoiceManagement();
   };
-
   window.refreshInvoices = function () {
-    invoices = JSON.parse(localStorage.getItem(INVOICES_KEY)) || [];
+    reloadDataAndSync();
     renderInvoiceManagement();
   };
-
   window.viewInvoice = function (id) {
     const invoice = invoices.find((inv) => inv.id === id);
     if (!invoice) return;
-
     const itemsStr = invoice.items
       .map(
         (it) =>
@@ -3118,141 +2681,73 @@ ${
           )}đ`
       )
       .join("\n");
-
     const message = `
 ┌────────────────────────────
    HÓA ĐƠN BÁN HÀNG
 └────────────────────────────┘
-
 Mã HĐ: #${id}
 Ngày: ${invoice.date}
 Khách hàng: ${invoice.user}
-
 ┌────────────────────────────
 CHI TIẾT SẢN PHẨM
 └────────────────────────────┘
-
 ${itemsStr}
-
 ────────────────────────────
 Tổng tiền: ${formatPrice(invoice.total)}đ
 ────────────────────────────
     `;
-
     alert(message);
   };
-
   window.deleteInvoice = function (id) {
-    if (!confirm("Bạn có chắc muốn xóa hóa đơn này?")) return;
+    if (!confirm("Bạn có chắc muốn xóa vĩnh viễn hóa đơn này?")) return;
     invoices = invoices.filter((inv) => inv.id !== id);
     localStorage.setItem(INVOICES_KEY, JSON.stringify(invoices));
+    syncInventoryToShelf();
     renderInvoiceManagement();
     alert("Đã xóa hóa đơn!");
   };
+  // ========================================================
 
   // === GẮN SỰ KIỆN CHO CÁC NÚT ĐIỀU HƯỚNG (GIỮ NGUYÊN) ===
   if (manageUserBtn) {
     manageUserBtn.addEventListener("click", renderUserManagement);
   }
-
   if (manageProductBtn) {
     manageProductBtn.addEventListener("click", () => renderProductManagement());
   }
-
   if (manageInvoiceBtn) {
     manageInvoiceBtn.addEventListener("click", renderInvoiceManagement);
   }
-
   if (addInfoBtn) {
     addInfoBtn.addEventListener("click", renderAddInfo);
   }
-
   if (manageStockBtn) {
     manageStockBtn.addEventListener("click", () => renderStockManagement());
   }
   if (manageProfitBtn) {
     manageProfitBtn.addEventListener("click", renderProfitManagement);
   }
+  // ========================================================
 
   // === GẮN SỰ KIỆN CHO FORM SẢN PHẨM (GIỮ NGUYÊN) ===
   const productForm = document.getElementById("productForm");
   if (productForm) {
     productForm.addEventListener("submit", function (event) {
-      if (window.editingProductIndex === -1) {
-        window.addProduct(event);
-      } else {
-        window.editProductSubmit(event);
+      if (window.isAddingDefinition) {
+        window.addProductDefinition(event);
+      } else if (window.editingProductIndex > -1) {
+        window.editProductDefinition(event);
       }
     });
   }
-
-  // === GẮN SỰ KIỆN ĐÓNG POPUP SẢN PHẨM (ĐÃ THAY THẾ) ===
-  const closePopupBtn = document.getElementById("close-product-form-popup");
-  const productPopup = document.getElementById("product-form-popup");
-
-  if (closePopupBtn && productPopup) {
-    closePopupBtn.addEventListener("click", () => {
-      productPopup.style.display = "none";
-      window.editingProductIndex = -1;
-
-      // === YÊU CẦU MỚI: MỞ KHÓA TẤT CẢ CÁC TRƯỜNG KHI ĐÓNG ===
-      document.getElementById("value").disabled = false;
-      document.getElementById("quantity").disabled = false;
-      document.getElementById("description").disabled = false;
-      document.getElementById("specs").disabled = false;
-
-      // Dọn dẹp luôn các trường mới
-      document.getElementById("description").value = "";
-      document.getElementById("specs").value = "";
-      // ====================================================
-
-      // LOGIC DỌN DẸP DOM: HOÀN TÁC TRƯỜNG NAME
-      const nameElement = document.getElementById("name");
-      if (nameElement && nameElement.tagName === "SELECT") {
-        // Tạo lại input text gốc
-        const originalInput = document.createElement("input");
-        originalInput.type = "text";
-        originalInput.id = "name";
-        originalInput.required = true;
-        originalInput.style.cssText =
-          "width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;";
-        originalInput.placeholder = "Nhập tên sản phẩm...";
-
-        nameElement.replaceWith(originalInput);
-      }
-
-      // Ẩn ghi chú readonly của giá bán khi đóng popup
-      const valueNote = document.getElementById("valueReadOnlyNote");
-      if (valueNote) valueNote.style.display = "none";
-
-      // Đảm bảo nút Lưu được bật lại nếu đang ở chế độ sửa
-      const submitBtn = document
-        .getElementById("productForm")
-        .querySelector('button[type="submit"]');
-      if (submitBtn) submitBtn.disabled = false;
-    });
-  }
-
-  // Đóng popup khi click bên ngoài
-  if (productPopup) {
-    productPopup.addEventListener("click", (e) => {
-      if (e.target === productPopup) {
-        // Thực hiện logic đóng popup
-        const closeBtn = document.getElementById("close-product-form-popup");
-        if (closeBtn) closeBtn.click();
-      }
-    });
-  }
+  // ========================================================
 
   // === KHỞI TẠO TRANG (GIỮ NGUYÊN) ===
   if (localStorage.getItem("isAdmin") === "true") {
-    // Tự động hiển thị Quản lý khách hàng khi tải trang
-    // (Hoặc bạn có thể bỏ dòng này nếu muốn trang ban đầu trống)
-    renderUserManagement();
+    reloadDataAndSync(); // Tải và đồng bộ dữ liệu ngay từ đầu
+    renderUserManagement(); // Hiển thị tab mặc định
   } else {
-    // Nếu không phải admin, chuyển về trang login
     if (window.location.pathname.includes("admin")) {
-      // Dùng replace để không lưu vào lịch sử trình duyệt
       window.location.replace("../index.html");
     }
   }

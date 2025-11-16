@@ -132,47 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let users = [];
   const STORAGE_KEY = "userAccounts";
 
-  function loadUsers() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      users = JSON.parse(stored);
-    } else {
-      // Tạo users mẫu
-      users = [
-        {
-          username: "user1",
-          password: "123456",
-          email: "user1@example.com",
-          phone: "0901234567",
-          address: "123 Nguyễn Huệ, Quận 1, TP.HCM",
-        },
-        {
-          username: "nguyenvana",
-          password: "password123",
-          email: "nguyenvana@gmail.com",
-          phone: "0912345678",
-          address: "456 Lê Lợi, Quận 3, TP.HCM",
-        },
-        {
-          username: "tranthib",
-          password: "123456",
-          email: "tranthib@yahoo.com",
-          phone: "0923456789",
-          address: "789 Hai Bà Trưng, Quận 1, TP.HCM",
-        },
-        {
-          username: "demo",
-          password: "demo",
-          email: "demo@dmarket.com",
-          phone: "0934567890",
-          address: "321 Trần Hưng Đạo, Quận 5, TP.HCM",
-        },
-      ];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-    }
-  }
-  loadUsers();
-
   // ----- Products với dữ liệu mẫu -----
   let products = [];
   const PRODUCTS_KEY = "products";
@@ -185,548 +144,16 @@ document.addEventListener("DOMContentLoaded", () => {
       products = [];
     }
   }
-
   // Nếu chưa có products, tạo dữ liệu mẫu
-  if (products.length === 0) {
-    products = [
-      {
-        name: "iPhone 15 Pro Max",
-        value: 29990000,
-        quantity: 15,
-        category: "Điện thoại",
-        image: "../image/IP15PM.jpg",
-        tags: ["điện thoại", "apple"],
-        details: {
-          // THÊM DETAILS
-          "Màn hình": "6.7 inch, Super Retina XDR",
-          Chip: "Apple A17 Pro",
-          RAM: "8GB",
-          "Bộ nhớ trong": "256GB",
-          Camera: "Chính 48MP & Phụ 12MP",
-        },
-      },
-      {
-        name: "Samsung Galaxy S24 Ultra",
-        value: 27990000,
-        quantity: 20,
-        category: "Điện thoại",
-        image: "../image/S24U.jpg",
-        tags: ["điện thoại", "samsung"],
-        details: {
-          // THÊM DETAILS
-          "Màn hình": "6.8 inch, Dynamic AMOLED 2X",
-          Chip: "Snapdragon 8 Gen 3 for Galaxy",
-          RAM: "12GB",
-          "Bộ nhớ trong": "256GB",
-          Camera: "Chính 200MP & Phụ 12MP, 10MP, 50MP",
-        },
-      },
-      {
-        name: "MacBook Pro M3 14 inch",
-        value: 42990000,
-        quantity: 8,
-        category: "Laptop",
-        image: "../image/MBP14M3.jpg",
-        tags: ["laptop", "apple"],
-        details: {
-          // THÊM DETAILS
-          "Màn hình": "14.2 inch, Liquid Retina XDR",
-          Chip: "Apple M3 Pro",
-          RAM: "18GB",
-          "Ổ cứng": "512GB SSD",
-          GPU: "14-core GPU",
-        },
-      },
-      {
-        name: "Dell XPS 13",
-        value: 32990000,
-        quantity: 12,
-        category: "Laptop",
-        image: "../image/DellXPS13.jpg",
-        tags: ["laptop", "dell"],
-        details: {
-          // THÊM DETAILS
-          "Màn hình": "13.4 inch, FHD+ InfinityEdge",
-          CPU: "Intel Core Ultra 7 155H",
-          RAM: "16GB LPDDR5x",
-          "Ổ cứng": "512GB SSD",
-          "Đồ họa": "Intel Arc Graphics",
-        },
-      },
-      {
-        name: "iPad Pro 12.9 inch M2",
-        value: 25990000,
-        quantity: 10,
-        category: "Máy tính bảng",
-        image: "../image/iPadProM2.jpg",
-        tags: ["máy tính bảng", "apple"],
-        details: {
-          // THÊM DETAILS
-          "Màn hình": "12.9 inch, Liquid Retina XDR",
-          Chip: "Apple M2",
-          RAM: "8GB",
-          "Bộ nhớ trong": "128GB",
-          "Kết nối": "Wi-Fi 6E",
-        },
-      },
-      {
-        name: "AirPods Pro 2",
-        value: 5990000,
-        quantity: 30,
-        category: "Phụ kiện",
-        image: "../image/AirPodsPro2.jpg",
-        tags: ["phụ kiện", "âm thanh", "apple"],
-        details: {
-          // THÊM DETAILS
-          "Tính năng": "Chống ồn chủ động (ANC)",
-          Chip: "Apple H2",
-          "Thời lượng pin": "Tới 6 giờ (tai nghe), 30 giờ (hộp sạc)",
-          Sạc: "MagSafe, USB-C",
-        },
-      },
-      {
-        name: "Sony WH-1000XM5",
-        value: 8490000,
-        quantity: 18,
-        category: "Phụ kiện",
-        image: "../image/SonyWH1000XM5.jpg",
-        tags: ["phụ kiện", "âm thanh", "sony"],
-        details: {
-          // THÊM DETAILS
-          Loại: "Tai nghe Over-ear",
-          "Tính năng": "Chống ồn chủ động (ANC) hàng đầu",
-          Driver: "30mm",
-          "Thời lượng pin": "Tới 30 giờ (bật ANC)",
-        },
-      },
-      {
-        name: "Apple Watch Series 9",
-        value: 10990000,
-        quantity: 25,
-        category: "Đồng hồ thông minh",
-        image: "../image/AppleWatchS9.jpg",
-        tags: ["đồng hồ thông minh", "apple"],
-        details: {
-          // THÊM DETAILS
-          "Kích cỡ": "45mm",
-          "Màn hình": "Always-On Retina",
-          Chip: "Apple S9 SiP",
-          "Tính năng": "Double Tap, ECG, SpO2",
-          "Chống nước": "50m",
-        },
-      },
-      {
-        name: "Samsung Galaxy Watch 6",
-        value: 7490000,
-        quantity: 22,
-        category: "Đồng hồ thông minh",
-        image: "../image/SamsungGW6.jpg",
-        tags: ["đồng hồ thông minh", "samsung"],
-        details: {
-          // THÊM DETAILS
-          "Kích cỡ": "44mm",
-          "Màn hình": "Super AMOLED",
-          "Hệ điều hành": "Wear OS 4",
-          "Tính năng": "Đo thành phần cơ thể, ECG, Huyết áp",
-          "Chất liệu": "Armor Aluminum",
-        },
-      },
-      {
-        name: "Bàn phím cơ Keychron K2",
-        value: 2490000,
-        quantity: 35,
-        category: "Phụ kiện",
-        image: "../image/KeychronK2.jpg",
-        tags: ["phụ kiện", "keychron"],
-        details: {
-          // THÊM DETAILS
-          Layout: "75%",
-          Switch: "Gateron Brown",
-          "Kết nối": "Bluetooth 5.1, USB-C",
-          "Đèn nền": "RGB",
-          "Tương thích": "Mac & Windows",
-        },
-      },
-      {
-        name: "Chuột Logitech MX Master 3S",
-        value: 2790000,
-        quantity: 40,
-        category: "Phụ kiện",
-        image: "../image/LogitechMXMaster3S.jpg",
-        tags: ["phụ kiện", "logitech"],
-        details: {
-          // THÊM DETAILS
-          "Cảm biến": "Darkfield 8000 DPI",
-          "Nút cuộn": "MagSpeed",
-          "Kết nối": "Logi Bolt, Bluetooth",
-          "Tính năng": "Click yên tĩnh, Sạc nhanh USB-C",
-        },
-      },
-      {
-        name: "Màn hình LG UltraGear 27 inch",
-        value: 8990000,
-        quantity: 14,
-        category: "Màn hình",
-        image: "../image/LGUltraGear27.jpg",
-        tags: ["màn hình", "lg"],
-        details: {
-          // THÊM DETAILS
-          "Kích thước": "27 inch",
-          "Độ phân giải": "QHD (2560 x 1440)",
-          "Tấm nền": "Nano IPS",
-          "Tần số quét": "165Hz",
-          "Phản hồi": "1ms (GtG)",
-        },
-      },
-      {
-        name: "Webcam Logitech C920",
-        value: 1990000,
-        quantity: 28,
-        category: "Phụ kiện",
-        image: "../image/LogitechC920.jpg",
-        tags: ["phụ kiện", "logitech"],
-        details: {
-          // THÊM DETAILS
-          "Độ phân giải": "Full HD 1080p / 30fps",
-          "Góc nhìn": "78°",
-          "Tính năng": "Tự động lấy nét, Mic kép",
-          "Kết nối": "USB-A",
-        },
-      },
-      {
-        name: "SSD Samsung 990 PRO 1TB",
-        value: 3490000,
-        quantity: 32,
-        category: "Linh kiện",
-        image: "../image/Samsung990PRO1TB.jpg",
-        tags: ["linh kiện", "samsung"],
-        details: {
-          // THÊM DETAILS
-          "Dung lượng": "1TB",
-          Chuẩn: "NVMe PCIe Gen 4.0",
-          "Tốc độ đọc": "~7,450 MB/s",
-          "Tốc độ ghi": "~6,900 MB/s",
-          "Form Factor": "M.2 2280",
-        },
-      },
-      {
-        name: "RAM Corsair Vengeance 32GB",
-        value: 4290000,
-        quantity: 26,
-        category: "Linh kiện",
-        image: "../image/CorsairVengeance32GB.jpg",
-        tags: ["linh kiện", "corsair"],
-        details: {
-          // THÊM DETAILS
-          "Dung lượng": "32GB (2 x 16GB)",
-          Loại: "DDR5",
-          "Tốc độ": "6000MHz",
-          Đèn: "RGB",
-          "Tản nhiệt": "Nhôm",
-        },
-      },
-      {
-        name: "Tai nghe Gaming Razer BlackShark V2",
-        value: 2890000,
-        quantity: 19,
-        category: "Phụ kiện",
-        image: "../image/RazerBlackSharkV2.jpg",
-        tags: ["phụ kiện", "âm thanh", "razer"],
-        details: {
-          // THÊM DETAILS
-          Driver: "Razer TriForce Titanium 50mm",
-          "Âm thanh": "THX Spatial Audio",
-          Mic: "Razer HyperClear Cardioid",
-          "Kết nối": "Jack 3.5mm, USB Sound Card",
-        },
-      },
-      {
-        name: "Sạc dự phòng Anker 20000mAh",
-        value: 990000,
-        quantity: 45,
-        category: "Phụ kiện",
-        image: "../image/Anker20000mAh.jpg",
-        tags: ["phụ kiện", "anker"],
-        details: {
-          // THÊM DETAILS
-          "Dung lượng": "20,000 mAh",
-          "Công suất": "20W",
-          "Cổng ra": "1x USB-C, 1x USB-A",
-          "Công nghệ": "PowerIQ 3.0, Power Delivery (PD)",
-        },
-      },
-      {
-        name: "Ốp lưng iPhone 15 Pro",
-        value: 490000,
-        quantity: 50,
-        category: "Phụ kiện",
-        image: "../image/OpLungIP15Pro.jpg",
-        tags: ["phụ kiện", "apple"],
-        details: {
-          // THÊM DETAILS
-          "Chất liệu": "Silicone",
-          "Tương thích": "iPhone 15 Pro",
-          "Tính năng": "Hỗ trợ MagSafe",
-        },
-      },
-      {
-        name: "Cáp sạc USB-C to Lightning",
-        value: 390000,
-        quantity: 60,
-        category: "Phụ kiện",
-        image: "../image/CableUSBCtoLightning.jpg",
-        tags: ["phụ kiện", "apple"],
-        details: {
-          // THÊM DETAILS
-          Loại: "USB-C to Lightning",
-          "Độ dài": "1m",
-          Hãng: "Apple",
-          "Tính năng": "Sạc nhanh (PD)",
-        },
-      },
-      {
-        name: "Router WiFi 6 TP-Link Archer AX73",
-        value: 2490000,
-        quantity: 16,
-        category: "Mạng & Kết nối",
-        image: "../image/TPLinkArcherAX73.jpg",
-        tags: ["mạng & kết nối", "tp-link"],
-        details: {
-          // THÊM DETAILS
-          Chuẩn: "Wi-Fi 6 (802.11ax)",
-          "Tốc độ": "AX5400 (5GHz: 4804 Mbps, 2.4GHz: 574 Mbps)",
-          Anten: "6 anten",
-          "Tính năng": "OneMesh, HomeShield",
-        },
-      },
-      {
-        name: "Loa Bluetooth JBL Flip 6",
-        value: 2990000,
-        quantity: 24,
-        category: "Âm thanh",
-        image: "../image/JBLFlip6.jpg",
-        tags: ["âm thanh", "jbl"],
-        details: {
-          // THÊM DETAILS
-          "Công suất": "20W RMS (woofer) + 10W RMS (tweeter)",
-          "Chống nước": "IP67",
-          "Thời lượng pin": "12 giờ",
-          "Tính năng": "PartyBoost",
-        },
-      },
-      {
-        name: "Gimbal DJI OM 6",
-        value: 3990000,
-        quantity: 11,
-        category: "Phụ kiện",
-        image: "../image/DJIOM6.jpg",
-        tags: ["phụ kiện", "dji"],
-        details: {
-          // THÊM DETAILS
-          Loại: "Chống rung 3 trục",
-          "Tính năng": "ActiveTrack 6.0, Quick Launch",
-          Pin: "6.4 giờ",
-          "Trọng lượng": "309g",
-        },
-      },
-      {
-        name: "Máy tính bảng Samsung Tab S9",
-        value: 18990000,
-        quantity: 9,
-        category: "Máy tính bảng",
-        image: "../image/SamsungTabS9.jpg",
-        tags: ["máy tính bảng", "samsung"],
-        details: {
-          // THÊM DETAILS
-          "Màn hình": "11 inch, Dynamic AMOLED 2X",
-          Chip: "Snapdragon 8 Gen 2 for Galaxy",
-          RAM: "8GB",
-          "Bộ nhớ trong": "128GB",
-          Bút: "S Pen đi kèm (chống nước IP68)",
-        },
-      },
-      {
-        name: "Ổ cứng di động WD My Passport 2TB",
-        value: 1990000,
-        quantity: 33,
-        category: "Linh kiện",
-        image: "../image/WDMyPassport2TB.jpg",
-        tags: ["linh kiện", "wd"],
-        details: {
-          // THÊM DETAILS
-          "Dung lượng": "2TB",
-          "Kết nối": "USB 3.2 Gen 1",
-          Loại: "HDD",
-          "Bảo mật": "Mã hóa AES 256-bit",
-        },
-      },
-      {
-        name: "Xiaomi Redmi Note 13 Pro",
-        value: 7990000,
-        quantity: 4,
-        category: "Điện thoại",
-        image: "../image/RedmiNote13Pro.jpg",
-        tags: ["điện thoại", "xiaomi"],
-        details: {
-          // THÊM DETAILS
-          "Màn hình": "6.67 inch, AMOLED, 120Hz",
-          Chip: "Helio G99-Ultra",
-          RAM: "8GB",
-          "Bộ nhớ trong": "256GB",
-          Camera: "Chính 200MP",
-        },
-      },
-      {
-        name: "Kính cường lực iPhone 15",
-        value: 290000,
-        quantity: 2,
-        category: "Phụ kiện",
-        image: "../image/KinhCuongLucIP15.jpg",
-        tags: ["phụ kiện", "apple"],
-        details: {
-          // THÊM DETAILS
-          "Tương thích": "iPhone 15",
-          "Độ cứng": "9H",
-          "Tính năng": "Chống vân tay, Viền 2.5D",
-        },
-      },
-    ];
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-  }
-
   // ----- Cart -----
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
   // ----- Invoices -----
   let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
 
-  if (invoices.length === 0) {
-    invoices = [
-      // Mỗi {} là một hóa đơn của khách
-      {
-        id: 1736784100001,
-        date: "12/11/2025, 10:05:21",
-        user: "user1", // Tên người dùng đã mua
-        address: "123 Nguyễn Huệ, Quận 1, TP.HCM",
-        items: [
-          // Danh sách các món hàng trong hóa đơn
-          { name: "iPhone 15 Pro Max", price: 29990000, quantity: 1 },
-        ],
-        total: 29990000,
-        status: "Đã giao", // <-- THÊM DÒNG NÀY
-      },
-      {
-        id: 1736784200002,
-        date: "12/11/2025, 15:45:10",
-        user: "nguyenvana",
-        address: "456 Lê Lợi, Quận 3, TP.HCM",
-        items: [
-          { name: "AirPods Pro 2", price: 5990000, quantity: 1 },
-          { name: "Ốp lưng iPhone 15 Pro", price: 490000, quantity: 1 },
-        ],
-        total: 6480000,
-        status: "Đã giao", // <-- THÊM DÒNG NÀY
-      },
-    ];
-    // Lưu dữ liệu mẫu này vào "sổ tay" localStorage
-    localStorage.setItem("invoices", JSON.stringify(invoices));
-  }
-
   // ----- Import Receipts (Phiếu Nhập Hàng) -----
   let importReceipts = JSON.parse(localStorage.getItem("importReceipts")) || [];
   let currentReceiptId = null; // Biến này lưu ID của phiếu nhập đang được thao tác
-
-  if (importReceipts.length === 0) {
-    importReceipts = [
-      // --- PHIẾU 1: Điện thoại thông minh (4 mặt hàng) ---
-      {
-        id: "PN1736784000001",
-        date: "10/11/2025, 08:30:00",
-        importedBy: "Admin",
-        status: "Chưa hoàn thành",
-        items: [
-          { productName: "iPhone 15 Pro Max", quantity: 50, price: 25000000, category: "Điện thoại" },
-          { productName: "Samsung Galaxy S24 Ultra", quantity: 50, price: 23000000, category: "Điện thoại" },
-          { productName: "Xiaomi Redmi Note 13 Pro", quantity: 30, price: 6500000, category: "Điện thoại" },
-          { productName: "Máy tính bảng Samsung Tab S9", quantity: 20, price: 16000000, category: "Máy tính bảng" },
-        ],
-      },
-
-      // --- PHIẾU 2: Laptop và Máy tính bảng (3 mặt hàng) ---
-      {
-        id: "PN1736784000002",
-        date: "11/11/2025, 14:00:00",
-        importedBy: "Admin",
-        status: "Chưa hoàn thành",
-        items: [
-          { productName: "MacBook Pro M3 14 inch", quantity: 20, price: 38000000, category: "Laptop" },
-          { productName: "Dell XPS 13", quantity: 30, price: 28000000, category: "Laptop" },
-          { productName: "iPad Pro 12.9 inch M2", quantity: 25, price: 22000000, category: "Máy tính bảng" },
-        ],
-      },
-
-      // --- PHIẾU 3: Thiết bị Âm thanh (4 mặt hàng) ---
-      {
-        id: "PN1736784000003",
-        date: "11/11/2025, 14:15:00",
-        importedBy: "Admin",
-        status: "Chưa hoàn thành",
-        items: [
-          { productName: "AirPods Pro 2", quantity: 100, price: 4500000, category: "Phụ kiện" },
-          { productName: "Sony WH-1000XM5", quantity: 40, price: 7000000, category: "Phụ kiện" },
-          { productName: "Tai nghe Gaming Razer BlackShark V2", quantity: 30, price: 2200000, category: "Phụ kiện" },
-          { productName: "Loa Bluetooth JBL Flip 6", quantity: 40, price: 2500000, category: "Âm thanh" },
-        ],
-      },
-
-      // --- PHIẾU 4: Đồng hồ và Thiết bị Ngoại vi (4 mặt hàng) ---
-      {
-        id: "PN1736784000004",
-        date: "12/11/2025, 09:00:00",
-        importedBy: "Admin",
-        status: "Chưa hoàn thành",
-        items: [
-          { productName: "Apple Watch Series 9", quantity: 50, price: 9000000, category: "Đồng hồ thông minh" },
-          { productName: "Samsung Galaxy Watch 6", quantity: 50, price: 6000000, category: "Đồng hồ thông minh" },
-          { productName: "Bàn phím cơ Keychron K2", quantity: 80, price: 2000000, category: "Phụ kiện" },
-          { productName: "Chuột Logitech MX Master 3S", quantity: 100, price: 2200000, category: "Phụ kiện" },
-        ],
-      },
-
-      // --- PHIẾU 5: Linh kiện và Màn hình (4 mặt hàng) ---
-      {
-        id: "PN1736784000005",
-        date: "12/11/2025, 09:20:00",
-        importedBy: "Admin",
-        status: "Chưa hoàn thành",
-        items: [
-          { productName: "Màn hình LG UltraGear 27 inch", quantity: 30, price: 7500000, category: "Màn hình" },
-          { productName: "SSD Samsung 990 PRO 1TB", quantity: 50, price: 2800000, category: "Linh kiện" },
-          { productName: "RAM Corsair Vengeance 32GB", quantity: 40, price: 3500000, category: "Linh kiện" },
-          { productName: "Ổ cứng di động WD My Passport 2TB", quantity: 50, price: 1500000, category: "Linh kiện" },
-        ],
-      },
-
-      // --- PHIẾU 6: Phụ kiện tổng hợp (7 mặt hàng) ---
-      {
-        id: "PN1736784000006",
-        date: "12/11/2025, 09:40:00",
-        importedBy: "Admin",
-        status: "Chưa hoàn thành",
-        items: [
-          { productName: "Webcam Logitech C920", quantity: 60, price: 1500000, category: "Phụ kiện" },
-          { productName: "Sạc dự phòng Anker 20000mAh", quantity: 100, price: 700000, category: "Phụ kiện" },
-          { productName: "Ốp lưng iPhone 15 Pro", quantity: 200, price: 250000, category: "Phụ kiện" },
-          { productName: "Cáp sạc USB-C to Lightning", quantity: 300, price: 150000, category: "Phụ kiện" },
-          { productName: "Router WiFi 6 TP-Link Archer AX73", quantity: 30, price: 2000000, category: "Mạng & Kết nối" },
-          { productName: "Gimbal DJI OM 6", quantity: 50, price: 3200000, category: "Phụ kiện" },
-          { productName: "Kính cường lực iPhone 15", quantity: 150, price: 100000, category: "Phụ kiện" },
-        ],
-      },
-    ];
-    // Lưu dữ liệu mẫu này vào "sổ tay" localStorage
-    localStorage.setItem("importReceipts", JSON.stringify(importReceipts));
-  }
 
   // ----- Pagination & Render Products -----
   let currentPage = 1;
@@ -1671,169 +1098,173 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (confirmCheckoutBtn) {
     confirmCheckoutBtn.addEventListener("click", () => {
-        // Lấy địa chỉ dựa trên lựa chọn radio (dùng địa chỉ lưu hoặc nhập mới)
-        let address = "";
-        if (useSavedAddressRadio && useSavedAddressRadio.checked) {
-            // Dùng địa chỉ hiện tại từ hồ sơ
-            const currentUser = localStorage.getItem("currentUser");
-            const u = users.find((x) => x.username === currentUser);
-            address = u && u.address ? String(u.address).trim() : "";
-        } else {
-            // Dùng địa chỉ nhập mới
-            address = checkoutAddressEl?.value?.trim() || "";
+      // Lấy địa chỉ dựa trên lựa chọn radio (dùng địa chỉ lưu hoặc nhập mới)
+      let address = "";
+      if (useSavedAddressRadio && useSavedAddressRadio.checked) {
+        // Dùng địa chỉ hiện tại từ hồ sơ
+        const currentUser = localStorage.getItem("currentUser");
+        const u = users.find((x) => x.username === currentUser);
+        address = u && u.address ? String(u.address).trim() : "";
+      } else {
+        // Dùng địa chỉ nhập mới
+        address = checkoutAddressEl?.value?.trim() || "";
+      }
+
+      if (!address) {
+        alert("Vui lòng nhập hoặc chọn địa chỉ giao hàng.");
+        return;
+      }
+
+      const currentUser =
+        localStorage.getItem("currentUser") ||
+        displayedUsername?.innerText ||
+        "Guest";
+      const invoice = {
+        id: Date.now(),
+        date: new Date().toLocaleString("vi-VN"),
+        user: currentUser,
+        address: address,
+        items: checkoutList.map((it) => ({
+          name: it.name,
+          price: it.value,
+          quantity: it.purchaseQuantity || it.quantity || 1, // Ưu tiên purchaseQuantity
+        })),
+        total: checkoutList.reduce(
+          (sum, it) =>
+            sum +
+            parsePrice(it.value) * (it.purchaseQuantity || it.quantity || 1),
+          0
+        ),
+        status: "Mới đặt",
+      };
+
+      // Nếu người dùng chọn lưu địa chỉ thì cập nhật vào hồ sơ
+      try {
+        if (
+          saveAddressCheckbox &&
+          saveAddressCheckbox.checked &&
+          currentUser &&
+          currentUser !== "Guest"
+        ) {
+          const u = users.find((x) => x.username === currentUser);
+          if (u) {
+            u.address = address;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+            if (savedAddressDisplay) savedAddressDisplay.innerText = address;
+          }
         }
+      } catch (e) {
+        console.error("Lỗi khi lưu địa chỉ người dùng:", e);
+      }
 
-        if (!address) {
-            alert("Vui lòng nhập hoặc chọn địa chỉ giao hàng.");
-            return;
+      // CẬP NHẬT TỒN KHO
+      let isFromCart = cart.length > 0 && checkoutList.length === cart.length;
+
+      checkoutList.forEach((it) => {
+        const p = products.find((x) => x.name === it.name);
+        const purchaseQty = it.purchaseQuantity || it.quantity || 1;
+        if (p && p.quantity >= purchaseQty) {
+          p.quantity -= purchaseQty; // Trừ đúng số lượng mua
+        } else if (p) {
+          console.warn(`Không đủ hàng ${p.name}, chỉ trừ ${p.quantity}`);
+          p.quantity = 0; // Hết hàng
         }
+      });
 
-        const currentUser =
-            localStorage.getItem("currentUser") ||
-            displayedUsername?.innerText ||
-            "Guest";
-        const invoice = {
-            id: Date.now(),
-            date: new Date().toLocaleString("vi-VN"),
-            user: currentUser,
-            address: address,
-            items: checkoutList.map((it) => ({
-                name: it.name,
-                price: it.value,
-                quantity: it.purchaseQuantity || it.quantity || 1, // Ưu tiên purchaseQuantity
-            })),
-            total: checkoutList.reduce(
-                (sum, it) =>
-                    sum +
-                    parsePrice(it.value) * (it.purchaseQuantity || it.quantity || 1),
-                0
-            ),
-            status: "Mới đặt",
-        };
+      invoices.push(invoice);
+      localStorage.setItem("invoices", JSON.stringify(invoices));
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+      renderProducts(); // Render lại sản phẩm (với số lượng mới)
 
-        // Nếu người dùng chọn lưu địa chỉ thì cập nhật vào hồ sơ
-        try {
-            if (
-                saveAddressCheckbox &&
-                saveAddressCheckbox.checked &&
-                currentUser &&
-                currentUser !== "Guest"
-            ) {
-                const u = users.find((x) => x.username === currentUser);
-                if (u) {
-                    u.address = address;
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-                    if (savedAddressDisplay) savedAddressDisplay.innerText = address;
-                }
-            }
-        } catch (e) {
-            console.error("Lỗi khi lưu địa chỉ người dùng:", e);
-        }
-
-        // CẬP NHẬT TỒN KHO
-        let isFromCart = cart.length > 0 && checkoutList.length === cart.length;
-
-        checkoutList.forEach((it) => {
-            const p = products.find((x) => x.name === it.name);
-            const purchaseQty = it.purchaseQuantity || it.quantity || 1;
-            if (p && p.quantity >= purchaseQty) {
-                p.quantity -= purchaseQty; // Trừ đúng số lượng mua
-            } else if (p) {
-                console.warn(`Không đủ hàng ${p.name}, chỉ trừ ${p.quantity}`);
-                p.quantity = 0; // Hết hàng
-            }
+      // Hiển thị popup chi tiết đơn mua
+      const modal = document.getElementById("orderDetailsModal");
+      const orderDetailsContent = document.getElementById(
+        "orderDetailsContent"
+      );
+      if (modal && orderDetailsContent) {
+        // Tạo nội dung chi tiết đơn mua
+        let content = `<p><strong>Người nhận:</strong> ${invoice.user}</p>`;
+        content += `<p><strong>Địa chỉ:</strong> ${invoice.address}</p>`;
+        content += `<p><strong>Ngày đặt:</strong> ${invoice.date}</p>`;
+        content += `<p><strong>Tổng tiền:</strong> ${formatPrice(
+          invoice.total
+        )}đ</p>`;
+        content += `<h3>Danh sách sản phẩm:</h3><ul>`;
+        invoice.items.forEach((item) => {
+          content += `<li>${escapeHtml(item.name)} - ${
+            item.quantity
+          } x ${formatPrice(item.price)}đ</li>`;
         });
+        content += `</ul>`;
 
-        invoices.push(invoice);
-        localStorage.setItem("invoices", JSON.stringify(invoices));
-        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-        renderProducts(); // Render lại sản phẩm (với số lượng mới)
+        orderDetailsContent.innerHTML = content;
+        modal.style.display = "flex";
+      }
 
-        // Hiển thị popup chi tiết đơn mua
-        const modal = document.getElementById("orderDetailsModal");
-        const orderDetailsContent = document.getElementById("orderDetailsContent");
-        if (modal && orderDetailsContent) {
-            // Tạo nội dung chi tiết đơn mua
-            let content = `<p><strong>Người nhận:</strong> ${invoice.user}</p>`;
-            content += `<p><strong>Địa chỉ:</strong> ${invoice.address}</p>`;
-            content += `<p><strong>Ngày đặt:</strong> ${invoice.date}</p>`;
-            content += `<p><strong>Tổng tiền:</strong> ${formatPrice(invoice.total)}đ</p>`;
-            content += `<h3>Danh sách sản phẩm:</h3><ul>`;
-            invoice.items.forEach((item) => {
-                content += `<li>${escapeHtml(item.name)} - ${item.quantity} x ${formatPrice(item.price)}đ</li>`;
-            });
-            content += `</ul>`;
+      // Đóng popup sau khi hiển thị
+      const closeButton = document.querySelector(".close-button");
+      if (closeButton) {
+        closeButton.addEventListener("click", () => {
+          modal.style.display = "none";
+        });
+      }
 
-            orderDetailsContent.innerHTML = content;
-            modal.style.display = "flex";
-            }
+      // Xóa giỏ hàng sau khi thanh toán (nếu mua từ giỏ hàng)
+      if (isFromCart) {
+        cart = [];
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+      }
 
-        // Đóng popup sau khi hiển thị
-        const closeButton = document.querySelector(".close-button");
-        if (closeButton) {
-            closeButton.addEventListener("click", () => {
-                modal.style.display = "none";
-            });
-        }
-
-        // Xóa giỏ hàng sau khi thanh toán (nếu mua từ giỏ hàng)
-        if (isFromCart) {
-            cart = [];
-            localStorage.setItem("cart", JSON.stringify(cart));
-            renderCart();
-        }
-
-        // Reset các tùy chọn sau khi thanh toán thành công
-        if (checkoutAddressEl) checkoutAddressEl.value = "";
-        if (saveAddressCheckbox) saveAddressCheckbox.checked = false;
-        if (useSavedAddressRadio) useSavedAddressRadio.checked = false;
-        if (enterNewAddressRadio) enterNewAddressRadio.checked = false;
-        if (paymentMethodSelect) {
-            paymentMethodSelect.value = "cod"; // về Thanh toán khi nhận hàng
-        }
-        if (paymentDetails) paymentDetails.style.display = "none";
-        if (bankTransferQR) bankTransferQR.style.display = "none";
-        if (momoQR) momoQR.style.display = "none";
-        if (creditCardForm) {
-            creditCardForm.style.display = "none";
-            const inputs = creditCardForm.querySelectorAll("input");
-            inputs.forEach(input => input.value = ""); // xóa dữ liệu thẻ tín dụng
-        }
-        const bankInfoEl = document.getElementById("bank-info");
-        if (bankInfoEl) {
-            bankInfoEl.style.display = "none"; // Ẩn phần tử
-            bankInfoEl.innerHTML = ""; // Xóa nội dung bên trong
-        }
-
+      // Reset các tùy chọn sau khi thanh toán thành công
+      if (checkoutAddressEl) checkoutAddressEl.value = "";
+      if (saveAddressCheckbox) saveAddressCheckbox.checked = false;
+      if (useSavedAddressRadio) useSavedAddressRadio.checked = false;
+      if (enterNewAddressRadio) enterNewAddressRadio.checked = false;
+      if (paymentMethodSelect) {
+        paymentMethodSelect.value = "cod"; // về Thanh toán khi nhận hàng
+      }
+      if (paymentDetails) paymentDetails.style.display = "none";
+      if (bankTransferQR) bankTransferQR.style.display = "none";
+      if (momoQR) momoQR.style.display = "none";
+      if (creditCardForm) {
+        creditCardForm.style.display = "none";
+        const inputs = creditCardForm.querySelectorAll("input");
+        inputs.forEach((input) => (input.value = "")); // xóa dữ liệu thẻ tín dụng
+      }
+      const bankInfoEl = document.getElementById("bank-info");
+      if (bankInfoEl) {
+        bankInfoEl.style.display = "none"; // Ẩn phần tử
+        bankInfoEl.innerHTML = ""; // Xóa nội dung bên trong
+      }
     });
-}
+  }
 
   if (closeCheckoutPopup) {
     closeCheckoutPopup.onclick = () => {
       if (checkoutPopup) checkoutPopup.style.display = "none";
       checkoutList = [];
       if (checkoutAddressEl) checkoutAddressEl.value = "";
-    if (saveAddressCheckbox) saveAddressCheckbox.checked = false;
-    if (useSavedAddressRadio) useSavedAddressRadio.checked = false;
-    if (enterNewAddressRadio) enterNewAddressRadio.checked = false;
+      if (saveAddressCheckbox) saveAddressCheckbox.checked = false;
+      if (useSavedAddressRadio) useSavedAddressRadio.checked = false;
+      if (enterNewAddressRadio) enterNewAddressRadio.checked = false;
 
-    if (paymentMethodSelect) paymentMethodSelect.value = "cod"; // quay về COD mặc định
+      if (paymentMethodSelect) paymentMethodSelect.value = "cod"; // quay về COD mặc định
 
-    if (paymentDetails) paymentDetails.style.display = "none";
-    if (bankTransferQR) bankTransferQR.style.display = "none";
-    if (momoQR) momoQR.style.display = "none";
+      if (paymentDetails) paymentDetails.style.display = "none";
+      if (bankTransferQR) bankTransferQR.style.display = "none";
+      if (momoQR) momoQR.style.display = "none";
 
-    if (creditCardForm) {
-      creditCardForm.style.display = "none";
-      const inputs = creditCardForm.querySelectorAll("input");
-      inputs.forEach(input => input.value = ""); // xóa dữ liệu thẻ credit card
-    }
-    const bankInfoEl = document.getElementById("bank-info");
-    if (bankInfoEl) {
-      bankInfoEl.style.display = "none"; // Ẩn phần tử
-      bankInfoEl.innerHTML = ""; // Xóa nội dung bên trong
-    }
-
+      if (creditCardForm) {
+        creditCardForm.style.display = "none";
+        const inputs = creditCardForm.querySelectorAll("input");
+        inputs.forEach((input) => (input.value = "")); // xóa dữ liệu thẻ credit card
+      }
+      const bankInfoEl = document.getElementById("bank-info");
+      if (bankInfoEl) {
+        bankInfoEl.style.display = "none"; // Ẩn phần tử
+        bankInfoEl.innerHTML = ""; // Xóa nội dung bên trong
+      }
     };
   }
 
@@ -1842,27 +1273,26 @@ document.addEventListener("DOMContentLoaded", () => {
       if (checkoutPopup) checkoutPopup.style.display = "none";
       checkoutList = [];
       if (checkoutAddressEl) checkoutAddressEl.value = "";
-    if (saveAddressCheckbox) saveAddressCheckbox.checked = false;
-    if (useSavedAddressRadio) useSavedAddressRadio.checked = false;
-    if (enterNewAddressRadio) enterNewAddressRadio.checked = false;
+      if (saveAddressCheckbox) saveAddressCheckbox.checked = false;
+      if (useSavedAddressRadio) useSavedAddressRadio.checked = false;
+      if (enterNewAddressRadio) enterNewAddressRadio.checked = false;
 
-    if (paymentMethodSelect) paymentMethodSelect.value = "cod"; // quay về COD mặc định
+      if (paymentMethodSelect) paymentMethodSelect.value = "cod"; // quay về COD mặc định
 
-    if (paymentDetails) paymentDetails.style.display = "none";
-    if (bankTransferQR) bankTransferQR.style.display = "none";
-    if (momoQR) momoQR.style.display = "none";
+      if (paymentDetails) paymentDetails.style.display = "none";
+      if (bankTransferQR) bankTransferQR.style.display = "none";
+      if (momoQR) momoQR.style.display = "none";
 
-    if (creditCardForm) {
-      creditCardForm.style.display = "none";
-      const inputs = creditCardForm.querySelectorAll("input");
-      inputs.forEach(input => input.value = ""); // xóa dữ liệu thẻ credit card
-    }
-    const bankInfoEl = document.getElementById("bank-info");
-    if (bankInfoEl) {
-      bankInfoEl.style.display = "none"; // Ẩn phần tử
-      bankInfoEl.innerHTML = ""; // Xóa nội dung bên trong
-    }
-
+      if (creditCardForm) {
+        creditCardForm.style.display = "none";
+        const inputs = creditCardForm.querySelectorAll("input");
+        inputs.forEach((input) => (input.value = "")); // xóa dữ liệu thẻ credit card
+      }
+      const bankInfoEl = document.getElementById("bank-info");
+      if (bankInfoEl) {
+        bankInfoEl.style.display = "none"; // Ẩn phần tử
+        bankInfoEl.innerHTML = ""; // Xóa nội dung bên trong
+      }
     };
   }
 
@@ -2634,19 +2064,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         <div class="input-group">
                             <label style="display: block;">Số tài khoản:</label>
-                            <input type="text" id="bank-account" value="${user?.bankAccount || ''}" 
+                            <input type="text" id="bank-account" value="${
+                              user?.bankAccount || ""
+                            }" 
                                 style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                         </div>
 
                         <div class="input-group">
                 <label style="display: block;">Tên chủ tài khoản:</label>
-                <input type="text" id="bank-owner" value="${user?.bankOwner || ''}" 
+                <input type="text" id="bank-owner" value="${
+                  user?.bankOwner || ""
+                }" 
                     style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
             </div>
 
             <div class="input-group">
                 <label style="display: block;">Số CCCD:</label>
-                <input type="text" id="bank-cccd" value="${user?.bankCCCD || ''}" 
+                <input type="text" id="bank-cccd" value="${
+                  user?.bankCCCD || ""
+                }" 
                     style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
             </div>
 
@@ -2655,18 +2091,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 <select id="bank-name" 
                         style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                     <option value="">-- Chọn ngân hàng --</option>
-                    <option value="Vietcombank" ${user?.bankName === 'Vietcombank' ? 'selected' : ''}>Vietcombank</option>
-                    <option value="VietinBank" ${user?.bankName === 'VietinBank' ? 'selected' : ''}>VietinBank</option>
-                    <option value="Techcombank" ${user?.bankName === 'Techcombank' ? 'selected' : ''}>Techcombank</option>
-                    <option value="BIDV" ${user?.bankName === 'BIDV' ? 'selected' : ''}>BIDV</option>
-                    <option value="MB Bank" ${user?.bankName === 'MB Bank' ? 'selected' : ''}>MB Bank</option>
-                    <option value="ACB" ${user?.bankName === 'ACB' ? 'selected' : ''}>ACB</option>
+                    <option value="Vietcombank" ${
+                      user?.bankName === "Vietcombank" ? "selected" : ""
+                    }>Vietcombank</option>
+                    <option value="VietinBank" ${
+                      user?.bankName === "VietinBank" ? "selected" : ""
+                    }>VietinBank</option>
+                    <option value="Techcombank" ${
+                      user?.bankName === "Techcombank" ? "selected" : ""
+                    }>Techcombank</option>
+                    <option value="BIDV" ${
+                      user?.bankName === "BIDV" ? "selected" : ""
+                    }>BIDV</option>
+                    <option value="MB Bank" ${
+                      user?.bankName === "MB Bank" ? "selected" : ""
+                    }>MB Bank</option>
+                    <option value="ACB" ${
+                      user?.bankName === "ACB" ? "selected" : ""
+                    }>ACB</option>
                 </select>
             </div>
 
             <div class="input-group">
                 <label style="display: block;">Số điện thoại ngân hàng:</label>
-                <input type="tel" id="bank-phone" value="${user?.bankPhone || ''}" 
+                <input type="tel" id="bank-phone" value="${
+                  user?.bankPhone || ""
+                }" 
                     style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
             </div>
 
@@ -2807,15 +2257,15 @@ document.addEventListener("DOMContentLoaded", () => {
                   userInvoices
                     .filter((inv) => inv.status !== "Đã hủy") // Lọc bỏ đơn hủy
                     .forEach((inv) => {
-                    inv.items.forEach((item) => {
-                      if (!allProducts[item.name]) {
-                        allProducts[item.name] = { quantity: 0, total: 0 };
-                      }
-                      allProducts[item.name].quantity += item.quantity || 1;
-                      allProducts[item.name].total +=
-                        item.price * (item.quantity || 1);
+                      inv.items.forEach((item) => {
+                        if (!allProducts[item.name]) {
+                          allProducts[item.name] = { quantity: 0, total: 0 };
+                        }
+                        allProducts[item.name].quantity += item.quantity || 1;
+                        allProducts[item.name].total +=
+                          item.price * (item.quantity || 1);
+                      });
                     });
-                  });
 
                   return Object.entries(allProducts)
                     .map(
@@ -2930,7 +2380,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     `;
     document.head.appendChild(style);
-    
+
     // Event listeners cho tabs
     const tabs = popupContent.querySelectorAll(".profile-tab");
     const panels = popupContent.querySelectorAll(".tab-panel");
@@ -2955,7 +2405,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
     });
-    
+
     // ===== Invoice filter logic =====
     (function setupInvoiceFilters() {
       const invoiceListEl = popupContent.querySelector("#invoiceList");
@@ -2975,7 +2425,7 @@ document.addEventListener("DOMContentLoaded", () => {
           // Try to extract a dd/mm/yyyy pattern robustly (handles comma or space separators)
           const m = dateStr.match(/(\d{1,2}\/\d{1,2}\/\d{2,4})/);
           const datePart = m ? m[1] : dateStr.split(",")[0].trim(); // fallback
-          const parts = datePart.split("/").map(s => s.trim());
+          const parts = datePart.split("/").map((s) => s.trim());
           if (parts.length < 3) return "";
           const d = Number(parts[0]);
           const mth = Number(parts[1]);
@@ -2985,7 +2435,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const day = String(d).padStart(2, "0");
           return `${y}-${month}-${day}`;
         } catch (e) {
-          console.error('dateStrToYMD parse error for', dateStr, e);
+          console.error("dateStrToYMD parse error for", dateStr, e);
           return "";
         }
       }
@@ -3005,33 +2455,53 @@ document.addEventListener("DOMContentLoaded", () => {
       function renderInvoiceList(list) {
         if (!invoiceListEl) return;
         if (!list || list.length === 0) {
-          invoiceListEl.innerHTML = '<p style="text-align:center; color:#999; padding:20px">Không tìm thấy hóa đơn.</p>';
+          invoiceListEl.innerHTML =
+            '<p style="text-align:center; color:#999; padding:20px">Không tìm thấy hóa đơn.</p>';
           return;
         }
 
         invoiceListEl.innerHTML = list
-          .map((inv) => `
+          .map(
+            (inv) => `
             <div class="invoice-card" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #667eea;">
               <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                 <div>
                   <strong style="color: #667eea;">Mã HĐ: #${inv.id}</strong>
-                  <p style="margin: 5px 0; font-size: 0.9rem; color: #666;"><i class="fa-solid fa-calendar"></i> ${inv.date}</p>
+                  <p style="margin: 5px 0; font-size: 0.9rem; color: #666;"><i class="fa-solid fa-calendar"></i> ${
+                    inv.date
+                  }</p>
                 </div>
-                <span class="profile-invoice-status ${getStatusClass(inv.status)}">${escapeHtml(inv.status)}</span>
+                <span class="profile-invoice-status ${getStatusClass(
+                  inv.status
+                )}">${escapeHtml(inv.status)}</span>
               </div>
               <div style="border-top: 1px dashed #ddd; padding-top: 10px; margin-top: 10px;">
-                ${inv.items.map(item => `
+                ${inv.items
+                  .map(
+                    (item) => `
                   <div style="display:flex; justify-content:space-between; margin:5px 0;">
                     <span>${escapeHtml(item.name)} x${item.quantity || 1}</span>
-                    <span style="font-weight:600;">${formatPrice(item.price)}đ</span>
-                  </div>`).join("")}
+                    <span style="font-weight:600;">${formatPrice(
+                      item.price
+                    )}đ</span>
+                  </div>`
+                  )
+                  .join("")}
               </div>
               <div style="border-top: 2px solid #667eea; padding-top: 10px; margin-top: 10px; display:flex; justify-content:space-between; align-items:center;">
-                ${inv.status === "Mới đặt" || inv.status === "Đang xử lý" ? `<button class="cancel-order-btn" onclick="window.cancelOrder(${inv.id})"><i class="fa-solid fa-times"></i> Hủy đơn</button>` : "<div></div>"}
-                <strong style="color:#e91e63; font-size:1.1rem;">Tổng: ${formatPrice(inv.total)}đ</strong>
+                ${
+                  inv.status === "Mới đặt" || inv.status === "Đang xử lý"
+                    ? `<button class="cancel-order-btn" onclick="window.cancelOrder(${inv.id})"><i class="fa-solid fa-times"></i> Hủy đơn</button>`
+                    : "<div></div>"
+                }
+                <strong style="color:#e91e63; font-size:1.1rem;">Tổng: ${formatPrice(
+                  inv.total
+                )}đ</strong>
               </div>
             </div>
-          `).join("");
+          `
+          )
+          .join("");
       }
 
       function applyInvoiceFilters() {
@@ -3039,15 +2509,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const idTerm = filterId?.value?.trim();
         if (idTerm) {
-          filtered = filtered.filter(inv => String(inv.id).includes(idTerm));
+          filtered = filtered.filter((inv) => String(inv.id).includes(idTerm));
         }
 
         const status = filterStatus?.value || "";
-        if (status) filtered = filtered.filter(inv => inv.status === status);
+        if (status) filtered = filtered.filter((inv) => inv.status === status);
 
         // So sánh date dựa trên string "yyyy-mm-dd" (tránh timezone issue)
         if (filterFrom?.value || filterTo?.value) {
-          const fromNum = filterFrom?.value ? ymdToNumber(filterFrom.value) : NaN;
+          const fromNum = filterFrom?.value
+            ? ymdToNumber(filterFrom.value)
+            : NaN;
           const toNum = filterTo?.value ? ymdToNumber(filterTo.value) : NaN;
 
           filtered = filtered.filter((inv) => {
@@ -3063,8 +2535,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // min/max total
         const min = parseInt(filterMin?.value || "", 10);
         const max = parseInt(filterMax?.value || "", 10);
-        if (!isNaN(min)) filtered = filtered.filter(inv => inv.total >= min);
-        if (!isNaN(max)) filtered = filtered.filter(inv => inv.total <= max);
+        if (!isNaN(min)) filtered = filtered.filter((inv) => inv.total >= min);
+        if (!isNaN(max)) filtered = filtered.filter((inv) => inv.total <= max);
 
         renderInvoiceList(filtered);
       }
@@ -3081,15 +2553,15 @@ document.addEventListener("DOMContentLoaded", () => {
           renderInvoiceList(userInvoices.slice());
         });
     })();
-    
+
     // Add event listener for the 'Gửi OTP' button
     const sendOtpButton = document.getElementById("sendOtpButton");
-if (sendOtpButton) {
-  sendOtpButton.addEventListener("click", (e) => {
-    e.preventDefault(); // Ngăn form submit nếu nút nằm trong form
-    sendOtpButton.textContent = "Đã gửi";
-  });
-}
+    if (sendOtpButton) {
+      sendOtpButton.addEventListener("click", (e) => {
+        e.preventDefault(); // Ngăn form submit nếu nút nằm trong form
+        sendOtpButton.textContent = "Đã gửi";
+      });
+    }
 
     // Event listener cho form chỉnh sửa
     const editForm = popupContent.querySelector("#editProfileForm");
@@ -3123,7 +2595,7 @@ if (sendOtpButton) {
           users[userIndex].bankCCCD = bankCCCD;
           users[userIndex].bankName = bankName;
           users[userIndex].bankPhone = bankPhone;
-          
+
           localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
           alert("✅ Cập nhật thông tin thành công!");
 
@@ -3195,7 +2667,6 @@ if (sendOtpButton) {
     });
   }
 
-
   // ===== PAYMENT METHOD LOGIC =====
   const paymentMethodSelect = document.getElementById("payment-method");
   const paymentDetails = document.getElementById("payment-details");
@@ -3203,61 +2674,61 @@ if (sendOtpButton) {
   const momoQR = document.getElementById("momo-qr");
   const creditCardForm = document.getElementById("credit-card-form");
   const bankInfoDiv = document.getElementById("bank-info");
-  
 
   if (paymentMethodSelect) {
     paymentMethodSelect.addEventListener("change", () => {
-  const selectedMethod = paymentMethodSelect.value;
+      const selectedMethod = paymentMethodSelect.value;
 
-  // Ẩn tất cả section trước khi hiển thị section tương ứng
-  paymentDetails.style.display = "none";
-  const bankInfoEl = document.getElementById("bank-info");
-  if (!bankInfoEl) {
-    console.warn("bank-info element không tồn tại trong DOM.");
-  } else {
-    bankInfoEl.style.display = "none";
-    bankInfoEl.innerHTML = "";
-  }
-  momoQR.style.display = "none";
-  creditCardForm.style.display = "none";
+      // Ẩn tất cả section trước khi hiển thị section tương ứng
+      paymentDetails.style.display = "none";
+      const bankInfoEl = document.getElementById("bank-info");
+      if (!bankInfoEl) {
+        console.warn("bank-info element không tồn tại trong DOM.");
+      } else {
+        bankInfoEl.style.display = "none";
+        bankInfoEl.innerHTML = "";
+      }
+      momoQR.style.display = "none";
+      creditCardForm.style.display = "none";
 
-  if (selectedMethod === "bank") {
-    const currentUser = localStorage.getItem("currentUser");
-    const user = users.find(u => u.username === currentUser);
+      if (selectedMethod === "bank") {
+        const currentUser = localStorage.getItem("currentUser");
+        const user = users.find((u) => u.username === currentUser);
 
-    if (!user) {
-      bankInfoEl.style.display = "block";
-      bankInfoEl.innerHTML = `<span style="color:red">⚠️ Không tìm thấy thông tin người dùng!</span>`;
-      return;
-    }
+        if (!user) {
+          bankInfoEl.style.display = "block";
+          bankInfoEl.innerHTML = `<span style="color:red">⚠️ Không tìm thấy thông tin người dùng!</span>`;
+          return;
+        }
 
-    if (!user.bankOwner?.trim() || !user.bankCCCD?.trim() || !user.bankName?.trim() || !user.bankPhone?.trim()) {
-      bankInfoEl.style.display = "block";
-      bankInfoEl.innerHTML = `<span style="color:red">⚠️ Vui lòng cập nhật đầy đủ thông tin tài khoản ngân hàng!</span>`;
-      return;
-    }
+        if (
+          !user.bankOwner?.trim() ||
+          !user.bankCCCD?.trim() ||
+          !user.bankName?.trim() ||
+          !user.bankPhone?.trim()
+        ) {
+          bankInfoEl.style.display = "block";
+          bankInfoEl.innerHTML = `<span style="color:red">⚠️ Vui lòng cập nhật đầy đủ thông tin tài khoản ngân hàng!</span>`;
+          return;
+        }
 
-    paymentDetails.style.display = "block";
-    bankInfoEl.style.display = "block";
-    bankInfoEl.innerHTML = `
+        paymentDetails.style.display = "block";
+        bankInfoEl.style.display = "block";
+        bankInfoEl.innerHTML = `
       <strong>Thông tin tài khoản ngân hàng:</strong><br>
       Chủ tài khoản: ${user.bankOwner}<br>
       Ngân hàng: ${user.bankName}<br>
-      Số tài khoản: ${user.bankAccount || ''}
+      Số tài khoản: ${user.bankAccount || ""}
     `;
-  } 
-  else if (selectedMethod === "momo") {
-    paymentDetails.style.display = "block";
-    momoQR.style.display = "block";
-  } 
-  else if (selectedMethod === "credit") {
-    paymentDetails.style.display = "block";
-    creditCardForm.style.display = "block";
+      } else if (selectedMethod === "momo") {
+        paymentDetails.style.display = "block";
+        momoQR.style.display = "block";
+      } else if (selectedMethod === "credit") {
+        paymentDetails.style.display = "block";
+        creditCardForm.style.display = "block";
+      }
+    });
   }
-
-});
-  }
-
 
   // ----- Close popups on outside click -----
   document.addEventListener("click", (ev) => {
@@ -3297,7 +2768,6 @@ if (sendOtpButton) {
   // ----- Expose global functions -----
   window.addToCart = addToCart;
   window.buyProduct = buyProduct;
-  
 
   // ===== HÀM HỦY ĐƠN HÀNG (MỚI) =====
   window.cancelOrder = function (invoiceId) {
@@ -3345,14 +2815,13 @@ if (sendOtpButton) {
     if (stockUpdated) {
       localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
       // Render lại danh sách sản phẩm (để cập nhật số lượng)
-      renderProducts(); 
+      renderProducts();
     }
 
     // BƯỚC 4: Cập nhật lại giao diện hồ sơ
     renderUserProfile();
     alert("Đã hủy đơn hàng thành công. Sản phẩm đã được hoàn trả (nếu có).");
   };
-
 
   // Khôi phục trạng thái đăng nhập
   function restoreLoginState() {
