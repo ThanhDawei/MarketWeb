@@ -1045,6 +1045,20 @@ admin {
   background: #f9f9f9;
 }
 
+.modal-box {
+  width: 80%;
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+
+
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  max-height: 560px;
+}
+
 .btn-edit,
 .btn-delete,
 .btn-view ,
