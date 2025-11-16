@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>DMarket</title>
-    <!-- CSS -->
     <link rel="stylesheet" href="../css/styles.css" />
     <link rel="stylesheet" href="../css/admin-styles.css" />
     <link rel="stylesheet" href="../css/all.css" />
@@ -56,7 +55,6 @@
       </div>
     </div>
 
-    <!-- Admin Panel -->
     <admin id="adminPanel" class="admin-panel">
       <div class="container">
         <div class="sidebar">
@@ -147,18 +145,61 @@
                 placeholder="Số lượng"
                 required
               />
-              <input
-                type="text"
-                id="category"
-                placeholder="Danh mục"
-                required
-              />
+
+              <div style="margin-bottom: 15px">
+                <label
+                  style="
+                    display: block;
+                    margin-bottom: 5px;
+                    font-weight: 600;
+                  "
+                >
+                  Mô tả sản phẩm:
+                </label>
+                <textarea
+                  id="description"
+                  rows="4"
+                  style="
+                    width: 100%;
+                    padding: 10px;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 8px;
+                    outline: none;
+                  "
+                  placeholder="Nhập mô tả chi tiết..."
+                ></textarea>
+              </div>
+
+              <div style="margin-bottom: 15px">
+                <label
+                  style="
+                    display: block;
+                    margin-bottom: 5px;
+                    font-weight: 600;
+                  "
+                >
+                  Thông số kỹ thuật:
+                </label>
+                <textarea
+                  id="specs"
+                  rows="4"
+                  style="
+                    width: 100%;
+                    padding: 10px;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 8px;
+                    outline: none;
+                  "
+                  placeholder="Ví dụ: RAM: 8GB, Màn hình: 6.5 inch..."
+                ></textarea>
+              </div>
+
               <input type="file" id="image" accept="image/*" />
               <button type="submit">Lưu</button>
             </form>
           </div>
         </div>
-      </div>
+        </div>
     </admin>
     <script>
       // Xử lý đăng nhập

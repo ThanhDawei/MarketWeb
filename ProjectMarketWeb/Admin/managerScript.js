@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     JSON.parse(localStorage.getItem(IMPORT_RECEIPTS_KEY)) || [];
 
   // === THÊM CSS CHO TRẠNG THÁI HÓA ĐƠN ===
-  const adminStyles = document.createElement('style');
+  const adminStyles = document.createElement("style");
   adminStyles.textContent = `
     .invoice-status-select {
       padding: 6px 10px;
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
   }
-  
+
   function getStatusClass(status) {
     switch (status) {
       case "Mới đặt":
@@ -101,6 +101,21 @@ document.addEventListener("DOMContentLoaded", () => {
       default:
         return "";
     }
+  }
+
+  /**
+   * (HÀM MỚI) Kiểm tra xem sản phẩm đã từng được mua hay chưa.
+   * @param {string} productName Tên sản phẩm cần kiểm tra.
+   * @returns {boolean} True nếu đã từng được mua, false nếu chưa.
+   */
+  function hasProductBeenPurchased(productName) {
+    const lowerCaseName = productName.trim().toLowerCase();
+    // 'invoices' là biến toàn cục đã được tải
+    return invoices.some((invoice) =>
+      invoice.items.some(
+        (item) => item.name.trim().toLowerCase() === lowerCaseName
+      )
+    );
   }
 
   function hideAllContent() {
@@ -158,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // 2. Tính tổng số lượng đã bán (Giữ nguyên, giả định invoices.items vẫn là mảng 1 cấp)
-    if (typeof invoices !== 'undefined') {
+    if (typeof invoices !== "undefined") {
       invoices.forEach((invoice) => {
         invoice.items.forEach((item) => {
           if (item.name.trim().toLowerCase() === key) {
@@ -169,7 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 3. Tính tổng số lượng đã đưa lên kệ (Giữ nguyên)
-    if (typeof products !== 'undefined') {
+    if (typeof products !== "undefined") {
       products.forEach((product) => {
         if (product.name.trim().toLowerCase() === key) {
           onShelf += parseInt(product.quantity || 0);
@@ -353,7 +368,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 2. Trừ số lượng đã bán (từ Hóa đơn)
     // Giả định: Cấu trúc invoices.items.item.name và item.quantity là đúng
-    if (typeof invoices !== 'undefined') { // Kiểm tra biến invoices có tồn tại không
+    if (typeof invoices !== "undefined") {
+      // Kiểm tra biến invoices có tồn tại không
       invoices.forEach((invoice) => {
         invoice.items.forEach((item) => {
           const key = item.name.trim().toLowerCase();
@@ -366,7 +382,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 3. Trừ đi số lượng đã được thêm lên kệ (products list)
     // Giả định: Cấu trúc products.product.name và product.quantity là đúng
-    if (typeof products !== 'undefined') { // Kiểm tra biến products có tồn tại không
+    if (typeof products !== "undefined") {
+      // Kiểm tra biến products có tồn tại không
       products.forEach((product) => {
         const key = product.name.trim().toLowerCase();
         if (stock[key]) {
@@ -806,26 +823,6 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       alert(`🔓 Người dùng "${user.username}" đã được mở khóa.`);
     }
   };
-  window.refreshUsers = function () {
-    users = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    renderUserManagement();
-  };
-
-  window.editUser = function (index) {
-    const user = users[index];
-    if (!user) return;
-
-    const newUsername = prompt("Nhập tên đăng nhập mới:", user.username);
-    if (!newUsername) return;
-
-    const newPassword = prompt("Nhập mật khẩu mới:", user.password);
-    if (!newPassword) return;
-
-    users[index] = { username: newUsername, password: newPassword };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-    renderUserManagement();
-    alert("Cập nhật thành công!");
-  };
 
   window.deleteUser = function (index) {
     if (!confirm("Bạn có chắc muốn xóa người dùng này?")) return;
@@ -835,7 +832,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     alert("Đã xóa người dùng!");
   };
 
-  // === QUẢN LÝ SẢN PHẨM (CẬP NHẬT VỚI CỘT LỢI NHUẬN) ===
+  // === QUẢN LÝ SẢN PHẨM (GIỮ NGUYÊN) ===
   /**
    * Render giao diện Quản lý Sản phẩm.
    * @param {string} nameQuery Chuỗi tìm kiếm tên sản phẩm.
@@ -871,10 +868,11 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       if (!tbody) return;
 
       let html = "";
-      filteredProducts.forEach((product, index) => {
+      filteredProducts.forEach((product) => {
         const originalIndex = products.findIndex(
           (p) => p.name === product.name
         );
+        const isHidden = product.isHidden || false; // THÊM MỚI
 
         // --- LOGIC TÍNH LỢI NHUẬN (CHO BỘ LỌC) ---
         let profit = 0;
@@ -882,24 +880,31 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
         const importPriceStr = findLatestImportPrice(product.name);
 
         if (importPriceStr !== "") {
-          // Logic 1: Sản phẩm nhập thủ công (có giá nhập)
           const importPrice = parseInt(importPriceStr, 10);
           profit = sellingPrice - importPrice;
         } else {
-          // Logic 2: Sản phẩm "khai báo sẵn" (không tìm thấy giá nhập)
           profit = sellingPrice * 0.05; // 5% giá bán
         }
         // ----------------------------------------
 
         html += `
-        <tr>
+        <tr ${
+          isHidden ? 'style="opacity: 0.7; background-color: #fafafa;"' : ""
+        }>
           <td>${originalIndex + 1}</td>
           <td>
             <div class="product-img-mini" style="background-image: url('${
               product.image || ""
             }')"></div>
           </td>
-          <td>${escapeHtml(product.name)}</td>
+          <td>
+            ${escapeHtml(product.name)}
+            ${
+              isHidden
+                ? '<span style="color: #e53e3e; font-weight: 600; display: block; font-size: 12px;">(Đã ẩn)</span>'
+                : ""
+            }
+          </td>
           <td>${formatPrice(product.value)}đ</td>
           
           <td style="font-weight: 600; color: ${
@@ -911,14 +916,26 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <td>${product.quantity}</td>
           <td>${escapeHtml(product.category)}</td>
           <td>
-            <button onclick="editProduct(${originalIndex})" class="btn-edit"><i class="fa-solid fa-pen"></i> Sửa</button>
-            <button onclick="deleteProduct(${originalIndex})" class="btn-delete"><i class="fa-solid fa-trash"></i> Xóa</button>
+            <button onclick="editProduct(${originalIndex})" class="btn-edit" style="margin-right: 5px;">
+                <i class="fa-solid fa-pen"></i> Sửa
+            </button>
+            
+            <button onclick="toggleProductVisibility(${originalIndex})" 
+                    style="background-color: ${
+                      isHidden ? "#48bb78" : "#e53e3e"
+                    }; color: white; margin-right: 5px; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">
+              <i class="fa-solid ${isHidden ? "fa-eye" : "fa-eye-slash"}"></i> 
+              ${isHidden ? "Hiện" : "Ẩn"}
+            </button>
+            
+            <button onclick="deleteProduct(${originalIndex})" class="btn-delete">
+                <i class="fa-solid fa-trash"></i> Xóa
+            </button>
           </td>
         </tr>`;
       });
 
       if (!html)
-        // CẬP NHẬT COLSPAN
         html = `<tr><td colspan="8" class="empty-state">Không có sản phẩm phù hợp.</td></tr>`;
 
       tbody.innerHTML = html;
@@ -1035,9 +1052,10 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     `;
 
     // === CẬP NHẬT VÒNG LẶP RENDER BAN ĐẦU ===
-    filteredProducts.forEach((product, index) => {
+    filteredProducts.forEach((product) => {
       // Tìm lại index gốc để dùng cho thao tác Sửa/Xóa chính xác
       const originalIndex = products.findIndex((p) => p.name === product.name);
+      const isHidden = product.isHidden || false; // THÊM MỚI
 
       // --- LOGIC TÍNH LỢI NHUẬN (CHO RENDER BAN ĐẦU) ---
       let profit = 0;
@@ -1045,24 +1063,31 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       const importPriceStr = findLatestImportPrice(product.name);
 
       if (importPriceStr !== "") {
-        // Logic 1: Sản phẩm nhập thủ công (có giá nhập)
         const importPrice = parseInt(importPriceStr, 10);
         profit = sellingPrice - importPrice;
       } else {
-        // Logic 2: Sản phẩm "khai báo sẵn" (không tìm thấy giá nhập)
         profit = sellingPrice * 0.05; // 5% giá bán
       }
       // ----------------------------------------
 
       html += `
-        <tr>
+        <tr ${
+          isHidden ? 'style="opacity: 0.7; background-color: #fafafa;"' : ""
+        }>
           <td>${originalIndex + 1}</td>
           <td>
             <div class="product-img-mini" style="background-image: url('${
               product.image || ""
             }')"></div>
           </td>
-          <td>${escapeHtml(product.name)}</td>
+          <td>
+            ${escapeHtml(product.name)}
+            ${
+              isHidden
+                ? '<span style="color: #e53e3e; font-weight: 600; display: block; font-size: 12px;">(Đã ẩn)</span>'
+                : ""
+            }
+          </td>
           <td>${formatPrice(product.value)}đ</td>
           
           <td style="font-weight: 600; color: ${
@@ -1074,9 +1099,18 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <td>${product.quantity}</td>
           <td>${escapeHtml(product.category)}</td>
           <td>
-            <button onclick="editProduct(${originalIndex})" class="btn-edit">
+            <button onclick="editProduct(${originalIndex})" class="btn-edit" style="margin-right: 5px;">
               <i class="fa-solid fa-pen"></i> Sửa
             </button>
+            
+            <button onclick="toggleProductVisibility(${originalIndex})" 
+                    style="background-color: ${
+                      isHidden ? "#48bb78" : "#e53e3e"
+                    }; color: white; margin-right: 5px; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">
+              <i class="fa-solid ${isHidden ? "fa-eye" : "fa-eye-slash"}"></i> 
+              ${isHidden ? "Hiện" : "Ẩn"}
+            </button>
+
             <button onclick="deleteProduct(${originalIndex})" class="btn-delete">
               <i class="fa-solid fa-trash"></i> Xóa
             </button>
@@ -1124,7 +1158,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     renderProductManagement();
   };
 
-  // === CẬP NHẬT window.addNewProduct (THAY THẾ INPUT NAME BẰNG SELECT, BỎ CATEGORY) ===
+  // === CẬP NHẬT window.addNewProduct (ĐỂ DỌN DẸP VÀ MỞ KHÓA CÁC TRƯỜNG) ===
   window.addNewProduct = function () {
     const popup = document.getElementById("product-form-popup");
     const stockProducts = getAvailableStockProducts();
@@ -1137,52 +1171,53 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       )
       .join("");
 
-    // 1. TÌM VÀ THAY THẾ TRƯỜNG NAME CŨ (input text) bằng SELECT
     let nameElement = document.getElementById("name");
 
     if (nameElement) {
-      // Nếu chưa là SELECT, thì thay thế
       if (nameElement.tagName !== "SELECT") {
         const selectElement = document.createElement("select");
         selectElement.id = "name";
         selectElement.required = true;
         selectElement.style.cssText =
           "width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;";
-
         nameElement.replaceWith(selectElement);
         nameElement = selectElement;
       }
     }
 
-    // Cập nhật nội dung cho select
     if (nameElement && nameElement.tagName === "SELECT") {
       nameElement.innerHTML =
         `<option value="">-- Chọn sản phẩm trong kho --</option>` +
         productSelectHtml;
-      nameElement.disabled = false; // Bật lại nếu nó bị disabled từ chế độ edit trước
+      nameElement.disabled = false;
 
-      // -- cập nhật giá nhập khi chọn sản phẩm --
       const valueInput = document.getElementById("value");
       function updateValueFromSelect() {
         const selected = nameElement.value;
         const price = selected ? findLatestImportPrice(selected) : "";
         if (valueInput) valueInput.value = price !== "" ? price : "";
       }
-      // gán event change (loại trừ việc gán nhiều lần)
       nameElement.removeEventListener("change", updateValueFromSelect);
       nameElement.addEventListener("change", updateValueFromSelect);
-
-      // nếu đã có lựa chọn mặc định (ví dụ đã set) thì cập nhật ngay
       updateValueFromSelect();
     }
 
     if (popup) {
+      // === MỞ KHÓA CÁC TRƯỜNG KHI THÊM MỚI ===
+      document.getElementById("value").disabled = false;
+      document.getElementById("quantity").disabled = false;
+      document.getElementById("description").disabled = false;
+      document.getElementById("specs").disabled = false;
+      // ========================================
+
+      // === DỌN DẸP FORM ===
       document.getElementById("value").value = "";
       document.getElementById("quantity").value = "";
+      document.getElementById("description").value = "";
+      document.getElementById("specs").value = "";
+      // ====================
 
-      // **XÓA TRƯỜNG CATEGORY ĐƯỢC CHÈN (nếu có)**
       document.getElementById("category-wrapper")?.remove();
-      // Đảm bảo input id="category" không tồn tại
       const categoryInput = document.getElementById("category");
       if (categoryInput && categoryInput.type !== "hidden")
         categoryInput.remove();
@@ -1191,13 +1226,12 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       if (imageInput) imageInput.value = "";
 
       window.editingProductIndex = -1;
-      // Đặt lại title
       popup.querySelector("h2").textContent = "Thêm sản phẩm lên kệ (Từ kho)";
       popup.style.display = "flex";
     }
   };
 
-  // === CẬP NHẬT window.editProduct (DÙNG SELECT NAME VÀ KHÓA, BỎ CATEGORY) ===
+  // === CẬP NHẬT window.editProduct (KHÓA GIÁ/SỐ LƯỢNG, THÊM MÔ TẢ/THÔNG SỐ) ===
   window.editProduct = function (index) {
     const product = products[index];
     if (!product) return;
@@ -1233,14 +1267,12 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     }
 
     if (nameElement && nameElement.tagName === "SELECT") {
-      // Đảm bảo sản phẩm đang sửa có trong danh sách chọn (dù hết hàng)
       const isEditing = stockProducts.some(
         (p) => p.productName === product.name
       );
 
       let currentOptions = productSelectHtml;
       if (!isEditing) {
-        // Nếu sản phẩm đang sửa không còn hàng trong kho, thêm nó vào danh sách chọn (đã chọn)
         currentOptions =
           `<option value="${escapeHtml(product.name)}" selected>${escapeHtml(
             product.name
@@ -1248,46 +1280,97 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       }
 
       nameElement.innerHTML = currentOptions;
-      nameElement.value = product.name; // Set current value
+      nameElement.value = product.name;
       nameElement.disabled = true; // KHÓA TÊN SẢN PHẨM KHI CHỈNH SỬA
-
-      // Cập nhật giá nhập hiển thị (nếu có phiếu nhập)
-      const valueInput = document.getElementById("value");
-      const latestPrice = findLatestImportPrice(product.name);
-      if (valueInput)
-        valueInput.value = latestPrice !== "" ? latestPrice : product.value;
     }
 
     if (popup) {
-      document.getElementById("name").value = product.name;
-      document.getElementById("value").value = product.value;
-      document.getElementById("quantity").value = product.quantity;
+      const valueInput = document.getElementById("value");
+      const quantityInput = document.getElementById("quantity");
 
-      // **XÓA TRƯỜNG CATEGORY ĐƯỢC CHÈN (nếu có)**
-      document.getElementById("category-wrapper")?.remove();
-      // Đảm bảo input id="category" không tồn tại
-      const categoryInput = document.getElementById("category");
-      if (categoryInput && categoryInput.type !== "hidden")
-        categoryInput.remove();
+      // ĐIỀN DỮ LIỆU CŨ VÀO FORM
+      document.getElementById("name").value = product.name;
+      valueInput.value = product.value;
+      quantityInput.value = product.quantity;
+
+      // ĐIỀN DỮ LIỆU MỚI (MÔ TẢ/THÔNG SỐ)
+      document.getElementById("description").value = product.description || "";
+      document.getElementById("specs").value = product.specs || "";
+      document.getElementById("description").disabled = false; // Đảm bảo mở
+      document.getElementById("specs").disabled = false; // Đảm bảo mở
+
+      // === YÊU CẦU: KHÓA SỐ LƯỢNG VÀ GIÁ KHI SỬA ===
+      valueInput.disabled = true;
+      quantityInput.disabled = true;
+      // ===============================================
 
       const imageInput = document.getElementById("image");
-      if (imageInput) imageInput.value = ""; // Xóa input file để người dùng chọn file mới
+      if (imageInput) imageInput.value = "";
 
       window.editingProductIndex = index;
       popup.style.display = "flex";
-
-      // Đặt lại title
       popup.querySelector("h2").textContent = "Sửa sản phẩm trên kệ";
     }
   };
 
+  // === CẬP NHẬT window.deleteProduct (THEO YÊU CẦU MỚI) ===
   window.deleteProduct = function (index) {
-    if (!confirm("Bạn có chắc muốn xóa sản phẩm này?")) return;
-    products.splice(index, 1);
+    const product = products[index];
+    if (!product) return;
+
+    // Kiểm tra xem sản phẩm đã được mua chưa
+    const isPurchased = hasProductBeenPurchased(product.name);
+
+    if (isPurchased) {
+      // Đã mua: Chỉ cho phép ẨN
+      if (
+        confirm(
+          `Sản phẩm "${product.name}" ĐÃ được đặt hàng.\nBạn không thể XÓA, chỉ có thể ẨN sản phẩm này.\n\nBạn có muốn ẨN sản phẩm này không?`
+        )
+      ) {
+        products[index].isHidden = true; // Set to hidden
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+        renderProductManagement();
+        alert(`Đã ẩn sản phẩm "${product.name}".`);
+      }
+    } else {
+      // Chưa mua: Cho phép XÓA VĨNH VIỄN
+      if (
+        confirm(
+          `Sản phẩm "${product.name}" CHƯA được bán.\nBạn có chắc muốn XÓA VĨNH VIỄN sản phẩm này?`
+        )
+      ) {
+        products.splice(index, 1);
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+        renderProductManagement();
+        renderStockManagement(); // Cập nhật lại kho
+        alert("Đã xóa vĩnh viễn sản phẩm!");
+      }
+    }
+  };
+
+  // === HÀM MỚI: ẨN/HIỆN SẢN PHẨM ===
+  window.toggleProductVisibility = function (index) {
+    const product = products[index];
+    if (!product) {
+      alert("Lỗi: Không tìm thấy sản phẩm!");
+      return;
+    }
+
+    // Đảo ngược trạng thái
+    product.isHidden = !product.isHidden;
+
+    // Lưu lại
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+
+    // Render lại
     renderProductManagement();
-    renderStockManagement(); // Cập nhật lại kho sau khi xóa sản phẩm trên kệ
-    alert("Đã xóa sản phẩm!");
+
+    alert(
+      product.isHidden
+        ? `✅ Đã ẩn sản phẩm "${product.name}".`
+        : `✅ Đã hiển thị lại sản phẩm "${product.name}".`
+    );
   };
 
   // === HÀM LƯU VÀ RENDER (DÙNG CHUNG) ===
@@ -1309,15 +1392,18 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     }
   }
 
-  // === HÀM THÊM SẢN PHẨM MỚI (CẬP NHẬT LOGIC TỪ KHO) ===
+  // === HÀM THÊM SẢN PHẨM MỚI (CẬP NHẬT VỚI MÔ TẢ/THÔNG SỐ) ===
   window.addProduct = async function (event) {
     event.preventDefault();
 
     const name = document.getElementById("name").value.trim(); // Lấy từ SELECT
     const value = parseInt(document.getElementById("value").value);
     const quantity = parseInt(document.getElementById("quantity").value);
-    // LẤY DANH MỤC TỪ DỮ LIỆU KHO/PHIẾU NHẬP
     const category = findProductCategory(name);
+
+    // LẤY TRƯỜNG MỚI
+    const description = document.getElementById("description").value.trim();
+    const specs = document.getElementById("specs").value.trim();
 
     const imageFile = document.getElementById("image").files[0];
     const popup = document.getElementById("product-form-popup");
@@ -1359,7 +1445,6 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       (item) => item.productName.trim().toLowerCase() === name.toLowerCase()
     );
 
-    // Nếu không có bản ghi kho cho sản phẩm
     if (!stockItem) {
       alert(
         `❌ Lỗi Kho: Sản phẩm "${name}" chưa có trong kho. Vui lòng tạo phiếu nhập trước khi đưa lên kệ.`
@@ -1371,7 +1456,6 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
 
     const availableStock = parseInt(stockItem.quantity || 0, 10);
 
-    // Kiểm tra tồn kho khả dụng (đã trừ số lượng trên kệ)
     if (availableStock <= 0) {
       alert(
         `❌ Lỗi Tồn Kho: Sản phẩm "${name}" hiện đang hết kho (0). Vui lòng nhập thêm.`
@@ -1401,10 +1485,19 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       }
     }
 
-    const newProduct = { name, value, quantity, category, image: imageBase64 };
+    const newProduct = {
+      name,
+      value,
+      quantity,
+      category,
+      image: imageBase64,
+      isHidden: false,
+      description: description || "", // Lưu trường mới
+      specs: specs || "", // Lưu trường mới
+    };
     products.push(newProduct);
 
-    // Lưu và render, bắt lỗi khi lưu localStorage
+    // Lưu và render
     try {
       saveAndRenderProducts(popup, stockContent);
       alert("✅ Thêm sản phẩm thành công!");
@@ -1413,18 +1506,17 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       alert("❌ Lỗi khi lưu sản phẩm. Kiểm tra console.");
     }
   };
-  // === HÀM SỬA SẢN PHẨM (CẬP NHẬT LOGIC) ===
+  // === HÀM SỬA SẢN PHẨM (CẬP NHẬT LOGIC: CHỈ LƯU MÔ TẢ/THÔNG SỐ/ẢNH) ===
   window.editProductSubmit = async function (event) {
     event.preventDefault();
-    // Ngăn các listener khác xử lý cùng event
     if (typeof event.stopImmediatePropagation === "function")
       event.stopImmediatePropagation();
 
-    const name = document.getElementById("name").value.trim();
-    const value = parseInt(document.getElementById("value").value);
-    const quantity = parseInt(document.getElementById("quantity").value);
-
+    // LẤY TRƯỜNG MỚI ĐỂ LƯU
+    const description = document.getElementById("description").value.trim();
+    const specs = document.getElementById("specs").value.trim();
     const imageFile = document.getElementById("image").files[0];
+
     const popup = document.getElementById("product-form-popup");
     const stockContent = document.getElementById("stockContent");
 
@@ -1432,72 +1524,6 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     const product = products[window.editingProductIndex];
     if (!product) {
       alert("❌ Không tìm thấy sản phẩm!");
-      return;
-    }
-
-    // LẤY DANH MỤC CŨ (Sản phẩm trên kệ không cho sửa danh mục)
-    const category = product.category;
-
-    // --- VALIDATE CƠ BẢN ---
-    if (
-      !name ||
-      isNaN(value) ||
-      isNaN(quantity) ||
-      value <= 0 ||
-      quantity <= 0
-    ) {
-      alert(
-        "⚠️ Vui lòng điền đầy đủ thông tin và đảm bảo Giá/Số lượng hợp lệ (> 0)!"
-      );
-      return;
-    }
-
-    const oldQuantity = product.quantity;
-    const quantityDelta = quantity - oldQuantity;
-
-    // --- KIỂM TRA TỒN KHO KHI TĂNG SỐ LƯỢNG ---
-    if (quantityDelta > 0) {
-      const currentStock = calculateStock();
-      const stockItem = currentStock.find(
-        (item) =>
-          item.productName.trim().toLowerCase() ===
-          product.name.trim().toLowerCase()
-      );
-
-      // Nếu không tìm thấy bản ghi kho, không thể tăng
-      if (!stockItem) {
-        alert(
-          `❌ Lỗi Kho: Sản phẩm "${product.name}" không có bản ghi trong kho. Không thể tăng số lượng.`
-        );
-        return;
-      }
-
-      const availableStock = parseInt(stockItem.quantity || 0, 10);
-
-      if (availableStock <= 0) {
-        alert(
-          `❌ Không đủ hàng trong kho để tăng số lượng.\n\nKho hiện chỉ còn ${availableStock} khả dụng.`
-        );
-        return;
-      }
-
-      if (quantityDelta > availableStock) {
-        alert(
-          `❌ Không đủ hàng trong kho để tăng số lượng.\n\nKho chỉ còn ${availableStock} khả dụng.`
-        );
-        return;
-      }
-    }
-
-    // --- KIỂM TRA TRÙNG TÊN KHI SỬA (Giữ lại check này cho an toàn) ---
-    const duplicate = products.find(
-      (p, i) =>
-        i !== window.editingProductIndex &&
-        p.name.trim().toLowerCase() === name.toLowerCase()
-    );
-
-    if (duplicate) {
-      alert("⚠️ Lỗi: Tên sản phẩm đã tồn tại. Vui lòng chọn tên khác.");
       return;
     }
 
@@ -1514,11 +1540,16 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     }
 
     // --- CẬP NHẬT SẢN PHẨM ---
-    product.name = name;
-    product.value = value;
-    product.quantity = quantity;
-    product.category = category; // Sử dụng category cũ
-    product.image = newImageBase64; // Cập nhật bằng Base64
+    // Giữ nguyên các trường bị khóa
+    product.name = product.name;
+    product.value = product.value;
+    product.quantity = product.quantity;
+    product.category = product.category;
+
+    // Cập nhật các trường được phép sửa
+    product.image = newImageBase64; // Cập nhật ảnh
+    product.description = description; // Cập nhật mô tả
+    product.specs = specs; // Cập nhật thông số
 
     // --- LƯU VÀ CẬP NHẬT GIAO DIỆN ---
     window.editingProductIndex = -1;
@@ -1526,7 +1557,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     alert("✅ Cập nhật sản phẩm thành công!");
   };
 
-  // === PHIẾU NHẬP HÀNG (CẬP NHẬT FORM VÀ LOGIC DANH MỤC) ===
+  // === PHIẾU NHẬP HÀNG (GIỮ NGUYÊN) ===
   function renderAddInfo() {
     hideAllContent();
     if (!addInfoContent) return;
@@ -1566,18 +1597,21 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <td>${receipt.date}</td>
           <td>${escapeHtml(receipt.importedBy)}</td>
           <td>
-              ${receipt.status === "Hoàn thành"
-          ? '<span style="color: green; font-weight: 600;">Hoàn thành</span>'
-          : '<span style="color: orange; font-weight: 600;">Chưa hoàn thành</span>'
-        }
+              ${
+                receipt.status === "Hoàn thành"
+                  ? '<span style="color: green; font-weight: 600;">Hoàn thành</span>'
+                  : '<span style="color: orange; font-weight: 600;">Chưa hoàn thành</span>'
+              }
           </td>
           <td>
-            <button onclick="viewImportReceipt('${receipt.id
-        }')" class="btn-view">
+            <button onclick="viewImportReceipt('${
+              receipt.id
+            }')" class="btn-view">
               <i class="fa-solid fa-eye"></i> Chi tiết phiếu
             </button>
-            ${receipt.status === "Chưa hoàn thành"
-          ? `
+            ${
+              receipt.status === "Chưa hoàn thành"
+                ? `
             <button onclick="editImportReceipt('${receipt.id}')" class="btn-edit">
               <i class="fa-solid fa-pen"></i> Sửa
             </button>
@@ -1585,10 +1619,11 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
               <i class="fa-solid fa-check"></i> Hoàn thành
             </button>
             `
-          : ""
-        }
-            <button onclick="deleteImportReceipt('${receipt.id
-        }')" class="btn-delete">
+                : ""
+            }
+            <button onclick="deleteImportReceipt('${
+              receipt.id
+            }')" class="btn-delete">
               <i class="fa-solid fa-trash"></i> Xóa
             </button>
           </td>
@@ -1613,10 +1648,13 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <i class="fa-solid fa-boxes-stacked stat-icon"></i>
           <div>
             <h3>${importReceipts.reduce((sum, receipt) => {
-      // reduce lồng nhau: Tính tổng quantity của items trong MỘT receipt
-      const totalItemsQuantity = receipt.items.reduce((itemSum, item) => itemSum + item.quantity, 0);
-      return sum + totalItemsQuantity;
-    }, 0)}</h3>
+              // reduce lồng nhau: Tính tổng quantity của items trong MỘT receipt
+              const totalItemsQuantity = receipt.items.reduce(
+                (itemSum, item) => itemSum + item.quantity,
+                0
+              );
+              return sum + totalItemsQuantity;
+            }, 0)}</h3>
             <p>Tổng số lượng nhập</p>
           </div>
         </div>
@@ -1624,12 +1662,15 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <i class="fa-solid fa-money-bill-trend-up stat-icon"></i>
           <div>
             <h3>${formatPrice(
-      importReceipts.reduce((sum, receipt) => {
-        // reduce lồng nhau: Tính tổng giá trị của items trong MỘT receipt
-        const totalItemsPrice = receipt.items.reduce((itemSum, item) => itemSum + (item.quantity * item.price), 0);
-        return sum + totalItemsPrice;
-      }, 0)
-    )}đ</h3>
+              importReceipts.reduce((sum, receipt) => {
+                // reduce lồng nhau: Tính tổng giá trị của items trong MỘT receipt
+                const totalItemsPrice = receipt.items.reduce(
+                  (itemSum, item) => itemSum + item.quantity * item.price,
+                  0
+                );
+                return sum + totalItemsPrice;
+              }, 0)
+            )}đ</h3>
             <p>Tổng giá trị nhập</p>
           </div>
         </div>
@@ -1661,13 +1702,14 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
   };
 
   window.showImportProductForm = function (receiptId) {
-    const currentReceipt = importReceipts.find(r => r.id === receiptId);
+    const currentReceipt = importReceipts.find((r) => r.id === receiptId);
     if (!currentReceipt) return alert("Lỗi: Không tìm thấy phiếu nhập!");
 
-    let itemsHtml = '';
+    let itemsHtml = "";
 
     // Lặp qua các mặt hàng để thêm cột Thao tác
-    currentReceipt.items.forEach((item, index) => { // Lấy thêm index để xác định mặt hàng
+    currentReceipt.items.forEach((item, index) => {
+      // Lấy thêm index để xác định mặt hàng
       const itemPrice = item.quantity * item.price;
 
       itemsHtml += `
@@ -1722,14 +1764,12 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     document.body.insertAdjacentHTML("beforeend", html);
   };
 
-
   window.closeModal = function (event) {
     if (!event || event.target.id === "importProductModal" || !event.target) {
       const modal = document.getElementById("importProductModal");
       if (modal) modal.remove();
     }
   };
-
 
   window.showImportReceiptForm = function (receiptId) {
     const categoryHtml = renderImportCategoryField(); // Thêm trường Danh mục mới
@@ -1811,7 +1851,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     }
 
     // 2. TÌM PHIẾU NHẬP ĐANG CHỈNH SỬA
-    const currentReceipt = importReceipts.find(r => r.id === receiptId);
+    const currentReceipt = importReceipts.find((r) => r.id === receiptId);
     if (!currentReceipt) {
       alert("Lỗi: Không tìm thấy phiếu nhập để thêm mặt hàng!");
       return;
@@ -1833,8 +1873,8 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     const tableBody = document.getElementById("importItemsTableBody");
     if (tableBody) {
       // Tái tạo HTML chỉ cho phần items của phiếu nhập hiện tại
-      let newItemsHtml = '';
-      currentReceipt.items.forEach((item) => {
+      let newItemsHtml = "";
+      currentReceipt.items.forEach((item, index) => {
         const inputPrice = item.quantity * item.price;
         newItemsHtml += `
                 <tr>
@@ -1842,6 +1882,14 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
                   <td>${item.quantity}</td>
                   <td>${formatPrice(item.price)}đ</td>
                   <td><strong>${formatPrice(inputPrice)}đ</strong></td>
+                  <td>
+                    <button onclick="editItemInReceipt('${receiptId}', ${index})" class="btn-edit-item">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button onclick="deleteItemInReceipt('${receiptId}', ${index})" class="btn-delete-item">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </td>
                 </tr>
             `;
       });
@@ -1873,7 +1921,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     const receipt = importReceipts.find((r) => r.id === id);
     if (!receipt) return alert("Không tìm thấy phiếu nhập!");
 
-    let itemsHtml = '';
+    let itemsHtml = "";
     let totalReceiptPrice = 0;
 
     // 1. Lặp qua các mặt hàng (items) để tính tổng và tạo chuỗi HTML chi tiết
@@ -1904,7 +1952,9 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <div style="margin-bottom: 15px; font-size: 14px; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
               <p><strong>Ngày nhập:</strong> ${receipt.date}</p>
               <p><strong>Người nhập:</strong> ${escapeHtml(receipt.importedBy)}</p>
-              <p><strong>Trạng thái:</strong> <span style="font-weight: 600; color: ${receipt.status === "Hoàn thành" ? 'green' : 'orange'};">${receipt.status}</span></p>
+              <p><strong>Trạng thái:</strong> <span style="font-weight: 600; color: ${
+                receipt.status === "Hoàn thành" ? "green" : "orange"
+              };">${receipt.status}</span></p>
           </div>
 
           <table class="admin-table">
@@ -1922,7 +1972,9 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           </table>
           
           <div style="margin-top: 20px; text-align: right; font-size: 18px;">
-              <strong>TỔNG GIÁ TRỊ PHIẾU:</strong> <span style="color: #764ba2; font-weight: 700;">${formatPrice(totalReceiptPrice)}đ</span>
+              <strong>TỔNG GIÁ TRỊ PHIẾU:</strong> <span style="color: #764ba2; font-weight: 700;">${formatPrice(
+                totalReceiptPrice
+              )}đ</span>
           </div>
 
         </div>
@@ -1934,7 +1986,11 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
 
   // 3. Tạo hàm đóng Modal
   window.closeViewReceiptModal = function (event) {
-    if (!event || event.target.id === "viewImportReceiptModal" || !event.target) {
+    if (
+      !event ||
+      event.target.id === "viewImportReceiptModal" ||
+      !event.target
+    ) {
       const modal = document.getElementById("viewImportReceiptModal");
       if (modal) modal.remove();
     }
@@ -1975,7 +2031,8 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     if (newProductName === null) return;
 
     const newQuantity = parseInt(prompt("Sửa Số lượng:", itemToEdit.quantity));
-    if (isNaN(newQuantity) || newQuantity <= 0) return alert("Số lượng không hợp lệ!");
+    if (isNaN(newQuantity) || newQuantity <= 0)
+      return alert("Số lượng không hợp lệ!");
 
     const newPrice = parseFloat(prompt("Sửa Đơn giá:", itemToEdit.price));
     if (isNaN(newPrice) || newPrice <= 0) return alert("Đơn giá không hợp lệ!");
@@ -2008,7 +2065,8 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
   };
 
   window.deleteItemInReceipt = function (receiptId, itemIndex) {
-    if (!confirm("Bạn có chắc chắn muốn xóa mặt hàng này khỏi phiếu nhập?")) return;
+    if (!confirm("Bạn có chắc chắn muốn xóa mặt hàng này khỏi phiếu nhập?"))
+      return;
 
     const receipt = importReceipts.find((r) => r.id === receiptId);
     if (!receipt || !receipt.items[itemIndex]) {
@@ -2028,7 +2086,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
 
     alert("Đã xóa mặt hàng thành công!");
   };
-  
+
   window.markImportReceiptDone = function (id) {
     const receipt = importReceipts.find((r) => r.id === id);
     if (!receipt) return alert("Không tìm thấy phiếu nhập!");
@@ -2070,7 +2128,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     renderAddInfo();
   };
 
-  // === QUẢN LÝ HÓA ĐƠN (CẬP NHẬT VỚI TRẠNG THÁI) ===
+  // === QUẢN LÝ HÓA ĐƠN (GIỮ NGUYÊN) ===
   function renderInvoiceManagement() {
     hideAllContent();
     if (!invoiceContent) return;
@@ -2106,11 +2164,17 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       const itemsStr = invoice.items.map((it) => it.name).join(", ");
       const status = invoice.status || "Mới đặt"; // Mặc định cho hóa đơn cũ
       const statusClass = getStatusClass(status);
-      
-      // <-- THÊM MỚI: Kiểm tra xem đây có phải trạng thái cuối cùng không
-      const isFinalStatus = (status === "Đã giao" || status === "Đã hủy");
 
-      const allStatuses = ["Mới đặt", "Đang xử lý","Đang vận chuyển", "Đã giao", "Đã hủy"];
+      // <-- THÊM MỚI: Kiểm tra xem đây có phải trạng thái cuối cùng không
+      const isFinalStatus = status === "Đã giao" || status === "Đã hủy";
+
+      const allStatuses = [
+        "Mới đặt",
+        "Đang xử lý",
+        "Đang vận chuyển",
+        "Đã giao",
+        "Đã hủy",
+      ];
       const statusOptions = allStatuses
         .map(
           (s) =>
@@ -2176,8 +2240,11 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <i class="fa-solid fa-box-open stat-icon"></i>
           <div>
             <h3>${
-              invoices.filter((inv) => (inv.status || "Mới đặt") === "Mới đặt" || (inv.status || "Mới đặt") === "Đang xử lý") 
-                .length
+              invoices.filter(
+                (inv) =>
+                  (inv.status || "Mới đặt") === "Mới đặt" ||
+                  (inv.status || "Mới đặt") === "Đang xử lý"
+              ).length
             }</h3>
             <p>Đơn hàng mới</p>
           </div>
@@ -2207,7 +2274,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     }
 
     const oldStatus = invoice.status || "Mới đặt";
-    
+
     // <-- THÊM MỚI: Ràng buộc không cho phép thay đổi trạng thái cuối cùng
     if (oldStatus === "Đã giao" || oldStatus === "Đã hủy") {
       alert(
@@ -2223,10 +2290,14 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
 
     // Logic hoàn kho (CHỈ KHI ADMIN CHUYỂN TỪ TRẠNG THÁI KHÁC -> ĐÃ HỦY)
     // Và logic trừ kho (CHỈ KHI ADMIN CHUYỂN TỪ ĐÃ HỦY -> TRẠNG THÁI KHÁC)
-    
+
     // 1. Nếu chuyển sang "Đã hủy" (từ trạng thái không phải "Đã hủy")
     if (newStatus === "Đã hủy" && oldStatus !== "Đã hủy") {
-      if (confirm("Việc hủy đơn hàng này sẽ hoàn trả sản phẩm về kho. Bạn có chắc chắn?")) {
+      if (
+        confirm(
+          "Việc hủy đơn hàng này sẽ hoàn trả sản phẩm về kho. Bạn có chắc chắn?"
+        )
+      ) {
         try {
           invoice.items.forEach((item) => {
             const product = products.find((p) => p.name === item.name);
@@ -2236,7 +2307,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
             // (Như lưu ý cũ: logic này đang hoàn trả về "sản phẩm trên kệ")
           });
           localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-        } catch(e) {
+        } catch (e) {
           alert("Có lỗi xảy ra khi hoàn kho. Trạng thái chưa được thay đổi.");
           selectElement.value = oldStatus; // Trả lại giá trị cũ
           return;
@@ -2246,35 +2317,42 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
         return;
       }
     }
-    
+
     // 2. Nếu chuyển từ "Đã hủy" sang trạng thái khác
     if (oldStatus === "Đã hủy" && newStatus !== "Đã hủy") {
-      if (confirm("Khôi phục đơn hàng này sẽ trừ lại số lượng sản phẩm từ kho (kệ). Bạn có chắc chắn?")) {
-         try {
+      if (
+        confirm(
+          "Khôi phục đơn hàng này sẽ trừ lại số lượng sản phẩm từ kho (kệ). Bạn có chắc chắn?"
+        )
+      ) {
+        try {
           // Kiểm tra kho trước khi trừ
-           for (const item of invoice.items) {
-             const product = products.find((p) => p.name === item.name);
-             if (!product || product.quantity < item.quantity) {
-               alert(`Không đủ hàng cho sản phẩm "${item.name}". Kho (kệ) còn ${product ? product.quantity : 0}.`);
-               selectElement.value = oldStatus; // Trả lại giá trị cũ
-               return; // Dừng
-             }
-           }
-           
-           // Nếu đủ hàng, tiến hành trừ kho
-           invoice.items.forEach((item) => {
-             const product = products.find((p) => p.name === item.name);
-             if (product) {
-               product.quantity -= item.quantity;
-             }
-           });
-           localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-           
-         } catch(e) {
-           alert("Có lỗi xảy ra khi trừ kho. Trạng thái chưa được thay đổi.");
-           selectElement.value = oldStatus; // Trả lại giátrị cũ
-           return;
-         }
+          for (const item of invoice.items) {
+            const product = products.find((p) => p.name === item.name);
+            if (!product || product.quantity < item.quantity) {
+              alert(
+                `Không đủ hàng cho sản phẩm "${item.name}". Kho (kệ) còn ${
+                  product ? product.quantity : 0
+                }.`
+              );
+              selectElement.value = oldStatus; // Trả lại giá trị cũ
+              return; // Dừng
+            }
+          }
+
+          // Nếu đủ hàng, tiến hành trừ kho
+          invoice.items.forEach((item) => {
+            const product = products.find((p) => p.name === item.name);
+            if (product) {
+              product.quantity -= item.quantity;
+            }
+          });
+          localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+        } catch (e) {
+          alert("Có lỗi xảy ra khi trừ kho. Trạng thái chưa được thay đổi.");
+          selectElement.value = oldStatus; // Trả lại giátrị cũ
+          return;
+        }
       } else {
         selectElement.value = oldStatus; // Người dùng hủy, trả lại giá trị cũ
         return;
@@ -2290,7 +2368,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       selectElement.className = "invoice-status-select"; // Reset
       selectElement.classList.add(getStatusClass(newStatus));
     }
-    
+
     // Cập nhật lại số liệu thống kê nếu cần
     renderInvoiceManagement();
   };
@@ -2377,7 +2455,7 @@ Tổng tiền: ${formatPrice(invoice.total)}đ
     });
   }
 
-  // === GẮN SỰ KIỆN ĐÓNG POPUP SẢN PHẨM (CẬP NHẬT LOGIC DỌN DẸP DOM NAME) ===
+  // === GẮN SỰ KIỆN ĐÓNG POPUP SẢN PHẨM (ĐÃ THAY THẾ) ===
   const closePopupBtn = document.getElementById("close-product-form-popup");
   const productPopup = document.getElementById("product-form-popup");
 
@@ -2386,7 +2464,18 @@ Tổng tiền: ${formatPrice(invoice.total)}đ
       productPopup.style.display = "none";
       window.editingProductIndex = -1;
 
-      // LOGIC DỌN DẸP DOM: HOÀN TÁC THAY ĐỔI VỀ TRƯỜNG NAME
+      // === YÊU CẦU MỚI: MỞ KHÓA TẤT CẢ CÁC TRƯỜNG KHI ĐÓNG ===
+      document.getElementById("value").disabled = false;
+      document.getElementById("quantity").disabled = false;
+      document.getElementById("description").disabled = false;
+      document.getElementById("specs").disabled = false;
+
+      // Dọn dẹp luôn các trường mới
+      document.getElementById("description").value = "";
+      document.getElementById("specs").value = "";
+      // ====================================================
+
+      // LOGIC DỌN DẸP DOM: HOÀN TÁC TRƯỜNG NAME
       const nameElement = document.getElementById("name");
       if (nameElement && nameElement.tagName === "SELECT") {
         // Tạo lại input text gốc
