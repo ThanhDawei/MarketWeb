@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DMarket</title>
+  <!-- CSS -->
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/all.css" />
+  <script src="UserScript.js"></script>
+</head>
+<body>
+  <user style="display: block">
+    <!-- HEADER -->
+    <header class="main-header">
+      <div class="header-left">
+        <div class="logo">
+          <i class="fa-solid fa-store"></i><span>DMarket</span>
+        </div>
+        <button
+            class="contact-btn"
+            onclick="window.open('https://www.facebook.com/thanh.huynhtuan.1840','_blank')"
+          >
+          <i class="fa-brands fa-facebook"></i> Liên hệ
+        </button>
+      </div>
+
+      <div class="header-center">
+        <div class="search-bar">
+          <input id="searchInput" type="text" placeholder="Tìm sản phẩm..." />
+          <button id="searchBtn" type="button">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button id="notificationBtn" class="icon-btn" title="Thông báo">
+          <i class="fa-solid fa-bell"></i>
+            <span id="notification-badge" 
+            class="notification-badge" style="display: none;">3</span>
+        </button>
+        <button id="helpBtn" class="text-btn">
+          <i class="fa-solid fa-circle-question"></i> Hỗ trợ
+        </button>
+        <button id="open-register-form" class="text-btn">
+          <i class="fa-solid fa-user-plus"></i> Đăng ký
+        </button>
+        <button id="login-btn" class="text-btn">
+          <i class="fa-solid fa-circle-user"></i> Đăng nhập
+        </button>
+
+        <div id="username-display" style="display: none">
+          <i class="fa-solid fa-circle-user"></i>
+          <span id="displayed-username"></span>
+        </div>
+
+        <button id="cartShop" class="icon-btn" title="Giỏ hàng">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- FILTER -->
+    <section class="filter-section" aria-label="Bộ lọc sản phẩm">
+      <input
+          type="text"
+          id="filterProductName"
+          placeholder="Tìm theo tên..."
+        />
+
+      <select id="filterProductCategory">
+        <option value="">Tất cả danh mục</option>
+        <optgroup label="Loại sản phẩm">
+          <option value="điện thoại">Điện thoại</option>
+          <option value="laptop">Laptop</option>
+          <option value="máy tính bảng">Máy tính bảng</option>
+          <option value="đồng hồ thông minh">Đồng hồ thông minh</option>
+          <option value="linh kiện">Linh kiện</option>
+          <option value="màn hình">Màn hình</option>
+          <option value="âm thanh">Âm thanh</option>
+          <option value="mạng & kết nối">Mạng & Kết nối</option>
+          <option value="phụ kiện">Phụ kiện</option>
+        </optgroup>
+        <optgroup label="Hãng sản xuất">
+          <option value="apple">Apple</option>
+          <option value="samsung">Samsung</option>
+          <option value="xiaomi">Xiaomi</option>
+          <option value="dell">Dell</option>
+          <option value="lg">LG</option>
+          <option value="sony">Sony</option>
+          <option value="logitech">Logitech</option>
+          <option value="keychron">Keychron</option>
+          <option value="corsair">Corsair</option>
+          <option value="razer">Razer</option>
+          <option value="anker">Anker</option>
+          <option value="tp-link">TP-Link</option>
+          <option value="jbl">JBL</option>
+          <option value="dji">DJI</option>
+          <option value="wd">WD</option>
+        </optgroup>
+      </select>
+
+      <input type="number" id="filterPriceMin" placeholder="Giá từ" min="0" />
+      <input type="number" id="filterPriceMax" placeholder="Đến" min="0" />
+      <button id="applyFilterBtn" type="button">Lọc</button>
+      <button id="clearFilterBtn" type="button">Xóa lọc</button>
+    </section>
+
+    <!-- MAIN -->
+    <main>
+      <div id="productList" class="product-grid"></div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <p>© 2025 DMarket. Mọi quyền được bảo lưu.</p>
+    </footer>
+
+    <!-- ================= POPUPS ================= -->
+
+    <!-- LOGIN -->
+    <div id="login-popup" class="popup" style="display: none">
+      <div class="popup-content">
+        <span id="close-login-popup" class="close">&times;</span>
+        <h2>Đăng nhập</h2>
+        <form class="login-form">
+          <div class="input-group">
+            <label for="username">Tên đăng nhập:</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-user"></i>
+              <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="Nhập tên đăng nhập"
+                  required
+                />
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="password">Mật khẩu:</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-lock"></i>
+              <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Nhập mật khẩu"
+                  required
+                />
+              <i class="fa-solid fa-eye-slash toggle-password"></i>
+            </div>
+          </div>
+          <button type="submit" class="login-button">Đăng nhập</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="modal" id="modal-toggle" style="display: none">
+      <div class="modal_overlay"></div>
+      <div class="modal_body">
+        <div class="auth-form">
+          <div class="auth-form_header">
+            <h3 class="auth-form_heading">Đăng ký</h3>
+          </div>
+          <div class="auth-form_container">
+            <div class="auth-form_form">
+              <div class="auth-form_group">
+                <input
+                    type="text"
+                    class="auth-form_input"
+                    placeholder="Tên đăng nhập"
+                  />
+                </div>
+                <div class="auth-form_group">
+                  <input
+                    type="password"
+                    class="auth-form_input"
+                    placeholder="Mật khẩu"
+                  />
+                </div>
+                <div class="auth-form_group">
+                  <input
+                    type="password"
+                    class="auth-form_input"
+                    id="last-input"
+                    placeholder="Nhập lại mật khẩu"
+                  />
+                </div>
+              </div>
+              <div class="auth-form_policy">
+                <p class="auth-form_policy-text">
+                  Bằng việc đăng kí, bạn đã đồng ý với cửa hàng về
+                  <a href="#" class="auth-form_policy-link"
+                    >Điều khoản dịch vụ</a
+                  >
+                  &
+                  <a href="#" class="auth-form_policy-link"
+                    >Chính sách bảo mật</a
+                  >
+              </p>
+            </div>
+            <div class="auth-form_control">
+              <button class="btn-register" id="turnback">Trở lại</button>
+              <button class="btn-register" id="register">Đăng ký</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCT FORM -->
+
+    <!-- USER PROFILE POPUP -->
+    <div id="user-popup" class="popup" style="display: none">
+      <div class="popup-content">
+        <span id="close-user-popup" class="close">&times;</span>
+        <h2>Hồ sơ người dùng</h2>
+        <p id="popup-username"></p>
+        <button id="logout-btn" class="login-button">Đăng xuất</button>
+      </div>
+    </div>
+
+    <!-- CHECKOUT POPUP -->
+    <div id="checkout-popup" class="popup" style="display: none; overflow-y: auto;">
+      <div class="popup-content">
+        <span id="close-checkout-popup" class="close">&times;</span>
+        <h2>Xác nhận thanh toán</h2>
+        <div id="checkout-items"></div>
+        <div id="checkout-total" style="color: #ee4d2d"></div>
+        <div class="input-group" style="margin-bottom: 0px;">
+          <div style="color:#555; font-weight:600; margin:4px 0;">
+            <span id="checkout-customer-name">(Khách)</span>
+            <span id="checkout-customer-phone" style="margin-left:8px;">(Chưa có)</span>
+          </div>
+          <label>📍 Địa chỉ giao hàng:</label>
+          <div>
+            <label>
+              <input type="radio" name="address-option" id="use-saved-address" value="saved" />
+              Sử dụng địa chỉ hiện tại:
+              <span id="saved-address-display" style="font-weight:600; margin-left:6px;">(chưa có)</span>
+            </label>
+          </div>
+          <div>
+            <label>
+              <input type="radio" name="address-option" id="enter-new-address" value="new" />
+              Nhập địa chỉ mới
+            </label>
+          </div>
+          <textarea id="checkout-address" placeholder="Nhập địa chỉ nhận hàng (Số nhà, đường, quận, thành phố)" rows="3" style="width:100%; margin-top:8px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;"></textarea>
+        </div>
+        <div class="input-group">
+          <label style="text-align: right;"><input type="checkbox" id="save-address-checkbox" /> Lưu địa chỉ vào hồ sơ</label>
+        </div>
+        <div class="input-group">
+          <label for="payment-method">💳 Phương thức thanh toán:</label>
+          <select id="payment-method" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;">
+            <option value="cod">Thanh toán khi nhận hàng</option>
+            <option value="bank">Chuyển khoản ngân hàng</option>
+            <option value="momo">Chuyển tiền ví Momo</option>
+            <option value="credit">Thẻ tín dụng/ghi nợ</option>
+          </select>
+        </div>
+
+        <div id="payment-details" style="margin-top: 16px; display: none;">
+          <!-- QR Code for Bank Transfer -->
+          <div id="bank-transfer-qr" style="display: none; text-align: center;">
+            <img src="../image/ChuyenKhoanNganHang.png" alt="QR Code Chuyển khoản ngân hàng" style="width: 150px; height: auto;" />
+          </div>
+
+          <!-- QR Code for Momo -->
+          <div id="momo-qr" style="display: none; text-align: center;">
+            <img src="../image/MoMo.png" alt="QR Code Ví Momo" style="width: 150px; height: auto;" />
+          </div>
+
+          <!-- Credit/Debit Card Form -->
+          <div id="credit-card-form" style="display: none;">
+            <div class="input-group">
+              <label for="card-number">Số thẻ:</label>
+              <input type="text" id="card-number" placeholder="Nhập số thẻ" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;" />
+            </div>
+            <div class="input-group" style="display: flex; gap: 16px;">
+              <div style="flex: 1;">
+                <label for="expiry-date">Ngày hết hạn (MM/YY):</label>
+                <input type="text" id="expiry-date" placeholder="MM/YY" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;" />
+              </div>
+              <div style="flex: 1;">
+                <label for="cvv">Mã CVV:</label>
+                <input type="text" id="cvv" placeholder="CVV" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;" />
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="cardholder-name">Họ và tên chủ thẻ:</label>
+              <input type="text" id="cardholder-name" placeholder="Nhập họ và tên" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;" />
+            </div>
+          </div>
+        </div>
+        <button id="confirm-checkout" class="login-button">Xác nhận</button>
+        <button id="cancel-checkout" class="btn-register">Hủy</button>
+      </div>
+    </div>
+
+    <!-- THÔNG BÁO -->
+    <div id="notificationPopup" class="popup" style="display: none;">
+      <div class="popup-content">
+        <span id="close-notification-popup" class="close">&times;</span>
+        <h2><i class="fa-solid fa-bell"></i> Thông Báo</h2>
+        
+        <div class="notification-list">
+            <div class="notification-item">
+                <p><strong>Khuyến Mãi Lớn!</strong> Giảm giá 50% cho tất cả tai nghe trong tháng này.</p>
+                <small>1 giờ trước</small>
+            </div>
+            <div class="notification-item">
+                <p><strong>Bảo trì hệ thống</strong> dự kiến vào lúc 2 giờ sáng ngày mai để nâng cấp hiệu suất.</p>
+                <small>5 giờ trước</small>
+            </div>
+            <div class="notification-item">
+                <p>Chào mừng bạn đến với DMarket! Hãy khám phá hàng ngàn sản phẩm công nghệ tuyệt vời.</p>
+                <small>1 ngày trước</small>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GIỎ HÀNG -->
+    <div id="cartMenu" class="cart-dropdown" style="display: none">
+      <h3>Giỏ hàng</h3>
+      <ul id="cartItems"></ul>
+      <div class="total">Tổng: <span id="totalPrice">0</span>đ</div>
+      <button id="checkoutBtn" class="checkout-btn">Thanh toán</button>
+    </div>
+
+    <div id="product-detail-popup" class="popup" style="display: none">
+      <div class="popup-content large">
+        <span id="close-product-detail-popup" class="close">&times;</span>
+        <div class="product-detail-layout">
+
+          <div class="product-detail-image-container">
+            <img
+                id="popup-product-image"
+                src=""
+                alt="Hình ảnh sản phẩm"
+              />
+          </div>
+
+          <div class="product-detail-info-container">
+            <h2 id="popup-product-name">Tên sản phẩm</h2>
+
+            <div class="product-detail-tags" id="popup-product-tags">
+            </div>
+
+            <div class="product-detail-price" id="popup-product-price">
+            </div>
+
+            <div class="product-detail-specs">
+              <h3>Thông số kỹ thuật</h3>
+              <ul id="popup-product-specs-list">
+              </ul>
+            </div>
+
+            <div class="product-detail-actions">
+              <button id="popup-buy-btn" class="buy-btn">
+                <i class="fa-solid fa-bolt"></i> Mua ngay
+              </button>
+              <button id="popup-add-to-cart-btn" class="add-to-cart">
+                <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </user>
+</body>
+</html>

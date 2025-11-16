@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>DMarket</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/admin-styles.css" />
+    <link rel="stylesheet" href="../css/all.css" />
+    <script src="managerScript.js"></script>
+    <script src="../User/UserScript.js"></script>
+  </head>
+  <body>
+    <div id="loginContainer" class="login-container">
+      <div class="login-box">
+        <div class="login-header">
+          <i class="fa-solid fa-shield-halved"></i>
+          <h1>Admin Panel</h1>
+          <p>Đăng nhập để quản lý hệ thống</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username">
+              <i class="fa-solid fa-user"></i> Tên đăng nhập
+            </label>
+            <input
+              type="text"
+              id="username"
+              placeholder="Nhập tên đăng nhập"
+              required
+              autocomplete="username"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">
+              <i class="fa-solid fa-lock"></i> Mật khẩu
+            </label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Nhập mật khẩu"
+              required
+              autocomplete="current-password"
+            />
+          </div>
+
+          <button type="submit" class="login-btn">
+            <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <admin id="adminPanel" class="admin-panel">
+      <div class="container">
+        <div class="sidebar">
+          <h1>Admin</h1>
+          <button id="manageUserBtn" type="button">
+            <div class="box">
+              <h1><i class="fa-solid fa-users"></i> Quản lý khách hàng</h1>
+            </div>
+          </button>
+          <button id="manageProductBtn" type="button">
+            <div class="box">
+              <h1><i class="fa-solid fa-shop"></i> Quản lý sản phẩm</h1>
+            </div>
+          </button>
+          <button id="manageInvoiceBtn" type="button">
+            <div class="box">
+              <h1>
+                <i class="fa-solid fa-file-invoice-dollar"></i> Quản lý hóa đơn
+              </h1>
+            </div>
+          </button>
+          <button id="manageStockBtn" type="button">
+            <div class="box">
+              <h1><i class="fa-solid fa-warehouse"></i> Quản lý kho</h1>
+            </div>
+          </button>
+          <button id="addInfoBtn" type="button">
+            <div class="box">
+              <h1><i class="fa-solid fa-table"></i> Phiếu nhập hàng</h1>
+            </div>
+          </button>
+          <button id="logoutBtn" type="button">
+            <div class="box">
+              <h1><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</h1>
+            </div>
+          </button>
+        </div>
+
+        <div class="content">
+          <div id="userContent" class="manageUser" style="display: none"></div>
+          <div
+            id="productContent"
+            class="manageProduct"
+            style="display: none"
+          ></div>
+          <div
+            id="invoiceContent"
+            class="manageInvoice"
+            style="display: none"
+          ></div>
+          <div id="addInfoContent" class="addInfo" style="display: none"></div>
+          <div id="stockContent" class="content-section" style="display: none">
+            <div class="management-header">
+              <h2><i class="fa-solid fa-warehouse"></i> Quản lý Kho Hàng</h2>
+            </div>
+            <div class="table-container">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>Số lượng tồn kho</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="stockTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="product-form-popup" class="popup" style="display: none">
+          <div class="popup-content">
+            <span id="close-product-form-popup" class="close">&times;</span>
+            <h2>Thêm / Sửa sản phẩm</h2>
+            <form id="productForm">
+              <input
+                type="text"
+                id="name"
+                placeholder="Tên sản phẩm"
+                required
+              />
+              <input type="number" id="value" placeholder="Giá" required />
+              <input
+                type="number"
+                id="quantity"
+                placeholder="Số lượng"
+                required
+              />
+              <input
+                type="text"
+                id="category"
+                placeholder="Danh mục"
+                required
+              />
+              <input type="file" id="image" accept="image/*" />
+              <button type="submit">Lưu</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </admin>
+    <script>
+      // Xử lý đăng nhập
+      document.addEventListener("DOMContentLoaded", () => {
+        const loginForm = document.getElementById("loginForm");
+        const loginContainer = document.getElementById("loginContainer");
+        const adminPanel = document.getElementById("adminPanel");
+        const errorMessage = document.getElementById("errorMessage");
+        const logoutBtn = document.getElementById("logoutBtn");
+
+        // Tài khoản admin mặc định (có thể lưu trong localStorage)
+        const ADMIN_ACCOUNTS = [
+          { username: "admin", password: "admin123" },
+          { username: "quantri", password: "123456" },
+        ];
+
+        // Kiểm tra trạng thái đăng nhập
+        function checkLoginStatus() {
+          const isLoggedIn = sessionStorage.getItem("adminLoggedIn");
+          const loginTime = sessionStorage.getItem("adminLoginTime");
+
+          // Kiểm tra session timeout (30 phút)
+          if (isLoggedIn === "true" && loginTime) {
+            const currentTime = new Date().getTime();
+            const timeDiff = currentTime - parseInt(loginTime);
+            const thirtyMinutes = 30 * 60 * 1000;
+
+            if (timeDiff > thirtyMinutes) {
+              // Session hết hạn
+              logout();
+              showError("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+              return false;
+            }
+
+            // Đăng nhập hợp lệ
+            showAdminPanel();
+            return true;
+          }
+
+          return false;
+        }
+
+        // Hiển thị thông báo lỗi
+        function showError(message) {
+          errorMessage.textContent = message;
+          errorMessage.classList.add("show");
+          setTimeout(() => {
+            errorMessage.classList.remove("show");
+          }, 3000);
+        }
+
+        // Hiển thị Admin Panel
+        function showAdminPanel() {
+          loginContainer.style.display = "none";
+          adminPanel.style.display = "block";
+          localStorage.setItem("isAdmin", "true");
+        }
+
+        // Xử lý đăng nhập
+        loginForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          const username = document.getElementById("username").value.trim();
+          const password = document.getElementById("password").value.trim();
+
+          // Kiểm tra tài khoản
+          const validAccount = ADMIN_ACCOUNTS.find(
+            (acc) => acc.username === username && acc.password === password
+          );
+
+          if (validAccount) {
+            // Đăng nhập thành công
+            sessionStorage.setItem("adminLoggedIn", "true");
+            sessionStorage.setItem("adminLoginTime", new Date().getTime());
+            sessionStorage.setItem("adminUsername", username);
+
+            showAdminPanel();
+
+            // Reset form
+            loginForm.reset();
+          } else {
+            // Đăng nhập thất bại
+            showError("Tên đăng nhập hoặc mật khẩu không đúng!");
+          }
+        });
+
+        // Xử lý đăng xuất
+        function logout() {
+          sessionStorage.removeItem("adminLoggedIn");
+          sessionStorage.removeItem("adminLoginTime");
+          sessionStorage.removeItem("adminUsername");
+          localStorage.removeItem("isAdmin");
+
+          loginContainer.style.display = "flex";
+          adminPanel.style.display = "none";
+          loginForm.reset();
+        }
+
+        logoutBtn.addEventListener("click", () => {
+          if (confirm("Bạn có chắc muốn đăng xuất?")) {
+            logout();
+          }
+        });
+
+        // Kiểm tra session mỗi phút
+        setInterval(() => {
+          const isLoggedIn = sessionStorage.getItem("adminLoggedIn");
+          if (isLoggedIn === "true") {
+            checkLoginStatus();
+          }
+        }, 60000); // 1 phút
+
+        // Kiểm tra trạng thái đăng nhập khi tải trang
+        checkLoginStatus();
+      });
+    </script>
+  </body>
+</html>

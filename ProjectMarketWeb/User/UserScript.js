@@ -598,7 +598,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
   // ----- Invoices -----
-  let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
+let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
 
   if (invoices.length === 0) {
     invoices = [
@@ -613,6 +613,7 @@ document.addEventListener("DOMContentLoaded", () => {
           { name: "iPhone 15 Pro Max", price: 29990000, quantity: 1 },
         ],
         total: 29990000,
+        status: "Đã giao", // <-- THÊM DÒNG NÀY
       },
       {
         id: 1736784200002,
@@ -624,6 +625,7 @@ document.addEventListener("DOMContentLoaded", () => {
           { name: "Ốp lưng iPhone 15 Pro", price: 490000, quantity: 1 },
         ],
         total: 6480000,
+        status: "Đã giao", // <-- THÊM DÒNG NÀY
       },
     ];
     // Lưu dữ liệu mẫu này vào "sổ tay" localStorage
@@ -1706,6 +1708,7 @@ document.addEventListener("DOMContentLoaded", () => {
             parsePrice(it.value) * (it.purchaseQuantity || it.quantity || 1),
           0
         ),
+        status: "Mới đặt",
       };
 
       // Nếu người dùng chọn lưu địa chỉ thì cập nhật vào hồ sơ
@@ -2406,17 +2409,41 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===== CẬP NHẬT: HỒ SƠ NGƯỜI DÙNG MỞ RỘNG =====
 
   // Render hồ sơ người dùng với các tab
+  // Thay thế toàn bộ hàm renderUserProfile bằng hàm mới dưới đây:
+
+  // Render hồ sơ người dùng với các tab
   function renderUserProfile() {
     const currentUser = localStorage.getItem("currentUser");
     if (!currentUser) return;
 
     const user = users.find((u) => u.username === currentUser);
-    const userInvoices = invoices.filter((inv) => inv.user === currentUser);
+    // Lấy hóa đơn và sắp xếp, cái mới nhất lên đầu
+    const userInvoices = invoices
+      .filter((inv) => inv.user === currentUser)
+      .sort((a, b) => b.id - a.id); // Sắp xếp theo ID (Date.now()) giảm dần
 
     if (!userPopup) return;
 
     const popupContent = userPopup.querySelector(".popup-content");
     if (!popupContent) return;
+
+    // Helper gíup lấy class màu cho trạng thái
+    function getStatusClass(status) {
+      switch (status) {
+        case "Mới đặt":
+          return "status-new";
+        case "Đang xử lý":
+          return "status-processing";
+        case "Đang vận chuyển":
+          return "status-delivering";
+        case "Đã giao":
+          return "status-delivered";
+        case "Đã hủy":
+          return "status-canceled";
+        default:
+          return "";
+      }
+    }
 
     popupContent.innerHTML = `
       <span id="close-user-popup-new" class="close">&times;</span>
@@ -2424,7 +2451,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <i class="fa-solid fa-circle-user"></i> Hồ sơ người dùng
       </h2>
       
-      <!-- Tabs -->
       <div class="profile-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
         <button class="profile-tab active" data-tab="info">
           <i class="fa-solid fa-user"></i> Thông tin
@@ -2440,9 +2466,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </button>
       </div>
       
-      <!-- Tab Content -->
       <div class="profile-content">
-        <!-- Tab: Thông tin -->
         <div class="tab-panel active" data-panel="info">
           <div style="background: #f8f9fa; padding: 20px; border-radius: 12px;">
             <p style="margin: 10px 0;"><strong>Tên đăng nhập:</strong> ${escapeHtml(
@@ -2460,7 +2484,6 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         </div>
         
-        <!-- Tab: Chỉnh sửa thông tin -->
         <div class="tab-panel" data-panel="edit" style="display: none;">
           <form id="editProfileForm" style="display: flex; flex-direction: column; gap: 15px;">
             <div class="input-group">
@@ -2491,7 +2514,6 @@ document.addEventListener("DOMContentLoaded", () => {
           </form>
         </div>
         
-        <!-- Tab: Kiểm tra hóa đơn -->
         <div class="tab-panel" data-panel="invoices" style="display: none;">
           ${
             userInvoices.length === 0
@@ -2508,8 +2530,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         <i class="fa-solid fa-calendar"></i> ${inv.date}
                       </p>
                     </div>
-                    <span style="background: #4caf50; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem;">
-                      Hoàn thành
+                    
+                    <span class="profile-invoice-status ${getStatusClass(
+                      inv.status
+                    )}">
+                      ${escapeHtml(inv.status)}
                     </span>
                   </div>
                   <div style="border-top: 1px dashed #ddd; padding-top: 10px; margin-top: 10px;">
@@ -2528,7 +2553,16 @@ document.addEventListener("DOMContentLoaded", () => {
                       )
                       .join("")}
                   </div>
-                  <div style="border-top: 2px solid #667eea; padding-top: 10px; margin-top: 10px; text-align: right;">
+                  <div style="border-top: 2px solid #667eea; padding-top: 10px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    
+                    ${
+                      inv.status === "Mới đặt" || inv.status === "Đang xử lý"
+                        ? `<button class="cancel-order-btn" onclick="window.cancelOrder(${inv.id})">
+                             <i class="fa-solid fa-times"></i> Hủy đơn
+                           </button>`
+                        : "<div></div>" /* Placeholder để giữ layout */
+                    }
+                    
                     <strong style="color: #e91e63; font-size: 1.1rem;">
                       Tổng: ${formatPrice(inv.total)}đ
                     </strong>
@@ -2551,33 +2585,38 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
                   <i class="fa-solid fa-shopping-cart" style="font-size: 2rem; color: #667eea; margin-bottom: 10px;"></i>
                   <h3 style="margin: 0; color: #667eea;">${
-                    userInvoices.length
+                    // Chỉ đếm đơn hàng không bị hủy
+                    userInvoices.filter((inv) => inv.status !== "Đã hủy").length
                   }</h3>
-                  <p style="margin: 5px 0; color: #666; font-size: 0.9rem;">Đơn hàng</p>
+                  <p style="margin: 5px 0; color: #666; font-size: 0.9rem;">Đơn hàng (Đã giao/Xử lý)</p>
                 </div>
                 <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
                   <i class="fa-solid fa-dollar-sign" style="font-size: 2rem; color: #4caf50; margin-bottom: 10px;"></i>
                   <h3 style="margin: 0; color: #4caf50;">${formatPrice(
-                    userInvoices.reduce((sum, inv) => sum + inv.total, 0)
+                    userInvoices
+                      .filter((inv) => inv.status !== "Đã hủy") // Không tính tiền đơn hủy
+                      .reduce((sum, inv) => sum + inv.total, 0)
                   )}đ</h3>
                   <p style="margin: 5px 0; color: #666; font-size: 0.9rem;">Tổng chi tiêu</p>
                 </div>
               </div>
               
-              <h4 style="color: #667eea; margin: 20px 0 10px 0;">Sản phẩm đã mua</h4>
+              <h4 style="color: #667eea; margin: 20px 0 10px 0;">Sản phẩm đã mua (Không tính đơn hủy)</h4>
               <div style="max-height: 250px; overflow-y: auto;">
                 ${(() => {
                   const allProducts = {};
-                  userInvoices.forEach((inv) => {
-                    inv.items.forEach((item) => {
-                      if (!allProducts[item.name]) {
-                        allProducts[item.name] = { quantity: 0, total: 0 };
-                      }
-                      allProducts[item.name].quantity += item.quantity || 1;
-                      allProducts[item.name].total +=
-                        item.price * (item.quantity || 1);
+                  userInvoices
+                    .filter((inv) => inv.status !== "Đã hủy") // Lọc bỏ đơn hủy
+                    .forEach((inv) => {
+                      inv.items.forEach((item) => {
+                        if (!allProducts[item.name]) {
+                          allProducts[item.name] = { quantity: 0, total: 0 };
+                        }
+                        allProducts[item.name].quantity += item.quantity || 1;
+                        allProducts[item.name].total +=
+                          item.price * (item.quantity || 1);
+                      });
                     });
-                  });
 
                   return Object.entries(allProducts)
                     .map(
@@ -2646,6 +2685,49 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       .invoice-card:hover {
         transform: translateX(5px);
+      }
+      
+      /* CSS CHO TRẠNG THÁI VÀ NÚT HỦY */
+      .profile-invoice-status {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #333;
+      }
+      .status-new {
+        background: #e0f2fe; /* blue-100 */
+        color: #0c4a6e; /* blue-800 */
+      }
+      .status-processing {
+        background: #fef9c3; /* yellow-100 */
+        color: #713f12; /* yellow-800 */
+      }
+      .status-delivered {
+        background: #dcfce7; /* green-100 */
+        color: #14532d; /* green-800 */
+      }
+      .status-delivering {
+        background: #fcf0dcff; /* brown-100 */
+        color: #533e14ff; /* brown-800 */
+      }
+      .status-canceled {
+        background: #fee2e2; /* red-100 */
+        color: #7f1d1d; /* red-800 */
+      }
+      .cancel-order-btn {
+        background: #fee2e2; /* red-100 */
+        color: #991b1b; /* red-800 */
+        border: 1px solid #fecaca; /* red-200 */
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .cancel-order-btn:hover {
+        background: #fecaca; /* red-200 */
+        color: #7f1d1d; /* red-800 */
       }
     `;
     document.head.appendChild(style);
@@ -2839,6 +2921,62 @@ document.addEventListener("DOMContentLoaded", () => {
   // ----- Expose global functions -----
   window.addToCart = addToCart;
   window.buyProduct = buyProduct;
+
+
+  // ===== HÀM HỦY ĐƠN HÀNG (MỚI) =====
+  window.cancelOrder = function (invoiceId) {
+    if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) {
+      return;
+    }
+
+    const invoiceIndex = invoices.findIndex((inv) => inv.id === invoiceId);
+
+    if (invoiceIndex === -1) {
+      alert("Lỗi: Không tìm thấy đơn hàng!");
+      return;
+    }
+
+    const invoice = invoices[invoiceIndex];
+
+    if (invoice.status !== "Mới đặt" && invoice.status !== "Đang xử lý") {
+      alert(
+        `Không thể hủy đơn hàng này vì đang ở trạng thái "${invoice.status}".`
+      );
+      return;
+    }
+
+    // BƯỚC 1: Hoàn trả số lượng sản phẩm
+    let stockUpdated = false;
+    try {
+      invoice.items.forEach((item) => {
+        const product = products.find((p) => p.name === item.name);
+        if (product) {
+          product.quantity += item.quantity;
+          stockUpdated = true;
+        }
+      });
+    } catch (e) {
+      console.error("Lỗi khi hoàn trả kho:", e);
+      alert("Đã xảy ra lỗi khi hoàn trả sản phẩm. Vui lòng liên hệ admin.");
+      return;
+    }
+
+    // BƯỚC 2: Cập nhật trạng thái hóa đơn
+    invoice.status = "Đã hủy";
+    localStorage.setItem("invoices", JSON.stringify(invoices));
+
+    // BƯỚC 3: Nếu kho đã được cập nhật, lưu kho
+    if (stockUpdated) {
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+      // Render lại danh sách sản phẩm (để cập nhật số lượng)
+      renderProducts(); 
+    }
+
+    // BƯỚC 4: Cập nhật lại giao diện hồ sơ
+    renderUserProfile();
+    alert("Đã hủy đơn hàng thành công. Sản phẩm đã được hoàn trả (nếu có).");
+  };
+
 
   // Khôi phục trạng thái đăng nhập
   function restoreLoginState() {

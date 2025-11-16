@@ -10,6 +10,52 @@ document.addEventListener("DOMContentLoaded", () => {
   let importReceipts =
     JSON.parse(localStorage.getItem(IMPORT_RECEIPTS_KEY)) || [];
 
+  // === THÊM CSS CHO TRẠNG THÁI HÓA ĐƠN ===
+  const adminStyles = document.createElement('style');
+  adminStyles.textContent = `
+    .invoice-status-select {
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-weight: 600;
+      outline: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-position: right 10px center;
+      background-repeat: no-repeat;
+      background-size: 12px;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%23666"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>');
+      padding-right: 30px; /* Thêm không gian cho mũi tên */
+    }
+    .status-new {
+      background-color: #e0f2fe; /* blue-100 */
+      color: #0c4a6e; /* blue-800 */
+      border-color: #7dd3fc; /* blue-300 */
+    }
+    .status-processing {
+      background-color: #fef9c3; /* yellow-100 */
+      color: #713f12; /* yellow-800 */
+      border-color: #fde047; /* yellow-300 */
+    }
+    .status-delivered {
+      background-color: #dcfce7; /* green-100 */
+      color: #14532d; /* green-800 */
+      border-color: #86efac; /* green-300 */
+    }
+    .status-delivering {
+      background-color: #fcecdcff; /* brown-100 */
+      color: #533a14ff; /* brown-800 */
+      border-color: #efb986ff; /* brown-300 */
+    }
+    .status-canceled {
+      background-color: #fee2e2; /* red-100 */
+      color: #7f1d1d; /* red-800 */
+      border-color: #fca5a5; /* red-300 */
+    }
+  `;
+  document.head.appendChild(adminStyles);
+  // ======================================
   // DOM Elements
   const manageUserBtn = document.getElementById("manageUserBtn");
   const manageProductBtn = document.getElementById("manageProductBtn");
@@ -38,6 +84,23 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+  
+  function getStatusClass(status) {
+    switch (status) {
+      case "Mới đặt":
+        return "status-new";
+      case "Đang xử lý":
+        return "status-processing";
+      case "Đang vận chuyển":
+        return "status-delivering";
+      case "Đã giao":
+        return "status-delivered";
+      case "Đã hủy":
+        return "status-canceled";
+      default:
+        return "";
+    }
   }
 
   function hideAllContent() {
@@ -2007,7 +2070,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     renderAddInfo();
   };
 
-  // === QUẢN LÝ HÓA ĐƠN (GIỮ NGUYÊN) ===
+  // === QUẢN LÝ HÓA ĐƠN (CẬP NHẬT VỚI TRẠNG THÁI) ===
   function renderInvoiceManagement() {
     hideAllContent();
     if (!invoiceContent) return;
@@ -2029,21 +2092,53 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
               <th>Khách hàng</th>
               <th>Sản phẩm</th>
               <th>Tổng tiền</th>
+              <th>Trạng thái</th>
               <th>Thao tác</th>
             </tr>
           </thead>
           <tbody>
     `;
 
+    // Sắp xếp hóa đơn, cái mới nhất lên đầu
+    invoices.sort((a, b) => b.id - a.id);
+
     invoices.forEach((invoice) => {
       const itemsStr = invoice.items.map((it) => it.name).join(", ");
+      const status = invoice.status || "Mới đặt"; // Mặc định cho hóa đơn cũ
+      const statusClass = getStatusClass(status);
+      
+      // <-- THÊM MỚI: Kiểm tra xem đây có phải trạng thái cuối cùng không
+      const isFinalStatus = (status === "Đã giao" || status === "Đã hủy");
+
+      const allStatuses = ["Mới đặt", "Đang xử lý","Đang vận chuyển", "Đã giao", "Đã hủy"];
+      const statusOptions = allStatuses
+        .map(
+          (s) =>
+            `<option value="${s}" ${s === status ? "selected" : ""}>${s}</option>`
+        )
+        .join("");
+
       html += `
         <tr>
           <td>#${invoice.id}</td>
           <td>${invoice.date}</td>
           <td>${escapeHtml(invoice.user)}</td>
-          <td>${escapeHtml(itemsStr)}</td>
+          <td title="${escapeHtml(itemsStr)}">${escapeHtml(
+        itemsStr.length > 50 ? itemsStr.substring(0, 50) + "..." : itemsStr
+      )}</td>
           <td>${formatPrice(invoice.total)}đ</td>
+          
+          <td>
+            <select 
+              class="invoice-status-select ${statusClass}" 
+              onchange="window.updateInvoiceStatus(${
+                invoice.id
+              }, this.value, this)"
+            >
+              ${statusOptions}
+            </select>
+          </td>
+
           <td>
             <button onclick="viewInvoice(${invoice.id})" class="btn-view">
               <i class="fa-solid fa-eye"></i> Xem
@@ -2071,10 +2166,29 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
         <div class="stat-card">
           <i class="fa-solid fa-money-bill stat-icon"></i>
           <div>
-            <h3>${formatPrice(
+            <h4>${formatPrice(
               invoices.reduce((sum, inv) => sum + inv.total, 0)
-            )}đ</h3>
+            )}đ</h4>
             <p>Tổng doanh thu</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fa-solid fa-box-open stat-icon"></i>
+          <div>
+            <h3>${
+              invoices.filter((inv) => (inv.status || "Mới đặt") === "Mới đặt" || (inv.status || "Mới đặt") === "Đang xử lý") 
+                .length
+            }</h3>
+            <p>Đơn hàng mới</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fa-solid fa-ban stat-icon"></i>
+          <div>
+            <h3>${
+              invoices.filter((inv) => inv.status === "Đã hủy").length
+            }</h3>
+            <p>Đơn hàng đã hủy</p>
           </div>
         </div>
       </div>
@@ -2082,6 +2196,104 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
 
     invoiceContent.innerHTML = html;
   }
+
+  // === HÀM CẬP NHẬT TRẠNG THÁI HÓA ĐƠN (MỚI) ===
+  window.updateInvoiceStatus = function (id, newStatus, selectElement) {
+    const invoice = invoices.find((inv) => inv.id === id);
+
+    if (!invoice) {
+      alert("Lỗi: Không tìm thấy hóa đơn!");
+      return;
+    }
+
+    const oldStatus = invoice.status || "Mới đặt";
+    
+    // <-- THÊM MỚI: Ràng buộc không cho phép thay đổi trạng thái cuối cùng
+    if (oldStatus === "Đã giao" || oldStatus === "Đã hủy") {
+      alert(
+        "Đơn hàng đã ở trạng thái cuối cùng (Đã giao/Đã hủy) và không thể thay đổi."
+      );
+      // Đảm bảo dropdown trả về giá trị cũ
+      if (selectElement) {
+        selectElement.value = oldStatus;
+      }
+      return; // Dừng hàm ngay lập tức
+    }
+    // KẾT THÚC THÊM MỚI
+
+    // Logic hoàn kho (CHỈ KHI ADMIN CHUYỂN TỪ TRẠNG THÁI KHÁC -> ĐÃ HỦY)
+    // Và logic trừ kho (CHỈ KHI ADMIN CHUYỂN TỪ ĐÃ HỦY -> TRẠNG THÁI KHÁC)
+    
+    // 1. Nếu chuyển sang "Đã hủy" (từ trạng thái không phải "Đã hủy")
+    if (newStatus === "Đã hủy" && oldStatus !== "Đã hủy") {
+      if (confirm("Việc hủy đơn hàng này sẽ hoàn trả sản phẩm về kho. Bạn có chắc chắn?")) {
+        try {
+          invoice.items.forEach((item) => {
+            const product = products.find((p) => p.name === item.name);
+            if (product) {
+              product.quantity += item.quantity;
+            }
+            // (Như lưu ý cũ: logic này đang hoàn trả về "sản phẩm trên kệ")
+          });
+          localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+        } catch(e) {
+          alert("Có lỗi xảy ra khi hoàn kho. Trạng thái chưa được thay đổi.");
+          selectElement.value = oldStatus; // Trả lại giá trị cũ
+          return;
+        }
+      } else {
+        selectElement.value = oldStatus; // Người dùng hủy, trả lại giá trị cũ
+        return;
+      }
+    }
+    
+    // 2. Nếu chuyển từ "Đã hủy" sang trạng thái khác
+    if (oldStatus === "Đã hủy" && newStatus !== "Đã hủy") {
+      if (confirm("Khôi phục đơn hàng này sẽ trừ lại số lượng sản phẩm từ kho (kệ). Bạn có chắc chắn?")) {
+         try {
+          // Kiểm tra kho trước khi trừ
+           for (const item of invoice.items) {
+             const product = products.find((p) => p.name === item.name);
+             if (!product || product.quantity < item.quantity) {
+               alert(`Không đủ hàng cho sản phẩm "${item.name}". Kho (kệ) còn ${product ? product.quantity : 0}.`);
+               selectElement.value = oldStatus; // Trả lại giá trị cũ
+               return; // Dừng
+             }
+           }
+           
+           // Nếu đủ hàng, tiến hành trừ kho
+           invoice.items.forEach((item) => {
+             const product = products.find((p) => p.name === item.name);
+             if (product) {
+               product.quantity -= item.quantity;
+             }
+           });
+           localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+           
+         } catch(e) {
+           alert("Có lỗi xảy ra khi trừ kho. Trạng thái chưa được thay đổi.");
+           selectElement.value = oldStatus; // Trả lại giátrị cũ
+           return;
+         }
+      } else {
+        selectElement.value = oldStatus; // Người dùng hủy, trả lại giá trị cũ
+        return;
+      }
+    }
+
+    // Cập nhật trạng thái hóa đơn
+    invoice.status = newStatus;
+    localStorage.setItem(INVOICES_KEY, JSON.stringify(invoices));
+
+    // Cập nhật giao diện (màu sắc) cho dropdown
+    if (selectElement) {
+      selectElement.className = "invoice-status-select"; // Reset
+      selectElement.classList.add(getStatusClass(newStatus));
+    }
+    
+    // Cập nhật lại số liệu thống kê nếu cần
+    renderInvoiceManagement();
+  };
 
   window.refreshInvoices = function () {
     invoices = JSON.parse(localStorage.getItem(INVOICES_KEY)) || [];
