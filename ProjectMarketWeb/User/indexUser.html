@@ -259,22 +259,15 @@
           <select id="payment-method" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px;">
             <option value="cod">Thanh toán khi nhận hàng</option>
             <option value="bank">Chuyển khoản ngân hàng</option>
-            <option value="momo">Chuyển tiền ví Momo</option>
             <option value="credit">Thẻ tín dụng/ghi nợ</option>
           </select>
         </div>
-
+        <div id="bank-info" style="margin-top: 10px; display: none; padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9;"></div>
         <div id="payment-details" style="margin-top: 16px; display: none;">
-          <!-- QR Code for Bank Transfer -->
-          <div id="bank-transfer-qr" style="display: none; text-align: center;">
-            <img src="../image/ChuyenKhoanNganHang.png" alt="QR Code Chuyển khoản ngân hàng" style="width: 150px; height: auto;" />
-          </div>
-
           <!-- QR Code for Momo -->
-          <div id="momo-qr" style="display: none; text-align: center;">
-            <img src="../image/MoMo.png" alt="QR Code Ví Momo" style="width: 150px; height: auto;" />
+          <div id="momo-qr" style="display: none; text-align: center;"> 
           </div>
-
+          
           <!-- Credit/Debit Card Form -->
           <div id="credit-card-form" style="display: none;">
             <div class="input-group">

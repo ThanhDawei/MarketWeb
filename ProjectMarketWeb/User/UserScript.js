@@ -598,7 +598,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
   // ----- Invoices -----
-let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
+  let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
 
   if (invoices.length === 0) {
     invoices = [
@@ -1776,6 +1776,12 @@ let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
         const inputs = creditCardForm.querySelectorAll("input");
         inputs.forEach(input => input.value = ""); // xóa dữ liệu thẻ tín dụng
       }
+      const bankInfoEl = document.getElementById("bank-info");
+      if (bankInfoEl) {
+        bankInfoEl.style.display = "none"; // Ẩn phần tử
+        bankInfoEl.innerHTML = ""; // Xóa nội dung bên trong
+      }
+
     });
   }
 
@@ -1783,6 +1789,28 @@ let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
     closeCheckoutPopup.onclick = () => {
       if (checkoutPopup) checkoutPopup.style.display = "none";
       checkoutList = [];
+      if (checkoutAddressEl) checkoutAddressEl.value = "";
+    if (saveAddressCheckbox) saveAddressCheckbox.checked = false;
+    if (useSavedAddressRadio) useSavedAddressRadio.checked = false;
+    if (enterNewAddressRadio) enterNewAddressRadio.checked = false;
+
+    if (paymentMethodSelect) paymentMethodSelect.value = "cod"; // quay về COD mặc định
+
+    if (paymentDetails) paymentDetails.style.display = "none";
+    if (bankTransferQR) bankTransferQR.style.display = "none";
+    if (momoQR) momoQR.style.display = "none";
+
+    if (creditCardForm) {
+      creditCardForm.style.display = "none";
+      const inputs = creditCardForm.querySelectorAll("input");
+      inputs.forEach(input => input.value = ""); // xóa dữ liệu thẻ credit card
+    }
+    const bankInfoEl = document.getElementById("bank-info");
+    if (bankInfoEl) {
+      bankInfoEl.style.display = "none"; // Ẩn phần tử
+      bankInfoEl.innerHTML = ""; // Xóa nội dung bên trong
+    }
+
     };
   }
 
@@ -1790,6 +1818,28 @@ let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
     cancelCheckoutBtn.onclick = () => {
       if (checkoutPopup) checkoutPopup.style.display = "none";
       checkoutList = [];
+      if (checkoutAddressEl) checkoutAddressEl.value = "";
+    if (saveAddressCheckbox) saveAddressCheckbox.checked = false;
+    if (useSavedAddressRadio) useSavedAddressRadio.checked = false;
+    if (enterNewAddressRadio) enterNewAddressRadio.checked = false;
+
+    if (paymentMethodSelect) paymentMethodSelect.value = "cod"; // quay về COD mặc định
+
+    if (paymentDetails) paymentDetails.style.display = "none";
+    if (bankTransferQR) bankTransferQR.style.display = "none";
+    if (momoQR) momoQR.style.display = "none";
+
+    if (creditCardForm) {
+      creditCardForm.style.display = "none";
+      const inputs = creditCardForm.querySelectorAll("input");
+      inputs.forEach(input => input.value = ""); // xóa dữ liệu thẻ credit card
+    }
+    const bankInfoEl = document.getElementById("bank-info");
+    if (bankInfoEl) {
+      bankInfoEl.style.display = "none"; // Ẩn phần tử
+      bankInfoEl.innerHTML = ""; // Xóa nội dung bên trong
+    }
+
     };
   }
 
@@ -2508,6 +2558,64 @@ let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
               <input type="password" id="edit-password" placeholder="Nhập mật khẩu mới" 
                 style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
             </div>
+            <!-- Thông tin tài khoản ngân hàng -->
+            <details style="border: none;">
+                    <summary style="font-weight: 600; color: #555; cursor: pointer; outline: none;">
+                        Liên kết ngân hàng
+                    </summary>
+
+                    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 15px;">
+
+                        <div class="input-group">
+                            <label style="display: block;">Số tài khoản:</label>
+                            <input type="text" id="bank-account" value="${user?.bankAccount || ''}" 
+                                style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                        </div>
+
+                        <div class="input-group">
+                <label style="display: block;">Tên chủ tài khoản:</label>
+                <input type="text" id="bank-owner" value="${user?.bankOwner || ''}" 
+                    style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+            </div>
+
+            <div class="input-group">
+                <label style="display: block;">Số CCCD:</label>
+                <input type="text" id="bank-cccd" value="${user?.bankCCCD || ''}" 
+                    style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+            </div>
+
+            <div class="input-group">
+                <label style="display: block;">Tên ngân hàng:</label>
+                <select id="bank-name" 
+                        style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                    <option value="">-- Chọn ngân hàng --</option>
+                    <option value="Vietcombank" ${user?.bankName === 'Vietcombank' ? 'selected' : ''}>Vietcombank</option>
+                    <option value="VietinBank" ${user?.bankName === 'VietinBank' ? 'selected' : ''}>VietinBank</option>
+                    <option value="Techcombank" ${user?.bankName === 'Techcombank' ? 'selected' : ''}>Techcombank</option>
+                    <option value="BIDV" ${user?.bankName === 'BIDV' ? 'selected' : ''}>BIDV</option>
+                    <option value="MB Bank" ${user?.bankName === 'MB Bank' ? 'selected' : ''}>MB Bank</option>
+                    <option value="ACB" ${user?.bankName === 'ACB' ? 'selected' : ''}>ACB</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label style="display: block;">Số điện thoại ngân hàng:</label>
+                <input type="tel" id="bank-phone" value="${user?.bankPhone || ''}" 
+                    style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+            </div>
+
+            <div class="input-group" style="display: flex; gap: 10px; align-items: center;">
+                <label style="margin-bottom: 0px;">Mã OTP:</label>
+                <input type="text" id="bank-otp" placeholder="Nhập mã OTP" 
+                    style="flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                <button id="sendOtpButton" 
+                        style="padding: 10px 15px; border-radius: 8px; border: none; background-color: #667eea; color: #fff; cursor: pointer;">
+                    Gửi OTP
+                </button>
+            </div>
+
+        </div>
+    </details>
             <button type="submit" class="login-button">
               <i class="fa-solid fa-save"></i> Lưu thay đổi
             </button>
@@ -2608,15 +2716,15 @@ let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
                   userInvoices
                     .filter((inv) => inv.status !== "Đã hủy") // Lọc bỏ đơn hủy
                     .forEach((inv) => {
-                      inv.items.forEach((item) => {
-                        if (!allProducts[item.name]) {
-                          allProducts[item.name] = { quantity: 0, total: 0 };
-                        }
-                        allProducts[item.name].quantity += item.quantity || 1;
-                        allProducts[item.name].total +=
-                          item.price * (item.quantity || 1);
-                      });
+                    inv.items.forEach((item) => {
+                      if (!allProducts[item.name]) {
+                        allProducts[item.name] = { quantity: 0, total: 0 };
+                      }
+                      allProducts[item.name].quantity += item.quantity || 1;
+                      allProducts[item.name].total +=
+                        item.price * (item.quantity || 1);
                     });
+                  });
 
                   return Object.entries(allProducts)
                     .map(
@@ -2686,7 +2794,7 @@ let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
       .invoice-card:hover {
         transform: translateX(5px);
       }
-      
+        
       /* CSS CHO TRẠNG THÁI VÀ NÚT HỦY */
       .profile-invoice-status {
         padding: 4px 10px;
@@ -2731,7 +2839,7 @@ let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
       }
     `;
     document.head.appendChild(style);
-
+    
     // Event listeners cho tabs
     const tabs = popupContent.querySelectorAll(".profile-tab");
     const panels = popupContent.querySelectorAll(".tab-panel");
@@ -2756,6 +2864,15 @@ let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
         }
       });
     });
+    
+    // Add event listener for the 'Gửi OTP' button
+    const sendOtpButton = document.getElementById("sendOtpButton");
+if (sendOtpButton) {
+  sendOtpButton.addEventListener("click", (e) => {
+    e.preventDefault(); // Ngăn form submit nếu nút nằm trong form
+    sendOtpButton.textContent = "Đã gửi";
+  });
+}
 
     // Event listener cho form chỉnh sửa
     const editForm = popupContent.querySelector("#editProfileForm");
@@ -2768,6 +2885,12 @@ let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
         const address = document.getElementById("edit-address").value;
         const newPassword = document.getElementById("edit-password").value;
 
+        const bankAccount = document.getElementById("bank-account").value;
+        const bankOwner = document.getElementById("bank-owner").value;
+        const bankCCCD = document.getElementById("bank-cccd").value;
+        const bankName = document.getElementById("bank-name").value;
+        const bankPhone = document.getElementById("bank-phone").value;
+
         const userIndex = users.findIndex((u) => u.username === currentUser);
         if (userIndex !== -1) {
           users[userIndex].email = email;
@@ -2778,6 +2901,12 @@ let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
             users[userIndex].password = newPassword;
           }
 
+          users[userIndex].bankAccount = bankAccount;
+          users[userIndex].bankOwner = bankOwner;
+          users[userIndex].bankCCCD = bankCCCD;
+          users[userIndex].bankName = bankName;
+          users[userIndex].bankPhone = bankPhone;
+          
           localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
           alert("✅ Cập nhật thông tin thành công!");
 
@@ -2850,36 +2979,66 @@ let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
   }
 
 
-// ===== PAYMENT METHOD LOGIC =====
+  // ===== PAYMENT METHOD LOGIC =====
   const paymentMethodSelect = document.getElementById("payment-method");
   const paymentDetails = document.getElementById("payment-details");
   const bankTransferQR = document.getElementById("bank-transfer-qr");
   const momoQR = document.getElementById("momo-qr");
   const creditCardForm = document.getElementById("credit-card-form");
+  const bankInfoDiv = document.getElementById("bank-info");
+  
 
   if (paymentMethodSelect) {
     paymentMethodSelect.addEventListener("change", () => {
-      const selectedMethod = paymentMethodSelect.value;
+  const selectedMethod = paymentMethodSelect.value;
 
-      // Hide all payment details initially
-      paymentDetails.style.display = "none";
-      bankTransferQR.style.display = "none";
-      momoQR.style.display = "none";
-      creditCardForm.style.display = "none";
+  // Ẩn tất cả section trước khi hiển thị section tương ứng
+  paymentDetails.style.display = "none";
+  const bankInfoEl = document.getElementById("bank-info");
+  if (!bankInfoEl) {
+    console.warn("bank-info element không tồn tại trong DOM.");
+  } else {
+    bankInfoEl.style.display = "none";
+    bankInfoEl.innerHTML = "";
+  }
+  momoQR.style.display = "none";
+  creditCardForm.style.display = "none";
 
-      // Show relevant section based on selected method
-      if (selectedMethod === "bank") {
-        paymentDetails.style.display = "block";
-        bankTransferQR.style.display = "block";
-      } else if (selectedMethod === "momo") {
-        paymentDetails.style.display = "block";
-        momoQR.style.display = "block";
-      } else if (selectedMethod === "credit") {
-        paymentDetails.style.display = "block";
-        creditCardForm.style.display = "block";
-      }
-      
-    });
+  if (selectedMethod === "bank") {
+    const currentUser = localStorage.getItem("currentUser");
+    const user = users.find(u => u.username === currentUser);
+
+    if (!user) {
+      bankInfoEl.style.display = "block";
+      bankInfoEl.innerHTML = `<span style="color:red">⚠️ Không tìm thấy thông tin người dùng!</span>`;
+      return;
+    }
+
+    if (!user.bankOwner?.trim() || !user.bankCCCD?.trim() || !user.bankName?.trim() || !user.bankPhone?.trim()) {
+      bankInfoEl.style.display = "block";
+      bankInfoEl.innerHTML = `<span style="color:red">⚠️ Vui lòng cập nhật đầy đủ thông tin tài khoản ngân hàng!</span>`;
+      return;
+    }
+
+    paymentDetails.style.display = "block";
+    bankInfoEl.style.display = "block";
+    bankInfoEl.innerHTML = `
+      <strong>Thông tin tài khoản ngân hàng:</strong><br>
+      Chủ tài khoản: ${user.bankOwner}<br>
+      Ngân hàng: ${user.bankName}<br>
+      Số tài khoản: ${user.bankAccount || ''}
+    `;
+  } 
+  else if (selectedMethod === "momo") {
+    paymentDetails.style.display = "block";
+    momoQR.style.display = "block";
+  } 
+  else if (selectedMethod === "credit") {
+    paymentDetails.style.display = "block";
+    creditCardForm.style.display = "block";
+  }
+
+});
   }
 
 
@@ -2921,7 +3080,7 @@ let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
   // ----- Expose global functions -----
   window.addToCart = addToCart;
   window.buyProduct = buyProduct;
-
+  
 
   // ===== HÀM HỦY ĐƠN HÀNG (MỚI) =====
   window.cancelOrder = function (invoiceId) {
