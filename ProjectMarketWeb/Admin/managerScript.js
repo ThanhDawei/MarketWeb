@@ -1346,8 +1346,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
               <th>STT</th>
               <th>Hình ảnh</th>
               <th>Tên sản phẩm</th>
-              <th>Giá</th>
-              <th>Lợi nhuận</th> <th>Số lượng (Trên kệ)</th>
+              <th>Số lượng (Trên kệ)</th>
               <th>Danh mục</th>
               <th>Thao tác</th>
             </tr>
@@ -1360,20 +1359,6 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       // Tìm lại index gốc để dùng cho thao tác Sửa/Xóa chính xác
       const originalIndex = products.findIndex((p) => p.name === product.name);
       const isHidden = product.isHidden || false; // THÊM MỚI
-
-      // --- LOGIC TÍNH LỢI NHUẬN (CHO RENDER BAN ĐẦU) ---
-      let profit = 0;
-      const sellingPrice = product.value;
-      const importPriceStr = findLatestImportPrice(product.name);
-
-      if (importPriceStr !== "") {
-        const importPrice = parseInt(importPriceStr, 10);
-        profit = sellingPrice - importPrice;
-      } else {
-        profit = sellingPrice * 0.05; // 5% giá bán
-      }
-      // ----------------------------------------
-
       html += `
         <tr ${
           isHidden ? 'style="opacity: 0.7; background-color: #fafafa;"' : ""
@@ -1392,13 +1377,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
                 : ""
             }
           </td>
-          <td>${formatPrice(product.value)}đ</td>
           
-          <td style="font-weight: 600; color: ${
-            profit < 0 ? "#e53e3e" : "#38a169"
-          };">
-            ${formatPrice(profit)}đ
-          </td>
 
           <td>${product.quantity}</td>
           <td>${escapeHtml(product.category)}</td>
@@ -1897,37 +1876,33 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     importReceipts.forEach((receipt) => {
       html += `
         <tr>
-          <td>#${receipt.id}</td>
+          <td>#PN${receipt.id}</td>
           <td>${receipt.date}</td>
           <td>${escapeHtml(receipt.importedBy)}</td>
           <td>
-              ${
-                receipt.status === "Hoàn thành"
-                  ? '<span style="color: green; font-weight: 600;">Hoàn thành</span>'
-                  : '<span style="color: orange; font-weight: 600;">Chưa hoàn thành</span>'
-              }
+              ${receipt.status === "Hoàn thành"
+          ? '<span style="color: green; font-weight: 600;">Hoàn thành</span>'
+          : '<span style="color: orange; font-weight: 600;">Chưa hoàn thành</span>'
+        }
           </td>
           <td>
-            <button onclick="viewImportReceipt('${
-              receipt.id
-            }')" class="btn-view">
+            <button onclick="viewImportReceipt('${receipt.id}')" class="btn-view">
               <i class="fa-solid fa-eye"></i> Chi tiết phiếu
             </button>
             ${
-              receipt.status === "Chưa hoàn thành"
-                ? `
+        // Nút Sửa và Hoàn thành ngoài danh sách chỉ hiển thị nếu trạng thái là "Chưa hoàn thành"
+        receipt.status === "Chưa hoàn thành"
+          ? `
             <button onclick="editImportReceipt('${receipt.id}')" class="btn-edit">
               <i class="fa-solid fa-pen"></i> Sửa
             </button>
-            <button onclick="markImportReceiptDone('${receipt.id}')" class="btn-done">
+            <button onclick="finalizeReceiptStatus('${receipt.id}')" class="btn-done">
               <i class="fa-solid fa-check"></i> Hoàn thành
             </button>
             `
-                : ""
-            }
-            <button onclick="deleteImportReceipt('${
-              receipt.id
-            }')" class="btn-delete">
+          : ""
+        }
+            <button onclick="deleteImportReceipt('${receipt.id}')" class="btn-delete">
               <i class="fa-solid fa-trash"></i> Xóa
             </button>
           </td>
@@ -1952,13 +1927,12 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <i class="fa-solid fa-boxes-stacked stat-icon"></i>
           <div>
             <h3>${importReceipts.reduce((sum, receipt) => {
-              // reduce lồng nhau: Tính tổng quantity của items trong MỘT receipt
-              const totalItemsQuantity = receipt.items.reduce(
-                (itemSum, item) => itemSum + item.quantity,
-                0
-              );
-              return sum + totalItemsQuantity;
-            }, 0)}</h3>
+      const totalItemsQuantity = receipt.items.reduce(
+        (itemSum, item) => itemSum + item.quantity,
+        0
+      );
+      return sum + totalItemsQuantity;
+    }, 0)}</h3>
             <p>Tổng số lượng nhập</p>
           </div>
         </div>
@@ -1966,15 +1940,14 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <i class="fa-solid fa-money-bill-trend-up stat-icon"></i>
           <div>
             <h3>${formatPrice(
-              importReceipts.reduce((sum, receipt) => {
-                // reduce lồng nhau: Tính tổng giá trị của items trong MỘT receipt
-                const totalItemsPrice = receipt.items.reduce(
-                  (itemSum, item) => itemSum + item.quantity * item.price,
-                  0
-                );
-                return sum + totalItemsPrice;
-              }, 0)
-            )}đ</h3>
+      importReceipts.reduce((sum, receipt) => {
+        const totalItemsPrice = receipt.items.reduce(
+          (itemSum, item) => itemSum + item.quantity * item.price,
+          0
+        );
+        return sum + totalItemsPrice;
+      }, 0)
+    )}đ</h3>
             <p>Tổng giá trị nhập</p>
           </div>
         </div>
@@ -1984,37 +1957,112 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     addInfoContent.innerHTML = html;
   }
 
+  // --- HÀM 2: TẠO VÀ HIỂN THỊ PHIẾU NHẬP MỚI ---
   window.createAndShowNewReceiptForm = function () {
-    // 1. Tạo một phiếu nhập rỗng
     const newReceipt = {
       id: Date.now().toString(),
       date: new Date().toLocaleString("vi-VN"),
-      importedBy: "Admin", // Hoặc lấy từ user session
+      importedBy: "Admin",
       status: "Chưa hoàn thành",
-      items: [], // PHIẾU RỖNG, KHÔNG CÓ MẶT HÀNG NÀO
+      items: [],
     };
 
-    // 2. Lưu phiếu nhập rỗng vào mảng
     importReceipts.push(newReceipt);
     localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
 
-    // 3. Cập nhật ID phiếu nhập đang được thao tác
     currentReceiptId = newReceipt.id;
 
-    // 4. Mở modal hiển thị danh sách mặt hàng của phiếu mới
     showImportProductForm(currentReceiptId);
   };
 
+  // --- HÀM 3: XỬ LÝ KHI CHỌN SẢN PHẨM TRONG SELECT ---
+  window.fillProductDetails = function (selectElement) {
+    const selectedProductName = selectElement.value;
+    const priceInput = document.getElementById("importPrice");
+
+    if (selectedProductName) {
+      const product = products.find(p => p.name === selectedProductName);
+      if (product) {
+        priceInput.value = product.value;
+      }
+    } else {
+      priceInput.value = '';
+    }
+  };
+
+  // --- HÀM 4: HIỂN THỊ MODAL CHÍNH ---
   window.showImportProductForm = function (receiptId) {
     const currentReceipt = importReceipts.find((r) => r.id === receiptId);
     if (!currentReceipt) return alert("Lỗi: Không tìm thấy phiếu nhập!");
 
-    let itemsHtml = "";
+    // Không cho phép sửa nếu đã Hoàn thành
+    if (currentReceipt.status === "Hoàn thành") {
+      alert("Không thể sửa phiếu nhập đã Hoàn thành.");
+      return;
+    }
 
-    // Lặp qua các mặt hàng để thêm cột Thao tác
+    const existingModal = document.getElementById("importProductModal");
+    if (existingModal) existingModal.remove();
+
+    // 1. TẠO HTML CHO SELECT TÊN SẢN PHẨM
+    let productOptions = '<option value="">-- Chọn sản phẩm --</option>';
+    if (typeof products !== 'undefined' && products.length > 0) {
+      products.forEach(product => {
+        productOptions += `<option value="${escapeHtml(product.name)}">${escapeHtml(product.name)}</option>`;
+      });
+    }
+
+    // --- TẠO HTML CHO FORM NHẬP CHI TIẾT ---
+    const importFormHtml = `
+        <div class="import-product-form-container" style="padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 20px; background-color: #f9f9f9;">
+            <h3 style="color: #667eea; margin-top: 0; border-bottom: 2px solid #667eea; padding-bottom: 10px;">
+                <i class="fa-solid fa-square-plus"></i> Thêm mặt hàng vào Phiếu
+            </h3>
+            <form id="importReceiptForm" onsubmit="submitImportItem(event,'${receiptId}')">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Tên sản phẩm:</label>
+                        <select id="importProductName" required 
+                            onchange="fillProductDetails(this)"
+                            style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;">
+                            ${productOptions}
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Số lượng:</label>
+                        <input type="number" id="importQuantity" required min="1"
+                            style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;"
+                            placeholder="Nhập số lượng...">
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Đơn giá nhập:</label>
+                        <input type="number" id="importPrice" required min="0"
+                            style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;"
+                            placeholder="Tự động điền / Nhập đơn giá...">
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                    <button type="submit"
+                        style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        <i class="fa-solid fa-plus"></i> Thêm mặt hàng
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    // 2. TẠO HTML CHO BẢNG DANH SÁCH MẶT HÀNG
+    let itemsHtml = "";
+    let totalItems = 0;
+    let totalValue = 0;
+    const hasItems = currentReceipt.items.length > 0;
+    const buttonDisabled = hasItems ? '' : 'disabled style="opacity: 0.5; cursor: not-allowed;"';
+
     currentReceipt.items.forEach((item, index) => {
-      // Lấy thêm index để xác định mặt hàng
       const itemPrice = item.quantity * item.price;
+      totalItems += item.quantity;
+      totalValue += itemPrice;
 
       itemsHtml += `
             <tr>
@@ -2023,9 +2071,6 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
               <td>${formatPrice(item.price)}đ</td>
               <td><strong>${formatPrice(itemPrice)}đ</strong></td>
               <td>
-                <button onclick="editItemInReceipt('${receiptId}', ${index})" class="btn-edit-item">
-                    <i class="fa-solid fa-pen"></i>
-                </button>
                 <button onclick="deleteItemInReceipt('${receiptId}', ${index})" class="btn-delete-item">
                     <i class="fa-solid fa-trash"></i>
                 </button>
@@ -2035,31 +2080,46 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     });
 
     let html = `
-      <div class="productImport-modal-overlay" id="importProductModal" onclick="closeModal(event)">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <button onclick="showImportReceiptForm('${receiptId}')" class="btn-add" style="margin-bottom: 10px;">
-              <i class="fa-solid fa-plus"></i> Nhập thêm mặt hàng
-            </button>
-            <div id="receiptIdDisplay" style="font-weight: 600; margin-bottom: 10px;">Mã phiếu: #${receiptId}</div>
+      <div class="productImport-modal-overlay" id="importProductModal" onclick="closeModal(event, '${receiptId}')">
+        <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 900px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                 <h2 style="margin: 0;">Quản lý Phiếu nhập hàng </h2>
+                 <button onclick="closeModal(null, '${receiptId}')" class="btn-refresh" style="background-color: transparent; color: #333; border: none; font-size: 24px;">&times;</button>
+            </div>
 
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>Tên sản phẩm</th>
-                  <th>Số lượng</th>
-                  <th>Giá nhập</th>
-                  <th>Thành tiền</th>
-                  <th>Thao tác</th> </tr>
-              </thead>
-              <tbody id="importItemsTableBody">
-                ${itemsHtml}
-              </tbody>
-            </table>
+            ${importFormHtml}
+            
+            <h3 style="margin-top: 30px; margin-bottom: 10px;"><i class="fa-solid fa-list-check"></i> Danh sách mặt hàng đã nhập (${currentReceipt.items.length} loại)</h3>
+            <h3>Mã phiếu: #PN${receiptId}</h3>
+            <div class="table-container">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Tên sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá nhập</th>
+                    <th>Thành tiền</th>
+                    <th>Thao tác</th> 
+                  </tr>
+                </thead>
+                <tbody id="importItemsTableBody">
+                  ${itemsHtml}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2"><strong>TỔNG CỘNG</strong></td>
+                        <td>${totalItems} SP</td>
+                        <td><strong>${formatPrice(totalValue)}đ</strong></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+              </table>
+            </div>
             
             <div style="margin-top: 20px; text-align: right;">
-                 <button onclick="finishReceiptEditing('${receiptId}')" class="btn-done">
-                     <i class="fa-solid fa-check"></i> Hoàn tất Phiếu
-                 </button>
+                    <button onclick="finishReceiptEditing('${receiptId}')" class="btn-done" ${buttonDisabled}>
+                       <i class="fa-solid fa-save"></i> Xác nhận phiếu
+                    </button>
              </div>
         </div>
       </div>
@@ -2068,102 +2128,52 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     document.body.insertAdjacentHTML("beforeend", html);
   };
 
-  window.closeModal = function (event) {
-    if (!event || event.target.id === "importProductModal" || !event.target) {
-      const modal = document.getElementById("importProductModal");
+  // --- HÀM 5: ĐÓNG MODAL (CÓ LOGIC XÓA PHIẾU RỖNG) ---
+  window.closeModal = function (event, receiptId) {
+    const modal = document.getElementById("importProductModal");
+
+    const isClosingEvent = !event || event.target.id === "importProductModal" || !event.target.closest('.modal-box');
+
+    if (isClosingEvent) {
+      if (receiptId) {
+        const index = importReceipts.findIndex(r => r.id === receiptId);
+        if (index !== -1) {
+          const currentReceipt = importReceipts[index];
+
+          // CHỈ XÓA nếu phiếu ở trạng thái "Chưa hoàn thành" VÀ không có mặt hàng
+          if (currentReceipt.status === "Chưa hoàn thành" && currentReceipt.items.length === 0) {
+            importReceipts.splice(index, 1);
+            localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
+            renderAddInfo();
+          }
+        }
+      }
       if (modal) modal.remove();
     }
   };
 
-  window.showImportReceiptForm = function (receiptId) {
-    const categoryHtml = renderImportCategoryField(); // Thêm trường Danh mục mới
-
-    const html = `
-      <div class="admin-modal-overlay" id="importReceiptModal" onclick="closeImportReceiptModal(event)" >
-        <div class="admin-modal-content" onclick="event.stopPropagation()">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="color: #667eea; margin: 0;">
-              <i class="fa-solid fa-clipboard-list"></i>Nhập mặt hàng
-            </h2>
-            <span onclick="closeImportReceiptModal()" style="cursor: pointer; font-size: 28px; color: #999;">&times;</span>
-          </div>
-          
-          <form id="importReceiptForm" onsubmit="submitImportItem(event,'${receiptId}')">
-            <div style="margin-bottom: 15px;">
-              <label style="display: block; margin-bottom: 5px; font-weight: 600;">Tên sản phẩm:</label>
-              <input type="text" id="importProductName" required 
-                style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;"
-                placeholder="Nhập tên sản phẩm...">
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-              <label style="display: block; margin-bottom: 5px; font-weight: 600;">Số lượng:</label>
-              <input type="number" id="importQuantity" required min="1"
-                style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;"
-                placeholder="Nhập số lượng...">
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-              <label style="display: block; margin-bottom: 5px; font-weight: 600;">Đơn giá:</label>
-              <input type="number" id="importPrice" required min="0"
-                style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;"
-                placeholder="Nhập đơn giá...">
-            </div>
-            
-            ${categoryHtml} 
-            
-            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-              <button type="button" onclick="closeImportReceiptModal()" 
-                style="padding: 10px 20px; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                Hủy
-              </button>
-              <button type="submit"
-                style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                <i class="fa-solid fa-save"></i> Tạo phiếu
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    `;
-
-    document.body.insertAdjacentHTML("beforeend", html);
-
-    // Thiết lập giá trị ban đầu cho select
-    window.checkImportCategoryInput();
-  };
-
-  window.closeImportReceiptModal = function (event) {
-    if (!event || event.target.id === "importReceiptModal" || !event.target) {
-      const modal = document.getElementById("importReceiptModal");
-      if (modal) modal.remove();
-    }
-  };
-
+  // --- HÀM 6: THÊM MẶT HÀNG VÀO PHIẾU ---
   window.submitImportItem = function (event, receiptId) {
     event.preventDefault();
 
-    // 1. Lấy dữ liệu input (Tên SP, SL, Đơn giá, Danh mục)
-    const productName = document
-      .getElementById("importProductName")
-      .value.trim();
+    const productName = document.getElementById("importProductName").value.trim();
     const quantity = parseInt(document.getElementById("importQuantity").value);
     const price = parseInt(document.getElementById("importPrice").value);
-    const category = document.getElementById("importCategory").value.trim();
 
-    if (!productName || !category || quantity <= 0 || price <= 0) {
-      alert("Vui lòng điền đầy đủ thông tin hợp lệ!");
+    const selectedProduct = products.find(p => p.name === productName);
+    const category = selectedProduct ? selectedProduct.category : "Chưa phân loại";
+
+    if (!productName || productName === "" || quantity <= 0 || price <= 0) {
+      alert("Vui lòng chọn sản phẩm và điền đầy đủ thông tin hợp lệ (SL, Đơn giá > 0)!");
       return;
     }
 
-    // 2. TÌM PHIẾU NHẬP ĐANG CHỈNH SỬA
     const currentReceipt = importReceipts.find((r) => r.id === receiptId);
     if (!currentReceipt) {
       alert("Lỗi: Không tìm thấy phiếu nhập để thêm mặt hàng!");
       return;
     }
 
-    // 3. TẠO MẶT HÀNG MỚI VÀ THÊM VÀO MẢNG ITEMS CỦA PHIẾU
     const newItem = {
       productName: productName,
       quantity: quantity,
@@ -2172,57 +2182,107 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     };
     currentReceipt.items.push(newItem);
 
-    // 4. LƯU LẠI DỮ LIỆU
     localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
 
-    // 5. CẬP NHẬT GIAO DIỆN HIỂN THỊ DANH SÁCH SẢN PHẨM NHẬP (TRONG MODAL LỚN)
-    const tableBody = document.getElementById("importItemsTableBody");
-    if (tableBody) {
-      // Tái tạo HTML chỉ cho phần items của phiếu nhập hiện tại
-      let newItemsHtml = "";
-      currentReceipt.items.forEach((item, index) => {
-        const inputPrice = item.quantity * item.price;
-        newItemsHtml += `
-                <tr>
-                  <td>${escapeHtml(item.productName)}</td>
-                  <td>${item.quantity}</td>
-                  <td>${formatPrice(item.price)}đ</td>
-                  <td><strong>${formatPrice(inputPrice)}đ</strong></td>
-                  <td>
-                    <button onclick="editItemInReceipt('${receiptId}', ${index})" class="btn-edit-item">
-                        <i class="fa-solid fa-pen"></i>
-                    </button>
-                    <button onclick="deleteItemInReceipt('${receiptId}', ${index})" class="btn-delete-item">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-            `;
-      });
-      tableBody.innerHTML = newItemsHtml;
-    }
+    showImportProductForm(receiptId);
 
-    // 6. ĐÓNG MODAL NHẬP LIỆU (FORM NHỎ)
-    closeImportReceiptModal();
+    setTimeout(() => {
+      document.getElementById("importProductName").value = '';
+      document.getElementById("importQuantity").value = '';
+      document.getElementById("importPrice").value = '';
+    }, 50);
 
     alert("✅ Đã thêm mặt hàng thành công!");
   };
 
-  window.finishReceiptEditing = function (receiptId) {
-    // 1. Tùy chọn: Xóa ID phiếu nhập đang chỉnh sửa sau khi hoàn tất
-    window.currentReceiptId = null;
+  // --- HÀM 7: XÓA MẶT HÀNG KHỎI PHIẾU NHẬP ---
+  window.deleteItemInReceipt = function (receiptId, itemIndex) {
+    const confirmDelete = confirm("Bạn có chắc chắn muốn xóa mặt hàng này khỏi phiếu nhập không?");
+    if (confirmDelete) {
+      const currentReceipt = importReceipts.find((r) => r.id === receiptId);
 
-    // 2. Đóng Modal danh sách sản phẩm nhập
-    const modal = document.getElementById("importProductModal");
-    if (modal) modal.remove();
+      if (!currentReceipt) {
+        alert("Lỗi: Không tìm thấy phiếu nhập!");
+        return;
+      }
 
-    // 3. Thông báo hoàn tất
-    alert("✅ Đã hoàn tất chỉnh sửa phiếu nhập và cập nhật danh sách!");
+      if (currentReceipt.status === "Hoàn thành") {
+        alert("Không thể xóa mặt hàng khỏi phiếu đã Hoàn thành.");
+        return;
+      }
 
-    // 4. Render lại trang Phiếu nhập hàng chính
-    renderAddInfo();
+      currentReceipt.items.splice(itemIndex, 1);
+
+      localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
+
+      showImportProductForm(receiptId);
+
+      alert("✅ Đã xóa mặt hàng thành công.");
+    }
   };
 
+  // --- HÀM 8: HOÀN TẤT PHIẾU TRONG MODAL (CHỈ LƯU VÀ ĐÓNG) ---
+  window.finishReceiptEditing = function (receiptId) {
+    const currentReceipt = importReceipts.find((r) => r.id === receiptId);
+
+    if (!currentReceipt) {
+      alert("Lỗi: Không tìm thấy phiếu nhập!");
+      return;
+    }
+
+    if (currentReceipt.items.length === 0) {
+      alert("❌ Phiếu nhập phải có ít nhất một sản phẩm mới được lưu!");
+      return;
+    }
+
+    localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
+
+    closeModal();
+    renderAddInfo();
+
+    alert(`✅ Đã lưu tất cả mặt hàng cho phiếu nhập #${receiptId}. Phiếu hiện đang ở trạng thái CHƯA HOÀN THÀNH.`);
+  };
+
+  // --- HÀM 9: HOÀN THÀNH PHIẾU (CHUYỂN TRẠNG THÁI NGOÀI DANH SÁCH) ---
+  window.finalizeReceiptStatus = function (receiptId) {
+    const currentReceipt = importReceipts.find((r) => r.id === receiptId);
+
+    if (!currentReceipt) {
+      alert("Lỗi: Không tìm thấy phiếu nhập!");
+      return;
+    }
+
+    if (currentReceipt.status === "Hoàn thành") {
+      alert("Phiếu đã ở trạng thái Hoàn thành.");
+      return;
+    }
+
+    if (currentReceipt.items.length === 0) {
+      alert("❌ Phiếu nhập rỗng không thể hoàn thành!");
+      return;
+    }
+
+    currentReceipt.status = "Hoàn thành";
+    localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
+
+    renderAddInfo();
+
+    alert(`✅ Phiếu nhập hàng #${receiptId} đã được chính thức Hoàn thành.`);
+  };
+
+  // --- HÀM 10: CHỈNH SỬA PHIẾU (CHỈ DÀNH CHO PHIẾU CHƯA HOÀN THÀNH) ---
+  window.editImportReceipt = function (receiptId) {
+    const currentReceipt = importReceipts.find((r) => r.id === receiptId);
+
+    if (!currentReceipt || currentReceipt.status !== "Chưa hoàn thành") {
+      alert("Lỗi: Phiếu này đã Hoàn thành và không thể chỉnh sửa.");
+      return;
+    }
+    showImportProductForm(receiptId);
+  };
+
+
+  // --- HÀM 11: HIỂN THỊ CHI TIẾT PHIẾU (VIEW ONLY) ---
   window.showViewImportReceiptModal = function (id) {
     const receipt = importReceipts.find((r) => r.id === id);
     if (!receipt) return alert("Không tìm thấy phiếu nhập!");
@@ -2230,7 +2290,6 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     let itemsHtml = "";
     let totalReceiptPrice = 0;
 
-    // 1. Lặp qua các mặt hàng (items) để tính tổng và tạo chuỗi HTML chi tiết
     receipt.items.forEach((item) => {
       const itemPrice = item.quantity * item.price;
       totalReceiptPrice += itemPrice;
@@ -2245,24 +2304,22 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
         `;
     });
 
-    // 2. Tạo HTML cho Modal
     const html = `
       <div class="productImport-modal-overlay" id="viewImportReceiptModal" onclick="closeViewReceiptModal(event)">
         <div class="modal-box" onclick="event.stopPropagation()">
 
           <h2 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-              CHI TIẾT PHIẾU NHẬP - #${receipt.id}
+              CHI TIẾT PHIẾU NHẬP - #PN${receipt.id}
               <span onclick="closeViewReceiptModal()" style="cursor: pointer; font-size: 28px; color: #999;">&times;</span>
           </h2>
           
           <div style="margin-bottom: 15px; font-size: 14px; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
               <p><strong>Ngày nhập:</strong> ${receipt.date}</p>
               <p><strong>Người nhập:</strong> ${escapeHtml(
-                receipt.importedBy
-              )}</p>
-              <p><strong>Trạng thái:</strong> <span style="font-weight: 600; color: ${
-                receipt.status === "Hoàn thành" ? "green" : "orange"
-              };">${receipt.status}</span></p>
+      receipt.importedBy
+    )}</p>
+              <p><strong>Trạng thái:</strong> <span style="font-weight: 600; color: ${receipt.status === "Hoàn thành" ? "green" : "orange"
+      };">${receipt.status}</span></p>
           </div>
 
           <table class="admin-table">
@@ -2281,8 +2338,8 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           
           <div style="margin-top: 20px; text-align: right; font-size: 18px;">
               <strong>TỔNG GIÁ TRỊ PHIẾU:</strong> <span style="color: #764ba2; font-weight: 700;">${formatPrice(
-                totalReceiptPrice
-              )}đ</span>
+        totalReceiptPrice
+      )}đ</span>
           </div>
 
         </div>
