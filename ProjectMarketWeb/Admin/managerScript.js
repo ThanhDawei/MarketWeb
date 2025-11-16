@@ -127,24 +127,32 @@ document.addEventListener("DOMContentLoaded", () => {
     if (stockContent) stockContent.style.display = "none";
     if (profitContent) profitContent.style.display = "none";
   }
+
+  // === SỬA LỖI 1: Thêm kiểm tra 'user && user.username' ===
   function calculateUserStats() {
     const stats = {};
     // Khởi tạo thống kê cho tất cả người dùng
     users.forEach((user) => {
       // Dùng username làm key
-      stats[user.username.trim().toLowerCase()] = {
-        orderCount: 0,
-        totalRevenue: 0,
-        ...user, // Copy các thuộc tính khác (như address, phone)
-      };
+      if (user && user.username) {
+        // <<< SỬA LỖI: Kiểm tra user và username tồn tại
+        stats[user.username.trim().toLowerCase()] = {
+          orderCount: 0,
+          totalRevenue: 0,
+          ...user, // Copy các thuộc tính khác (như address, phone)
+        };
+      }
     });
 
     // Tính toán số lượng hóa đơn
     invoices.forEach((invoice) => {
-      const usernameKey = invoice.user.trim().toLowerCase(); // Giả định invoice.user là username
-      if (stats[usernameKey]) {
-        stats[usernameKey].orderCount += 1;
-        stats[usernameKey].totalRevenue += invoice.total;
+      if (invoice && invoice.user) {
+        // Thêm kiểm tra an toàn
+        const usernameKey = invoice.user.trim().toLowerCase();
+        if (stats[usernameKey]) {
+          stats[usernameKey].orderCount += 1;
+          stats[usernameKey].totalRevenue += invoice.total;
+        }
       }
     });
 
@@ -941,19 +949,58 @@ ${
   };
   // ===================================================================
 
-  // === QUẢN LÝ NGƯỜI DÙNG (GIỮ NGUYÊN) ===
-  function renderUserManagement() {
+  // === QUẢN LÝ NGƯỜI DÙNG (CẬP NHẬT: THÊM BỘ LỌC + SỬA LỖI + BỎ NÚT SỬA) ===
+  function renderUserManagement(usernameQuery = "", phoneQuery = "") {
     hideAllContent();
     if (!userContent) return;
     userContent.style.display = "block";
 
+    // Hàm calculateUserStats đã được sửa lỗi (Fix 1)
     const userStats = calculateUserStats();
+
+    // --- LOGIC LỌC (Đã an toàn) ---
+    const lowerUsernameQuery = usernameQuery.trim().toLowerCase();
+    const lowerPhoneQuery = phoneQuery.trim().toLowerCase();
+
+    const filteredUserStats = userStats.filter((user) => {
+      // (user.username || "") đảm bảo an toàn nếu username là null/undefined
+      const username = (user.username || "").trim().toLowerCase();
+      const phone = (user.phone || "").trim().toLowerCase();
+
+      const matchesUsername =
+        lowerUsernameQuery === "" || username.includes(lowerUsernameQuery);
+      const matchesPhone =
+        lowerPhoneQuery === "" || phone.includes(lowerPhoneQuery);
+
+      return matchesUsername && matchesPhone;
+    });
+    // --- KẾT THÚC LOGIC LỌC ---
 
     let html = `
       <div class="management-header">
         <h2><i class="fa-solid fa-users"></i> Quản lý Người dùng</h2>
         <button onclick="refreshUsers()" class="btn-refresh">
           <i class="fa-solid fa-rotate"></i> Làm mới
+        </button>
+      </div>
+
+      <div class="filter-controls" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+        <input type="text" id="userSearchInput" placeholder="🔍 Tìm theo Tên đăng nhập..." value="${escapeHtml(
+          usernameQuery
+        )}" 
+            style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 250px;">
+            
+        <input type="text" id="userPhoneInput" placeholder="📞 Tìm theo SĐT..." value="${escapeHtml(
+          phoneQuery
+        )}" 
+            style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 200px;">
+            
+        <button onclick="window.filterUsers()" class="btn-add" style="background-color: #667eea;">
+            <i class="fa-solid fa-search"></i> Tìm
+        </button>
+        
+        <button onclick="window.resetUserFilter()" class="btn-delete" style="background-color: #718096;">
+            <i class="fa-solid fa-times"></i> Reset
         </button>
       </div>
       <div class="table-container">
@@ -971,11 +1018,26 @@ ${
           <tbody>
     `;
 
-    userStats.forEach((user, index) => {
+    // Dùng `filteredUserStats`
+    filteredUserStats.forEach((user, filteredIndex) => {
+      // === SỬA LỖI 2: Tìm index gốc một cách an toàn ===
+      const sName = (user && user.username)
+        ? user.username.trim().toLowerCase()
+        : null;
+      const originalUserIndex = users.findIndex((u) => {
+        const uName = (u && u.username)
+          ? u.username.trim().toLowerCase()
+          : null;
+        return uName && sName && uName === sName;
+      });
+      // ===============================================
+
+      // Nếu không tìm thấy (gần như không thể xảy ra), thì bỏ qua
+      if (originalUserIndex === -1) return;
+
       html += `
         <tr>
-          <td>${index + 1}</td>
-          <td>${escapeHtml(user.username || "N/A")} 
+          <td>${filteredIndex + 1}</td> <td>${escapeHtml(user.username || "N/A")} 
   ${
     user.locked
       ? '<span style="color:#e53e3e; font-weight:bold;">(Đã khóa)</span>'
@@ -988,16 +1050,14 @@ ${
             user.orderCount || 0
           }</span></td>
           <td>
-            <button onclick="viewUserDetail(${index})" class="btn-view" style="margin-right: 5px;">
+            <button onclick="viewUserDetail(${originalUserIndex})" class="btn-view" style="margin-right: 5px;">
               <i class="fa-solid fa-eye"></i> Xem
             </button>
-            <button onclick="resetUserPassword(${index})" class="btn-add" style="background-color: #f6ad55; margin-right: 5px;">
+            <button onclick="resetUserPassword(${originalUserIndex})" class="btn-add" style="background-color: #f6ad55; margin-right: 5px;">
               <i class="fa-solid fa-key"></i> Reset Mật khẩu
             </button>
-            <button onclick="editUser(${index})" class="btn-edit">
-              <i class="fa-solid fa-pen"></i> Sửa
-            </button>
-            <button onclick="toggleUserLock(${index})" class="btn-lock" 
+            
+            <button onclick="toggleUserLock(${originalUserIndex})" class="btn-lock" 
               style="background-color: #718096;">
                 <i class="fa-solid fa-lock"></i> Khóa
             </button>
@@ -1005,6 +1065,11 @@ ${
         </tr>
       `;
     });
+
+    // Thêm thông báo nếu không tìm thấy kết quả
+    if (filteredUserStats.length === 0) {
+      html += `<tr><td colspan="6" class="empty-state">Không tìm thấy người dùng phù hợp.</td></tr>`;
+    }
 
     html += `
           </tbody>
@@ -1031,6 +1096,18 @@ ${
     userContent.innerHTML = html;
   }
 
+  // === CÁC HÀM HỖ TRỢ LỌC NGƯỜI DÙNG (MỚI) ===
+  window.filterUsers = function () {
+    const usernameQuery = document.getElementById("userSearchInput").value;
+    const phoneQuery = document.getElementById("userPhoneInput").value;
+    renderUserManagement(usernameQuery, phoneQuery);
+  };
+
+  window.resetUserFilter = function () {
+    renderUserManagement("", ""); // Gọi lại hàm render với query rỗng
+  };
+  // ==========================================
+
   window.refreshUsers = function () {
     // Cập nhật lại 3 biến data chính
     users = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -1038,35 +1115,129 @@ ${
     renderUserManagement();
   };
 
+  // === CẬP NHẬT: window.viewUserDetail để hiển thị MODAL ===
   window.viewUserDetail = function (index) {
-    const userStats = calculateUserStats();
-    const user = userStats[index]; // Lấy từ mảng đã thống kê
-
-    if (!user) {
+    // 1. Lấy người dùng từ mảng `users` gốc bằng `index`
+    const userFromUsers = users[index];
+    if (!userFromUsers) {
       alert("Không tìm thấy thông tin người dùng!");
       return;
     }
 
-    const message = `
-┌────────────────────────────
-   CHI TIẾT NGƯỜI DÙNG
-└────────────────────────────┘
+    // 2. Tính toán thống kê
+    const userStats = calculateUserStats();
 
-Tên đăng nhập: ${user.username || "N/A"}
-Mật khẩu: ${user.password || "N/A"}
-Số điện thoại: ${user.phone || "Chưa cập nhật"}
-Địa chỉ: ${user.address || "Chưa cập nhật"}
+    // 3. Tìm thông tin thống kê của ĐÚNG người dùng đó (một cách an toàn)
+    const userFromUsersName = (userFromUsers && userFromUsers.username)
+      ? userFromUsers.username.trim().toLowerCase()
+      : null;
 
-┌────────────────────────────
-THỐNG KÊ
-└────────────────────────────┘
+    if (!userFromUsersName) {
+      alert("Lỗi: Người dùng này không có tên đăng nhập hợp lệ.");
+      return;
+    }
 
-Số đơn hàng: ${user.orderCount || 0}
-Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
+    const user = userStats.find((stat) => {
+      const statName = (stat && stat.username)
+        ? stat.username.trim().toLowerCase()
+        : null;
+      return statName && statName === userFromUsersName;
+    });
+
+    if (!user) {
+      alert("Không tìm thấy thông tin thống kê cho người dùng này!");
+      return;
+    }
+    // === KẾT THÚC TÌM KIẾM ===
+
+    // === YÊU CẦU MỚI: HIỂN THỊ MODAL THAY VÌ ALERT ===
+    showUserDetailModal(user);
+  };
+
+  // === HÀM MỚI: HIỂN THỊ MODAL CHI TIẾT NGƯỜI DÙNG ===
+  window.closeUserDetailModal = function () {
+    const modal = document.getElementById("userDetailModal");
+    if (modal) {
+      modal.classList.remove("show");
+      // Remove after transition
+      setTimeout(() => {
+        modal.remove();
+      }, 300);
+    }
+  };
+
+  window.showUserDetailModal = function (user) {
+    // Close any existing modal
+    closeUserDetailModal();
+
+    const modalHtml = `
+      <div class="user-detail-modal-overlay" id="userDetailModal">
+        <div class="user-detail-modal-content">
+          <div class="user-detail-header">
+            <h2><i class="fa-solid fa-user"></i> Chi tiết người dùng</h2>
+            <span class="close-modal">&times;</span>
+          </div>
+          
+          <div class="user-detail-section">
+            <h3>Thông tin tài khoản</h3>
+            <p><strong>Tên đăng nhập:</strong> <span>${escapeHtml(
+              user.username || "N/A"
+            )}</span></p>
+            <p><strong>Mật khẩu:</strong> <span class="value-password">${escapeHtml(
+              user.password || "N/A"
+            )}</span></p>
+          </div>
+
+          <div class="user-detail-section">
+            <h3>Thông tin liên hệ</h3>
+            <p><strong>Số điện thoại:</strong> <span class="${
+              user.phone ? "" : "value-na"
+            }">${escapeHtml(user.phone || "Chưa cập nhật")}</span></p>
+            <p><strong>Địa chỉ:</strong> <span class="${
+              user.address ? "" : "value-na"
+            }">${escapeHtml(user.address || "Chưa cập nhật")}</span></p>
+          </div>
+
+          <div class="user-detail-section">
+            <h3>Thống kê</h3>
+            <p><strong>Số đơn hàng:</strong> <span>${
+              user.orderCount || 0
+            }</span></p>
+            <p><strong>Tổng doanh thu:</strong> <span style="font-weight: 600; color: #38a169;">${formatPrice(
+              user.totalRevenue || 0
+            )}đ</span></p>
+          </div>
+
+          <div class="user-detail-modal-actions">
+            <button class="btn-close-modal">Đóng</button>
+          </div>
+        </div>
+      </div>
     `;
 
-    alert(message);
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+
+    const modal = document.getElementById("userDetailModal");
+    
+    // Add close events
+    const closeModalBtn = modal.querySelector(".close-modal");
+    const closeBtn = modal.querySelector(".btn-close-modal");
+
+    closeModalBtn.onclick = closeUserDetailModal;
+    closeBtn.onclick = closeUserDetailModal;
+    modal.onclick = function (e) {
+      if (e.target === modal) {
+        closeUserDetailModal();
+      }
+    };
+
+    // Show modal with animation
+    setTimeout(() => {
+       modal.classList.add("show");
+    }, 10); // Small delay to trigger transition
   };
+  // ====================================================
+
   window.resetUserPassword = function (index) {
     const userToReset = users[index];
     if (!userToReset) return;
@@ -1087,30 +1258,7 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     );
   };
 
-  // Cập nhật: Thêm các trường SĐT/Địa chỉ vào cửa sổ Sửa
-  window.editUser = function (index) {
-    const user = users[index];
-    if (!user) return;
-
-    const newUsername = prompt("Nhập tên đăng nhập mới:", user.username);
-    if (!newUsername) return;
-
-    const newPassword = prompt("Nhập mật khẩu mới:", user.password);
-    if (!newPassword) return;
-
-    const newPhone = prompt("Nhập số điện thoại:", user.phone || "");
-    const newAddress = prompt("Nhập địa chỉ giao hàng:", user.address || "");
-
-    users[index] = {
-      username: newUsername,
-      password: newPassword,
-      phone: newPhone || "",
-      address: newAddress || "",
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-    renderUserManagement();
-    alert("Cập nhật thành công!");
-  };
+  // HÀM editUser ĐÃ BỊ XÓA THEO YÊU CẦU
 
   window.toggleUserLock = function (index) {
     const user = users[index];
@@ -1346,7 +1494,8 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
               <th>STT</th>
               <th>Hình ảnh</th>
               <th>Tên sản phẩm</th>
-              <th>Số lượng (Trên kệ)</th>
+              <th>Giá</th>
+              <th>Lợi nhuận</th> <th>Số lượng (Trên kệ)</th>
               <th>Danh mục</th>
               <th>Thao tác</th>
             </tr>
@@ -1359,6 +1508,20 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
       // Tìm lại index gốc để dùng cho thao tác Sửa/Xóa chính xác
       const originalIndex = products.findIndex((p) => p.name === product.name);
       const isHidden = product.isHidden || false; // THÊM MỚI
+
+      // --- LOGIC TÍNH LỢI NHUẬN (CHO RENDER BAN ĐẦU) ---
+      let profit = 0;
+      const sellingPrice = product.value;
+      const importPriceStr = findLatestImportPrice(product.name);
+
+      if (importPriceStr !== "") {
+        const importPrice = parseInt(importPriceStr, 10);
+        profit = sellingPrice - importPrice;
+      } else {
+        profit = sellingPrice * 0.05; // 5% giá bán
+      }
+      // ----------------------------------------
+
       html += `
         <tr ${
           isHidden ? 'style="opacity: 0.7; background-color: #fafafa;"' : ""
@@ -1377,7 +1540,13 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
                 : ""
             }
           </td>
+          <td>${formatPrice(product.value)}đ</td>
           
+          <td style="font-weight: 600; color: ${
+            profit < 0 ? "#e53e3e" : "#38a169"
+          };">
+            ${formatPrice(profit)}đ
+          </td>
 
           <td>${product.quantity}</td>
           <td>${escapeHtml(product.category)}</td>
@@ -1487,11 +1656,15 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
 
     if (popup) {
       // === MỞ KHÓA CÁC TRƯỜNG KHI THÊM MỚI ===
+      document.getElementById("value").disabled = false;
+      document.getElementById("quantity").disabled = false;
       document.getElementById("description").disabled = false;
       document.getElementById("specs").disabled = false;
       // ========================================
 
       // === DỌN DẸP FORM ===
+      document.getElementById("value").value = "";
+      document.getElementById("quantity").value = "";
       document.getElementById("description").value = "";
       document.getElementById("specs").value = "";
       // ====================
@@ -1876,19 +2049,22 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <td>${receipt.date}</td>
           <td>${escapeHtml(receipt.importedBy)}</td>
           <td>
-              ${receipt.status === "Hoàn thành"
-          ? '<span style="color: green; font-weight: 600;">Hoàn thành</span>'
-          : '<span style="color: orange; font-weight: 600;">Chưa hoàn thành</span>'
-        }
+              ${
+                receipt.status === "Hoàn thành"
+                  ? '<span style="color: green; font-weight: 600;">Hoàn thành</span>'
+                  : '<span style="color: orange; font-weight: 600;">Chưa hoàn thành</span>'
+              }
           </td>
           <td>
-            <button onclick="viewImportReceipt('${receipt.id}')" class="btn-view">
+            <button onclick="viewImportReceipt('${
+              receipt.id
+            }')" class="btn-view">
               <i class="fa-solid fa-eye"></i> Chi tiết phiếu
             </button>
             ${
-        // Nút Sửa và Hoàn thành ngoài danh sách chỉ hiển thị nếu trạng thái là "Chưa hoàn thành"
-        receipt.status === "Chưa hoàn thành"
-          ? `
+              // Nút Sửa và Hoàn thành ngoài danh sách chỉ hiển thị nếu trạng thái là "Chưa hoàn thành"
+              receipt.status === "Chưa hoàn thành"
+                ? `
             <button onclick="editImportReceipt('${receipt.id}')" class="btn-edit">
               <i class="fa-solid fa-pen"></i> Sửa
             </button>
@@ -1896,9 +2072,11 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
               <i class="fa-solid fa-check"></i> Hoàn thành
             </button>
             `
-          : ""
-        }
-            <button onclick="deleteImportReceipt('${receipt.id}')" class="btn-delete">
+                : ""
+            }
+            <button onclick="deleteImportReceipt('${
+              receipt.id
+            }')" class="btn-delete">
               <i class="fa-solid fa-trash"></i> Xóa
             </button>
           </td>
@@ -1923,12 +2101,12 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <i class="fa-solid fa-boxes-stacked stat-icon"></i>
           <div>
             <h3>${importReceipts.reduce((sum, receipt) => {
-      const totalItemsQuantity = receipt.items.reduce(
-        (itemSum, item) => itemSum + item.quantity,
-        0
-      );
-      return sum + totalItemsQuantity;
-    }, 0)}</h3>
+              const totalItemsQuantity = receipt.items.reduce(
+                (itemSum, item) => itemSum + item.quantity,
+                0
+              );
+              return sum + totalItemsQuantity;
+            }, 0)}</h3>
             <p>Tổng số lượng nhập</p>
           </div>
         </div>
@@ -1936,14 +2114,14 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <i class="fa-solid fa-money-bill-trend-up stat-icon"></i>
           <div>
             <h3>${formatPrice(
-      importReceipts.reduce((sum, receipt) => {
-        const totalItemsPrice = receipt.items.reduce(
-          (itemSum, item) => itemSum + item.quantity * item.price,
-          0
-        );
-        return sum + totalItemsPrice;
-      }, 0)
-    )}đ</h3>
+              importReceipts.reduce((sum, receipt) => {
+                const totalItemsPrice = receipt.items.reduce(
+                  (itemSum, item) => itemSum + item.quantity * item.price,
+                  0
+                );
+                return sum + totalItemsPrice;
+              }, 0)
+            )}đ</h3>
             <p>Tổng giá trị nhập</p>
           </div>
         </div>
@@ -1977,12 +2155,12 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     const priceInput = document.getElementById("importPrice");
 
     if (selectedProductName) {
-      const product = products.find(p => p.name === selectedProductName);
+      const product = products.find((p) => p.name === selectedProductName);
       if (product) {
         priceInput.value = product.value;
       }
     } else {
-      priceInput.value = '';
+      priceInput.value = "";
     }
   };
 
@@ -2002,9 +2180,11 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
 
     // 1. TẠO HTML CHO SELECT TÊN SẢN PHẨM
     let productOptions = '<option value="">-- Chọn sản phẩm --</option>';
-    if (typeof products !== 'undefined' && products.length > 0) {
-      products.forEach(product => {
-        productOptions += `<option value="${escapeHtml(product.name)}">${escapeHtml(product.name)}</option>`;
+    if (typeof products !== "undefined" && products.length > 0) {
+      products.forEach((product) => {
+        productOptions += `<option value="${escapeHtml(
+          product.name
+        )}">${escapeHtml(product.name)}</option>`;
       });
     }
 
@@ -2053,7 +2233,9 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     let totalItems = 0;
     let totalValue = 0;
     const hasItems = currentReceipt.items.length > 0;
-    const buttonDisabled = hasItems ? '' : 'disabled style="opacity: 0.5; cursor: not-allowed;"';
+    const buttonDisabled = hasItems
+      ? ""
+      : 'disabled style="opacity: 0.5; cursor: not-allowed;"';
 
     currentReceipt.items.forEach((item, index) => {
       const itemPrice = item.quantity * item.price;
@@ -2085,7 +2267,9 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
 
             ${importFormHtml}
             
-            <h3 style="margin-top: 30px; margin-bottom: 10px;"><i class="fa-solid fa-list-check"></i> Danh sách mặt hàng đã nhập (${currentReceipt.items.length} loại)</h3>
+            <h3 style="margin-top: 30px; margin-bottom: 10px;"><i class="fa-solid fa-list-check"></i> Danh sách mặt hàng đã nhập (${
+              currentReceipt.items.length
+            } loại)</h3>
             <h3>Mã phiếu: #PN${receiptId}</h3>
             <div class="table-container">
               <table class="admin-table">
@@ -2128,18 +2312,27 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
   window.closeModal = function (event, receiptId) {
     const modal = document.getElementById("importProductModal");
 
-    const isClosingEvent = !event || event.target.id === "importProductModal" || !event.target.closest('.modal-box');
+    const isClosingEvent =
+      !event ||
+      event.target.id === "importProductModal" ||
+      !event.target.closest(".modal-box");
 
     if (isClosingEvent) {
       if (receiptId) {
-        const index = importReceipts.findIndex(r => r.id === receiptId);
+        const index = importReceipts.findIndex((r) => r.id === receiptId);
         if (index !== -1) {
           const currentReceipt = importReceipts[index];
 
           // CHỈ XÓA nếu phiếu ở trạng thái "Chưa hoàn thành" VÀ không có mặt hàng
-          if (currentReceipt.status === "Chưa hoàn thành" && currentReceipt.items.length === 0) {
+          if (
+            currentReceipt.status === "Chưa hoàn thành" &&
+            currentReceipt.items.length === 0
+          ) {
             importReceipts.splice(index, 1);
-            localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
+            localStorage.setItem(
+              IMPORT_RECEIPTS_KEY,
+              JSON.stringify(importReceipts)
+            );
             renderAddInfo();
           }
         }
@@ -2152,15 +2345,21 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
   window.submitImportItem = function (event, receiptId) {
     event.preventDefault();
 
-    const productName = document.getElementById("importProductName").value.trim();
+    const productName = document
+      .getElementById("importProductName")
+      .value.trim();
     const quantity = parseInt(document.getElementById("importQuantity").value);
     const price = parseInt(document.getElementById("importPrice").value);
 
-    const selectedProduct = products.find(p => p.name === productName);
-    const category = selectedProduct ? selectedProduct.category : "Chưa phân loại";
+    const selectedProduct = products.find((p) => p.name === productName);
+    const category = selectedProduct
+      ? selectedProduct.category
+      : "Chưa phân loại";
 
     if (!productName || productName === "" || quantity <= 0 || price <= 0) {
-      alert("Vui lòng chọn sản phẩm và điền đầy đủ thông tin hợp lệ (SL, Đơn giá > 0)!");
+      alert(
+        "Vui lòng chọn sản phẩm và điền đầy đủ thông tin hợp lệ (SL, Đơn giá > 0)!"
+      );
       return;
     }
 
@@ -2183,9 +2382,9 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     showImportProductForm(receiptId);
 
     setTimeout(() => {
-      document.getElementById("importProductName").value = '';
-      document.getElementById("importQuantity").value = '';
-      document.getElementById("importPrice").value = '';
+      document.getElementById("importProductName").value = "";
+      document.getElementById("importQuantity").value = "";
+      document.getElementById("importPrice").value = "";
     }, 50);
 
     alert("✅ Đã thêm mặt hàng thành công!");
@@ -2193,7 +2392,9 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
 
   // --- HÀM 7: XÓA MẶT HÀNG KHỎI PHIẾU NHẬP ---
   window.deleteItemInReceipt = function (receiptId, itemIndex) {
-    const confirmDelete = confirm("Bạn có chắc chắn muốn xóa mặt hàng này khỏi phiếu nhập không?");
+    const confirmDelete = confirm(
+      "Bạn có chắc chắn muốn xóa mặt hàng này khỏi phiếu nhập không?"
+    );
     if (confirmDelete) {
       const currentReceipt = importReceipts.find((r) => r.id === receiptId);
 
@@ -2236,7 +2437,9 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     closeModal();
     renderAddInfo();
 
-    alert(`✅ Đã lưu tất cả mặt hàng cho phiếu nhập #${receiptId}. Phiếu hiện đang ở trạng thái CHƯA HOÀN THÀNH.`);
+    alert(
+      `✅ Đã lưu tất cả mặt hàng cho phiếu nhập #${receiptId}. Phiếu hiện đang ở trạng thái CHƯA HOÀN THÀNH.`
+    );
   };
 
   // --- HÀM 9: HOÀN THÀNH PHIẾU (CHUYỂN TRẠNG THÁI NGOÀI DANH SÁCH) ---
@@ -2277,7 +2480,6 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
     showImportProductForm(receiptId);
   };
 
-
   // --- HÀM 11: HIỂN THỊ CHI TIẾT PHIẾU (VIEW ONLY) ---
   window.showViewImportReceiptModal = function (id) {
     const receipt = importReceipts.find((r) => r.id === id);
@@ -2312,10 +2514,11 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           <div style="margin-bottom: 15px; font-size: 14px; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
               <p><strong>Ngày nhập:</strong> ${receipt.date}</p>
               <p><strong>Người nhập:</strong> ${escapeHtml(
-      receipt.importedBy
-    )}</p>
-              <p><strong>Trạng thái:</strong> <span style="font-weight: 600; color: ${receipt.status === "Hoàn thành" ? "green" : "orange"
-      };">${receipt.status}</span></p>
+                receipt.importedBy
+              )}</p>
+              <p><strong>Trạng thái:</strong> <span style="font-weight: 600; color: ${
+                receipt.status === "Hoàn thành" ? "green" : "orange"
+              };">${receipt.status}</span></p>
           </div>
 
           <table class="admin-table">
@@ -2334,8 +2537,8 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
           
           <div style="margin-top: 20px; text-align: right; font-size: 18px;">
               <strong>TỔNG GIÁ TRỊ PHIẾU:</strong> <span style="color: #764ba2; font-weight: 700;">${formatPrice(
-        totalReceiptPrice
-      )}đ</span>
+                totalReceiptPrice
+              )}đ</span>
           </div>
 
         </div>
@@ -2875,13 +3078,14 @@ Tổng tiền: ${formatPrice(invoice.total)}đ
 
   // === KHỞI TẠO TRANG (GIỮ NGUYÊN) ===
   if (localStorage.getItem("isAdmin") === "true") {
-    // Không gọi renderProductManagement() hoặc renderStockManagement() ở đây
-    // vì chúng sẽ được gọi khi người dùng click vào các tab.
+    // Tự động hiển thị Quản lý khách hàng khi tải trang
+    // (Hoặc bạn có thể bỏ dòng này nếu muốn trang ban đầu trống)
+    renderUserManagement();
   } else {
     // Nếu không phải admin, chuyển về trang login
     if (window.location.pathname.includes("admin")) {
-      alert("Bạn cần đăng nhập với quyền Admin!");
-      window.location.href = "../index.html";
+      // Dùng replace để không lưu vào lịch sử trình duyệt
+      window.location.replace("../index.html");
     }
   }
 });
