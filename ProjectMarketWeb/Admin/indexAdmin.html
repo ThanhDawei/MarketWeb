@@ -142,12 +142,52 @@
             <span id="close-product-form-popup" class="close">&times;</span>
             <h2>Thêm / Sửa sản phẩm</h2>
             <form id="productForm">
-              <input
-                type="text"
-                id="name"
-                placeholder="Tên sản phẩm"
-                required
-              />
+              <div style="margin-bottom: 15px">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600">
+                  Tên sản phẩm:
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  placeholder="Nhập tên sản phẩm..."
+                  style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;"
+                  required
+                />
+              </div>
+              
+              <div style="margin-bottom: 15px">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600">
+                  Giá bán (đ):
+                </label>
+                <input
+                  type="number"
+                  id="value"
+                  min="0"
+                  step="1"
+                  placeholder="Nhập giá bán"
+                  style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;"
+                  required
+                />
+                <div id="valueReadOnlyNote" class="admin-field-hint" style="display:none;">
+                  Giá bán được quản lý tại mục <strong>Quản lý Lợi nhuận</strong>.
+                </div>
+              </div>
+
+              <div style="margin-bottom: 15px">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600">
+                  Số lượng (trên kệ):
+                </label>
+                <input
+                  type="number"
+                  id="quantity"
+                  min="0"
+                  step="1"
+                  placeholder="Nhập số lượng"
+                  style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;"
+                  required
+                />
+                <div id="quantityAvailableNote" class="admin-field-hint" style="display:none;"></div>
+              </div>
               
 
               <div style="margin-bottom: 15px">

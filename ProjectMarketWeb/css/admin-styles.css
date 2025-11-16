@@ -560,6 +560,302 @@ admin {
   }
 }
 
+/* ===== CSS CHO MODAL CHI TIẾT NGƯỜI DÙNG (ADMIN) ===== */
+.admin-user-detail-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.admin-user-detail-modal-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.admin-user-detail-modal-content {
+  background: #ffffff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  width: 450px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.admin-user-detail-modal-overlay.show .admin-user-detail-modal-content {
+  transform: scale(1);
+}
+
+.admin-user-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.admin-user-detail-header h2 {
+  margin: 0;
+  color: #667eea;
+  font-size: 22px;
+}
+
+.admin-user-detail-header .admin-close-modal {
+  font-size: 28px;
+  color: #999;
+  cursor: pointer;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.admin-user-detail-section {
+  margin-bottom: 15px;
+}
+
+.admin-user-detail-section h3 {
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 8px;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.admin-user-detail-section p {
+  margin: 8px 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.admin-user-detail-section p strong {
+  display: inline-block;
+  width: 130px;
+  color: #555;
+}
+
+.admin-user-detail-section p span.value-password {
+  color: #e53e3e;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.admin-user-detail-section p span.value-na {
+  color: #999;
+  font-style: italic;
+}
+
+.admin-user-detail-modal-actions {
+  text-align: right;
+  margin-top: 25px;
+}
+
+.admin-user-detail-modal-actions .admin-btn-close-modal {
+  padding: 10px 20px;
+  background: #718096;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.admin-user-detail-modal-actions .admin-btn-close-modal:hover {
+  background: #4a5568;
+}
+
+/* ===== CSS CHO MODAL CHI TIẾT SẢN PHẨM (ADMIN) ===== */
+.admin-product-detail-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
+
+.admin-product-detail-modal-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.admin-product-detail-modal-content {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 800px;
+  max-width: 95%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.admin-product-detail-modal-overlay.show .admin-product-detail-modal-content {
+  transform: scale(1);
+}
+
+.admin-product-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f7f8fa;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.admin-product-detail-header h2 {
+  margin: 0;
+  color: #667eea;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-product-detail-header .admin-close-modal {
+  font-size: 26px;
+  color: #888;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.admin-product-detail-header .admin-close-modal:hover {
+  color: #e53e3e;
+  transform: rotate(90deg);
+}
+
+.admin-product-detail-body {
+  display: flex;
+  gap: 25px;
+  padding: 25px;
+  overflow-y: auto;
+}
+
+.admin-product-detail-image {
+  width: 300px;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+.admin-product-detail-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-product-detail-info h3 {
+  font-size: 24px;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.admin-product-detail-section {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.admin-product-detail-section h4 {
+  font-size: 16px;
+  color: #555;
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-product-detail-section p,
+.admin-product-detail-section li {
+  margin: 6px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #444;
+}
+
+.admin-product-detail-section p strong,
+.admin-product-detail-section li strong {
+  color: #666;
+  font-weight: 600;
+}
+
+.admin-product-detail-section .price-current {
+  color: #e53e3e;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.admin-product-detail-section .description {
+  white-space: pre-wrap;
+  color: #555;
+}
+
+.admin-specs-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.admin-specs-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px dashed #ddd;
+}
+
+.admin-specs-list li:last-child {
+  border-bottom: none;
+}
+
+.admin-product-detail-modal-actions {
+  text-align: right;
+  padding: 15px 25px;
+  border-top: 1px solid #e0e0e0;
+  background: #f7f8fa;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.admin-product-detail-modal-actions .admin-btn-close-modal {
+  padding: 10px 25px;
+  background: #718096;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background 0.2s;
+}
+
+.admin-product-detail-modal-actions .admin-btn-close-modal:hover {
+  background: #4a5568;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .stats-container {
@@ -907,4 +1203,11 @@ td strong[id^="newPrice-"] {
   padding: 4px 8px;
   background: linear-gradient(135deg, #667eea22, #764ba222);
   border-radius: 4px;
+}
+
+/* Helper hint for read-only fields in admin forms */
+.admin-field-hint {
+  font-size: 12px;
+  color: #6b7280; /* gray-500 */
+  margin-top: 6px;
 }

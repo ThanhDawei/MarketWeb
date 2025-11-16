@@ -1151,12 +1151,12 @@ ${
     // === KẾT THÚC TÌM KIẾM ===
 
     // === YÊU CẦU MỚI: HIỂN THỊ MODAL THAY VÌ ALERT ===
-    showUserDetailModal(user);
+    showAdminUserDetailModal(user);
   };
 
   // === HÀM MỚI: HIỂN THỊ MODAL CHI TIẾT NGƯỜI DÙNG ===
-  window.closeUserDetailModal = function () {
-    const modal = document.getElementById("userDetailModal");
+  window.closeAdminUserDetailModal = function () {
+    const modal = document.getElementById("adminUserDetailModal");
     if (modal) {
       modal.classList.remove("show");
       // Remove after transition
@@ -1166,19 +1166,19 @@ ${
     }
   };
 
-  window.showUserDetailModal = function (user) {
+  window.showAdminUserDetailModal = function (user) {
     // Close any existing modal
-    closeUserDetailModal();
+    closeAdminUserDetailModal();
 
     const modalHtml = `
-      <div class="user-detail-modal-overlay" id="userDetailModal">
-        <div class="user-detail-modal-content">
-          <div class="user-detail-header">
+      <div class="admin-user-detail-modal-overlay" id="adminUserDetailModal">
+        <div class="admin-user-detail-modal-content">
+          <div class="admin-user-detail-header">
             <h2><i class="fa-solid fa-user"></i> Chi tiết người dùng</h2>
-            <span class="close-modal">&times;</span>
+            <span class="admin-close-modal">&times;</span>
           </div>
           
-          <div class="user-detail-section">
+          <div class="admin-user-detail-section">
             <h3>Thông tin tài khoản</h3>
             <p><strong>Tên đăng nhập:</strong> <span>${escapeHtml(
               user.username || "N/A"
@@ -1188,7 +1188,7 @@ ${
             )}</span></p>
           </div>
 
-          <div class="user-detail-section">
+          <div class="admin-user-detail-section">
             <h3>Thông tin liên hệ</h3>
             <p><strong>Số điện thoại:</strong> <span class="${
               user.phone ? "" : "value-na"
@@ -1198,7 +1198,7 @@ ${
             }">${escapeHtml(user.address || "Chưa cập nhật")}</span></p>
           </div>
 
-          <div class="user-detail-section">
+          <div class="admin-user-detail-section">
             <h3>Thống kê</h3>
             <p><strong>Số đơn hàng:</strong> <span>${
               user.orderCount || 0
@@ -1208,8 +1208,8 @@ ${
             )}đ</span></p>
           </div>
 
-          <div class="user-detail-modal-actions">
-            <button class="btn-close-modal">Đóng</button>
+          <div class="admin-user-detail-modal-actions">
+            <button class="admin-btn-close-modal">Đóng</button>
           </div>
         </div>
       </div>
@@ -1217,17 +1217,17 @@ ${
 
     document.body.insertAdjacentHTML("beforeend", modalHtml);
 
-    const modal = document.getElementById("userDetailModal");
+    const modal = document.getElementById("adminUserDetailModal");
     
     // Add close events
-    const closeModalBtn = modal.querySelector(".close-modal");
-    const closeBtn = modal.querySelector(".btn-close-modal");
+    const closeModalBtn = modal.querySelector(".admin-close-modal");
+    const closeBtn = modal.querySelector(".admin-btn-close-modal");
 
-    closeModalBtn.onclick = closeUserDetailModal;
-    closeBtn.onclick = closeUserDetailModal;
+    closeModalBtn.onclick = closeAdminUserDetailModal;
+    closeBtn.onclick = closeAdminUserDetailModal;
     modal.onclick = function (e) {
       if (e.target === modal) {
-        closeUserDetailModal();
+        closeAdminUserDetailModal();
       }
     };
 
@@ -1236,7 +1236,6 @@ ${
        modal.classList.add("show");
     }, 10); // Small delay to trigger transition
   };
-  // ====================================================
 
   window.resetUserPassword = function (index) {
     const userToReset = users[index];
@@ -1368,6 +1367,9 @@ ${
           <td>${product.quantity}</td>
           <td>${escapeHtml(product.category)}</td>
           <td>
+            <button onclick="viewProductDetail(${originalIndex})" class="btn-view" style="margin-right: 5px;">
+                <i class="fa-solid fa-eye"></i> Xem
+            </button>
             <button onclick="editProduct(${originalIndex})" class="btn-edit" style="margin-right: 5px;">
                 <i class="fa-solid fa-pen"></i> Sửa
             </button>
@@ -1551,6 +1553,9 @@ ${
           <td>${product.quantity}</td>
           <td>${escapeHtml(product.category)}</td>
           <td>
+            <button onclick="viewProductDetail(${originalIndex})" class="btn-view" style="margin-right: 5px;">
+                <i class="fa-solid fa-eye"></i> Xem
+            </button>
             <button onclick="editProduct(${originalIndex})" class="btn-edit" style="margin-right: 5px;">
               <i class="fa-solid fa-pen"></i> Sửa
             </button>
@@ -1644,10 +1649,24 @@ ${
       nameElement.disabled = false;
 
       const valueInput = document.getElementById("value");
+      const quantityInput = document.getElementById("quantity");
+      const qtyNote = document.getElementById("quantityAvailableNote");
       function updateValueFromSelect() {
         const selected = nameElement.value;
         const price = selected ? findLatestImportPrice(selected) : "";
         if (valueInput) valueInput.value = price !== "" ? price : "";
+        // Cập nhật giới hạn số lượng theo tồn kho khả dụng
+        if (quantityInput) {
+          const available = selected
+            ? Math.max(0, calculateStockBreakdown(selected).available)
+            : 0;
+          quantityInput.max = available;
+          quantityInput.placeholder = available > 0 ? `Tối đa: ${available}` : "Hết hàng khả dụng";
+          if (qtyNote) {
+            qtyNote.style.display = selected ? "block" : "none";
+            qtyNote.textContent = selected ? `Khả dụng: ${available} (tối đa có thể đưa lên kệ)` : "";
+          }
+        }
       }
       nameElement.removeEventListener("change", updateValueFromSelect);
       nameElement.addEventListener("change", updateValueFromSelect);
@@ -1660,6 +1679,13 @@ ${
       document.getElementById("quantity").disabled = false;
       document.getElementById("description").disabled = false;
       document.getElementById("specs").disabled = false;
+      // Ẩn ghi chú chỉ đọc của giá bán khi ở chế độ Thêm mới
+      const valueNote = document.getElementById("valueReadOnlyNote");
+      if (valueNote) valueNote.style.display = "none";
+      const qtyNote = document.getElementById("quantityAvailableNote");
+      if (qtyNote) qtyNote.style.display = "none";
+      const qtyNoteInit = document.getElementById("quantityAvailableNote");
+      if (qtyNoteInit) qtyNoteInit.style.display = "none";
       // ========================================
 
       // === DỌN DẸP FORM ===
@@ -1689,79 +1715,69 @@ ${
     if (!product) return;
 
     const popup = document.getElementById("product-form-popup");
-    const stockProducts = getAvailableStockProducts();
-
-    const productSelectHtml = stockProducts
-      .map(
-        (p) =>
-          `<option value="${escapeHtml(p.productName)}">${escapeHtml(
-            p.productName
-          )} (Kho: ${p.quantity})</option>`
-      )
-      .join("");
-
-    // TÌM VÀ THAY THẾ TRƯỜNG NAME CŨ (input text) bằng SELECT
+    
+    // TÌM VÀ THAY THẾ TRƯỜNG NAME CŨ (SELECT) bằng a disabled input
     let nameElement = document.getElementById("name");
-
     if (nameElement) {
-      if (nameElement.tagName !== "SELECT") {
-        const selectElement = document.createElement("select");
-        selectElement.id = "name";
-        selectElement.required = true;
-        selectElement.style.cssText =
-          "width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;";
-
-        nameElement.replaceWith(selectElement);
-        nameElement = selectElement;
-      }
+        // Nếu đang là thẻ SELECT (từ form Thêm mới), chuyển lại thành INPUT
+        if (nameElement.tagName === "SELECT") {
+            const inputElement = document.createElement("input");
+            inputElement.type = "text";
+            inputElement.id = "name";
+            inputElement.required = true;
+            inputElement.style.cssText = "width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;";
+            nameElement.replaceWith(inputElement);
+            nameElement = inputElement;
+        }
     } else {
-      return;
+        // Nếu không tìm thấy phần tử 'name', không thể tiếp tục
+        console.error("Không tìm thấy phần tử #name trong form.");
+        return;
     }
 
-    if (nameElement && nameElement.tagName === "SELECT") {
-      const isEditing = stockProducts.some(
-        (p) => p.productName === product.name
-      );
-
-      let currentOptions = productSelectHtml;
-      if (!isEditing) {
-        currentOptions =
-          `<option value="${escapeHtml(product.name)}" selected>${escapeHtml(
-            product.name
-          )} (Trên kệ)</option>` + currentOptions;
-      }
-
-      nameElement.innerHTML = currentOptions;
-      nameElement.value = product.name;
-      nameElement.disabled = true; // KHÓA TÊN SẢN PHẨM KHI CHỈNH SỬA
-    }
+    // Điền giá trị và khóa trường tên sản phẩm
+    nameElement.value = product.name;
+    nameElement.disabled = true; 
 
     if (popup) {
-      const valueInput = document.getElementById("value");
-      const quantityInput = document.getElementById("quantity");
-
       // ĐIỀN DỮ LIỆU CŨ VÀO FORM
-      document.getElementById("name").value = product.name;
-      valueInput.value = product.value;
-      quantityInput.value = product.quantity;
+      document.getElementById("value").value = product.value;
+      document.getElementById("quantity").value = product.quantity;
 
       // ĐIỀN DỮ LIỆU MỚI (MÔ TẢ/THÔNG SỐ)
       document.getElementById("description").value = product.description || "";
       document.getElementById("specs").value = product.specs || "";
-      document.getElementById("description").disabled = false; // Đảm bảo mở
-      document.getElementById("specs").disabled = false; // Đảm bảo mở
+      
+      // Khóa giá bán khi sửa; cho phép sửa số lượng
+      document.getElementById("value").disabled = true;
+      document.getElementById("quantity").disabled = false;
+      document.getElementById("description").disabled = false;
+      document.getElementById("specs").disabled = false;
+      // Hiển thị ghi chú rằng giá bán được quản lý ở Quản lý Lợi nhuận
+      const valueNote = document.getElementById("valueReadOnlyNote");
+      if (valueNote) valueNote.style.display = "block";
 
-      // === YÊU CẦU: KHÓA SỐ LƯỢNG VÀ GIÁ KHI SỬA ===
-      valueInput.disabled = true;
-      quantityInput.disabled = true;
-      // ===============================================
+      // Cập nhật giới hạn số lượng tối đa theo (đang có trên kệ + tồn khả dụng)
+      const breakdown = calculateStockBreakdown(product.name);
+      const available = Math.max(0, breakdown.available);
+      const maxAllowed = product.quantity + available;
+      const quantityInput = document.getElementById("quantity");
+      if (quantityInput) {
+        quantityInput.max = maxAllowed;
+        quantityInput.placeholder = `Tối đa: ${maxAllowed}`;
+      }
+      const qtyNote = document.getElementById("quantityAvailableNote");
+      if (qtyNote) {
+        qtyNote.style.display = "block";
+        qtyNote.textContent = `Khả dụng thêm: ${available} | Tối đa: ${maxAllowed}`;
+      }
 
       const imageInput = document.getElementById("image");
       if (imageInput) imageInput.value = "";
 
       window.editingProductIndex = index;
-      popup.style.display = "flex";
       popup.querySelector("h2").textContent = "Sửa sản phẩm trên kệ";
+      popup.style.display = "flex";
     }
   };
 
@@ -1799,6 +1815,141 @@ ${
         alert("Đã xóa vĩnh viễn sản phẩm!");
       }
     }
+  };
+
+  // === (TÍNH NĂNG MỚI) CÁC HÀM CHO MODAL CHI TIẾT SẢN PHẨM ===
+  window.viewProductDetail = function (index) {
+    const product = products[index];
+    if (!product) {
+      alert("Không tìm thấy thông tin sản phẩm!");
+      return;
+    }
+    showAdminProductDetailModal(product);
+  };
+
+  window.closeAdminProductDetailModal = function () {
+    const modal = document.getElementById("adminProductDetailModal");
+    if (modal) {
+      modal.classList.remove("show");
+      setTimeout(() => {
+        modal.remove();
+      }, 300);
+    }
+  };
+
+  window.showAdminProductDetailModal = function (product) {
+    closeAdminProductDetailModal();
+
+    const importPriceStr = findLatestImportPrice(product.name);
+    const importPrice = importPriceStr ? parseInt(importPriceStr, 10) : 0;
+    const sellingPrice = product.value;
+    let profit = 0;
+    let profitMargin = 0;
+
+    if (importPrice > 0) {
+      profit = sellingPrice - importPrice;
+      profitMargin = ((profit / importPrice) * 100).toFixed(1);
+    }
+
+    const profitColor = profit >= 0 ? "#38a169" : "#e53e3e";
+
+    const specsHtml = (product.specs || "")
+      .split(",")
+      .map((spec) => spec.trim())
+      .filter((spec) => spec)
+      .map((spec) => {
+        const parts = spec.split(":");
+        const key = parts[0] ? parts[0].trim() : "";
+        const value = parts[1] ? parts[1].trim() : "";
+        return `<li><strong>${escapeHtml(key)}:</strong> <span>${escapeHtml(
+          value
+        )}</span></li>`;
+      })
+      .join("");
+
+    const modalHtml = `
+      <div class="admin-product-detail-modal-overlay" id="adminProductDetailModal">
+        <div class="admin-product-detail-modal-content">
+          <div class="admin-product-detail-header">
+            <h2><i class="fa-solid fa-circle-info"></i> Chi tiết sản phẩm</h2>
+            <span class="admin-close-modal">&times;</span>
+          </div>
+          
+          <div class="admin-product-detail-body">
+            <div class="admin-product-detail-image" style="background-image: url('${
+              product.image || placeholderImg
+            }');"></div>
+            <div class="admin-product-detail-info">
+              
+              <h3>${escapeHtml(product.name)}</h3>
+              
+              <div class="admin-product-detail-section">
+                <h4><i class="fa-solid fa-money-bill-wave"></i> Giá & Kho</h4>
+                <p><strong>Giá bán:</strong> <span class="price-current">${formatPrice(
+                  sellingPrice
+                )}đ</span></p>
+                <p><strong>Giá nhập gần nhất:</strong> <span>${
+                  importPrice > 0 ? formatPrice(importPrice) + "đ" : "N/A"
+                }</span></p>
+                <p><strong>Lợi nhuận (ước tính):</strong> <span style="font-weight: 600; color: ${profitColor};">${formatPrice(
+      profit
+    )}đ ${
+      profitMargin > 0 ? `(${profitMargin}%)` : ""
+    }</span></p>
+                <p><strong>Số lượng trên kệ:</strong> <span>${
+                  product.quantity
+                }</span></p>
+                <p><strong>Danh mục:</strong> <span>${escapeHtml(
+                  product.category
+                )}</span></p>
+              </div>
+
+              <div class="admin-product-detail-section">
+                <h4><i class="fa-solid fa-align-left"></i> Mô tả</h4>
+                <p class="description">${escapeHtml(
+                  product.description || "Chưa có mô tả."
+                )}</p>
+              </div>
+
+              ${
+                specsHtml
+                  ? `
+              <div class="admin-product-detail-section">
+                <h4><i class="fa-solid fa-microchip"></i> Thông số kỹ thuật</h4>
+                <ul class="admin-specs-list">${specsHtml}</ul>
+              </div>
+              `
+                  : ""
+              }
+
+            </div>
+          </div>
+
+          <div class="admin-product-detail-modal-actions">
+            <button class="admin-btn-close-modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+
+    const modal = document.getElementById("adminProductDetailModal");
+
+    const closeModalBtn = modal.querySelector(".admin-close-modal");
+    const closeBtn = modal.querySelector(".admin-btn-close-modal");
+
+    closeModalBtn.onclick = closeAdminProductDetailModal;
+    closeBtn.onclick = closeAdminProductDetailModal;
+    modal.onclick = function (e) {
+      if (e.target === modal) {
+        closeAdminProductDetailModal();
+      }
+    };
+
+    setTimeout(() => {
+      modal.classList.add("show");
+    }, 10);
   };
 
   // === HÀM MỚI: ẨN/HIỆN SẢN PHẨM ===
@@ -1967,6 +2118,8 @@ ${
     // LẤY TRƯỜNG MỚI ĐỂ LƯU
     const description = document.getElementById("description").value.trim();
     const specs = document.getElementById("specs").value.trim();
+    const quantityStr = document.getElementById("quantity").value;
+    const newQuantity = parseInt(quantityStr, 10);
     const imageFile = document.getElementById("image").files[0];
 
     const popup = document.getElementById("product-form-popup");
@@ -1976,6 +2129,23 @@ ${
     const product = products[window.editingProductIndex];
     if (!product) {
       alert("❌ Không tìm thấy sản phẩm!");
+      return;
+    }
+
+    // Validate số lượng (cho phép sửa)
+    if (isNaN(newQuantity) || newQuantity < 0) {
+      alert("⚠️ Số lượng không hợp lệ. Vui lòng nhập số nguyên không âm!");
+      return;
+    }
+
+    // Ràng buộc: không vượt quá (hiện tại + khả dụng)
+    const breakdown = calculateStockBreakdown(product.name);
+    const available = Math.max(0, breakdown.available);
+    const maxAllowed = product.quantity + available;
+    if (newQuantity > maxAllowed) {
+      alert(
+        `⚠️ Số lượng vượt quá cho phép!\nTối đa: ${maxAllowed} (Khả dụng thêm: ${available})\nBạn nhập: ${newQuantity}`
+      );
       return;
     }
 
@@ -1995,7 +2165,7 @@ ${
     // Giữ nguyên các trường bị khóa
     product.name = product.name;
     product.value = product.value;
-    product.quantity = product.quantity;
+    product.quantity = newQuantity; // Cập nhật số lượng theo form
     product.category = product.category;
 
     // Cập nhật các trường được phép sửa
@@ -2686,12 +2856,6 @@ ${
     alert("Đã xóa phiếu nhập!");
   };
 
-  window.refreshImportReceipts = function () {
-    importReceipts =
-      JSON.parse(localStorage.getItem(IMPORT_RECEIPTS_KEY)) || [];
-    renderAddInfo();
-  };
-
   // === QUẢN LÝ HÓA ĐƠN (GIỮ NGUYÊN) ===
   function renderInvoiceManagement() {
     hideAllContent();
@@ -3056,6 +3220,10 @@ Tổng tiền: ${formatPrice(invoice.total)}đ
 
         nameElement.replaceWith(originalInput);
       }
+
+      // Ẩn ghi chú readonly của giá bán khi đóng popup
+      const valueNote = document.getElementById("valueReadOnlyNote");
+      if (valueNote) valueNote.style.display = "none";
 
       // Đảm bảo nút Lưu được bật lại nếu đang ở chế độ sửa
       const submitBtn = document
