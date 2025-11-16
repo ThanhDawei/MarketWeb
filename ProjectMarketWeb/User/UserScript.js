@@ -1671,119 +1671,142 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (confirmCheckoutBtn) {
     confirmCheckoutBtn.addEventListener("click", () => {
-      // Lấy địa chỉ dựa trên lựa chọn radio (dùng địa chỉ lưu hoặc nhập mới)
-      let address = "";
-      if (useSavedAddressRadio && useSavedAddressRadio.checked) {
-        // Dùng địa chỉ hiện tại từ hồ sơ
-        const currentUser = localStorage.getItem("currentUser");
-        const u = users.find((x) => x.username === currentUser);
-        address = u && u.address ? String(u.address).trim() : "";
-      } else {
-        // Dùng địa chỉ nhập mới
-        address = checkoutAddressEl?.value?.trim() || "";
-      }
-
-      if (!address) {
-        alert("Vui lòng nhập hoặc chọn địa chỉ giao hàng.");
-        return;
-      }
-
-      const currentUser =
-        localStorage.getItem("currentUser") ||
-        displayedUsername?.innerText ||
-        "Guest";
-      const invoice = {
-        id: Date.now(),
-        date: new Date().toLocaleString("vi-VN"),
-        user: currentUser,
-        address: address,
-        items: checkoutList.map((it) => ({
-          name: it.name,
-          price: it.value,
-          quantity: it.purchaseQuantity || it.quantity || 1, // Ưu tiên purchaseQuantity
-        })),
-        total: checkoutList.reduce(
-          (sum, it) =>
-            sum +
-            parsePrice(it.value) * (it.purchaseQuantity || it.quantity || 1),
-          0
-        ),
-        status: "Mới đặt",
-      };
-
-      // Nếu người dùng chọn lưu địa chỉ thì cập nhật vào hồ sơ
-      try {
-        if (
-          saveAddressCheckbox &&
-          saveAddressCheckbox.checked &&
-          currentUser &&
-          currentUser !== "Guest"
-        ) {
-          const u = users.find((x) => x.username === currentUser);
-          if (u) {
-            u.address = address;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-            if (savedAddressDisplay) savedAddressDisplay.innerText = address;
-          }
+        // Lấy địa chỉ dựa trên lựa chọn radio (dùng địa chỉ lưu hoặc nhập mới)
+        let address = "";
+        if (useSavedAddressRadio && useSavedAddressRadio.checked) {
+            // Dùng địa chỉ hiện tại từ hồ sơ
+            const currentUser = localStorage.getItem("currentUser");
+            const u = users.find((x) => x.username === currentUser);
+            address = u && u.address ? String(u.address).trim() : "";
+        } else {
+            // Dùng địa chỉ nhập mới
+            address = checkoutAddressEl?.value?.trim() || "";
         }
-      } catch (e) {
-        console.error("Lỗi khi lưu địa chỉ người dùng:", e);
-      }
 
-      // CẬP NHẬT TỒN KHO
-      let isFromCart = cart.length > 0 && checkoutList.length === cart.length;
-
-      checkoutList.forEach((it) => {
-        const p = products.find((x) => x.name === it.name);
-        const purchaseQty = it.purchaseQuantity || it.quantity || 1;
-        if (p && p.quantity >= purchaseQty) {
-          p.quantity -= purchaseQty; // Trừ đúng số lượng mua
-        } else if (p) {
-          console.warn(`Không đủ hàng ${p.name}, chỉ trừ ${p.quantity}`);
-          p.quantity = 0; // Hết hàng
+        if (!address) {
+            alert("Vui lòng nhập hoặc chọn địa chỉ giao hàng.");
+            return;
         }
-      });
 
-      invoices.push(invoice);
-      localStorage.setItem("invoices", JSON.stringify(invoices));
-      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-      renderProducts(); // Render lại sản phẩm (với số lượng mới)
+        const currentUser =
+            localStorage.getItem("currentUser") ||
+            displayedUsername?.innerText ||
+            "Guest";
+        const invoice = {
+            id: Date.now(),
+            date: new Date().toLocaleString("vi-VN"),
+            user: currentUser,
+            address: address,
+            items: checkoutList.map((it) => ({
+                name: it.name,
+                price: it.value,
+                quantity: it.purchaseQuantity || it.quantity || 1, // Ưu tiên purchaseQuantity
+            })),
+            total: checkoutList.reduce(
+                (sum, it) =>
+                    sum +
+                    parsePrice(it.value) * (it.purchaseQuantity || it.quantity || 1),
+                0
+            ),
+            status: "Mới đặt",
+        };
 
-      alert("🎉 Bạn đã mua thành công sản phẩm!");
-      if (checkoutPopup) checkoutPopup.style.display = "none";
-      checkoutList = [];
+        // Nếu người dùng chọn lưu địa chỉ thì cập nhật vào hồ sơ
+        try {
+            if (
+                saveAddressCheckbox &&
+                saveAddressCheckbox.checked &&
+                currentUser &&
+                currentUser !== "Guest"
+            ) {
+                const u = users.find((x) => x.username === currentUser);
+                if (u) {
+                    u.address = address;
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+                    if (savedAddressDisplay) savedAddressDisplay.innerText = address;
+                }
+            }
+        } catch (e) {
+            console.error("Lỗi khi lưu địa chỉ người dùng:", e);
+        }
 
-      // Xóa giỏ hàng sau khi thanh toán (nếu mua từ giỏ hàng)
-      if (isFromCart) {
-        cart = [];
-        localStorage.setItem("cart", JSON.stringify(cart));
-        renderCart();
-      }
+        // CẬP NHẬT TỒN KHO
+        let isFromCart = cart.length > 0 && checkoutList.length === cart.length;
 
-      // Reset các tùy chọn sau khi thanh toán thành công
-      if (checkoutAddressEl) checkoutAddressEl.value = "";
-      if (saveAddressCheckbox) saveAddressCheckbox.checked = false;
-      if (useSavedAddressRadio) useSavedAddressRadio.checked = false;
-      if (enterNewAddressRadio) enterNewAddressRadio.checked = false;
-      if (paymentMethodSelect) {
-        paymentMethodSelect.value = "cod"; // về Thanh toán khi nhận hàng
-      }
-      if (paymentDetails) paymentDetails.style.display = "none";
-      if (bankTransferQR) bankTransferQR.style.display = "none";
-      if (momoQR) momoQR.style.display = "none";
-      if (creditCardForm) {
-        creditCardForm.style.display = "none";
-        const inputs = creditCardForm.querySelectorAll("input");
-        inputs.forEach(input => input.value = ""); // xóa dữ liệu thẻ tín dụng
-      }
-      const bankInfoEl = document.getElementById("bank-info");
-      if (bankInfoEl) {
-        bankInfoEl.style.display = "none"; // Ẩn phần tử
-        bankInfoEl.innerHTML = ""; // Xóa nội dung bên trong
-      }
+        checkoutList.forEach((it) => {
+            const p = products.find((x) => x.name === it.name);
+            const purchaseQty = it.purchaseQuantity || it.quantity || 1;
+            if (p && p.quantity >= purchaseQty) {
+                p.quantity -= purchaseQty; // Trừ đúng số lượng mua
+            } else if (p) {
+                console.warn(`Không đủ hàng ${p.name}, chỉ trừ ${p.quantity}`);
+                p.quantity = 0; // Hết hàng
+            }
+        });
+
+        invoices.push(invoice);
+        localStorage.setItem("invoices", JSON.stringify(invoices));
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+        renderProducts(); // Render lại sản phẩm (với số lượng mới)
+
+        // Hiển thị popup chi tiết đơn mua
+        const modal = document.getElementById("orderDetailsModal");
+        const orderDetailsContent = document.getElementById("orderDetailsContent");
+        if (modal && orderDetailsContent) {
+            // Tạo nội dung chi tiết đơn mua
+            let content = `<p><strong>Người nhận:</strong> ${invoice.user}</p>`;
+            content += `<p><strong>Địa chỉ:</strong> ${invoice.address}</p>`;
+            content += `<p><strong>Ngày đặt:</strong> ${invoice.date}</p>`;
+            content += `<p><strong>Tổng tiền:</strong> ${formatPrice(invoice.total)}đ</p>`;
+            content += `<h3>Danh sách sản phẩm:</h3><ul>`;
+            invoice.items.forEach((item) => {
+                content += `<li>${escapeHtml(item.name)} - ${item.quantity} x ${formatPrice(item.price)}đ</li>`;
+            });
+            content += `</ul>`;
+
+            orderDetailsContent.innerHTML = content;
+            modal.style.display = "flex";
+            }
+
+        // Đóng popup sau khi hiển thị
+        const closeButton = document.querySelector(".close-button");
+        if (closeButton) {
+            closeButton.addEventListener("click", () => {
+                modal.style.display = "none";
+            });
+        }
+
+        // Xóa giỏ hàng sau khi thanh toán (nếu mua từ giỏ hàng)
+        if (isFromCart) {
+            cart = [];
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderCart();
+        }
+
+        // Reset các tùy chọn sau khi thanh toán thành công
+        if (checkoutAddressEl) checkoutAddressEl.value = "";
+        if (saveAddressCheckbox) saveAddressCheckbox.checked = false;
+        if (useSavedAddressRadio) useSavedAddressRadio.checked = false;
+        if (enterNewAddressRadio) enterNewAddressRadio.checked = false;
+        if (paymentMethodSelect) {
+            paymentMethodSelect.value = "cod"; // về Thanh toán khi nhận hàng
+        }
+        if (paymentDetails) paymentDetails.style.display = "none";
+        if (bankTransferQR) bankTransferQR.style.display = "none";
+        if (momoQR) momoQR.style.display = "none";
+        if (creditCardForm) {
+            creditCardForm.style.display = "none";
+            const inputs = creditCardForm.querySelectorAll("input");
+            inputs.forEach(input => input.value = ""); // xóa dữ liệu thẻ tín dụng
+        }
+        const bankInfoEl = document.getElementById("bank-info");
+        if (bankInfoEl) {
+            bankInfoEl.style.display = "none"; // Ẩn phần tử
+            bankInfoEl.innerHTML = ""; // Xóa nội dung bên trong
+        }
 
     });
-  }
+}
 
   if (closeCheckoutPopup) {
     closeCheckoutPopup.onclick = () => {
@@ -2456,6 +2479,49 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+  // ----- Order Details Modal -----
+  const orderDetailsModal = document.getElementById("orderDetailsModal");
+  const closeOrderDetailsBtn = document.getElementById("closeOrderDetailsBtn");
+  const confirmOrderButton = document.getElementById("confirm-order-btn");
+
+  // Close modal event - sử dụng ID để tránh conflict
+  if (closeOrderDetailsBtn) {
+    closeOrderDetailsBtn.addEventListener("click", () => {
+      if (orderDetailsModal) {
+        orderDetailsModal.style.display = "none";
+        // Restore checkout popup if it was open before
+        if (checkoutPopup && checkoutPopup.style.display === "none") {
+          checkoutPopup.style.display = "flex";
+        }
+      }
+    });
+  }
+
+  // Confirm order event
+  if (confirmOrderButton) {
+    confirmOrderButton.addEventListener("click", () => {
+      if (orderDetailsModal) {
+        orderDetailsModal.style.display = "none";
+        alert("Bạn đã mua thành công sản phẩm!");
+      }
+      if (checkoutPopup) {
+        checkoutPopup.style.display = "none";
+      }
+    });
+  }
+
+  // Close modal khi click outside
+  if (orderDetailsModal) {
+    window.addEventListener("click", (e) => {
+      if (e.target === orderDetailsModal) {
+        orderDetailsModal.style.display = "none";
+        if (checkoutPopup && checkoutPopup.style.display === "none") {
+          checkoutPopup.style.display = "flex";
+        }
+      }
+    });
+  }
+
   // ===== CẬP NHẬT: HỒ SƠ NGƯỜI DÙNG MỞ RỘNG =====
 
   // Render hồ sơ người dùng với các tab
@@ -2623,13 +2689,37 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         
         <div class="tab-panel" data-panel="invoices" style="display: none;">
-          ${
-            userInvoices.length === 0
-              ? '<p style="text-align: center; color: #999; padding: 20px;">Chưa có hóa đơn nào.</p>'
-              : `<div style="max-height: 400px; overflow-y: auto;">
-              ${userInvoices
-                .map(
-                  (inv) => `
+          <!-- Bộ lọc Hóa đơn: tìm theo mã, khoảng ngày, trạng thái, tổng tiền -->
+          <div style="margin-bottom: 12px;">
+            <form id="invoiceFilterForm" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+              <input type="text" id="invoiceFilterId" placeholder="Tìm theo mã HĐ..." style="padding:8px; border-radius:8px; border:1px solid #ddd; min-width:140px;" />
+              <label style="font-size:0.9rem; color:#666;">Từ:</label>
+              <input type="date" id="invoiceFilterFrom" style="padding:8px; border-radius:8px; border:1px solid #ddd;" />
+              <label style="font-size:0.9rem; color:#666;">Đến:</label>
+              <input type="date" id="invoiceFilterTo" style="padding:8px; border-radius:8px; border:1px solid #ddd;" />
+              <select id="invoiceFilterStatus" style="padding:8px; border-radius:8px; border:1px solid #ddd;">
+                <option value="">Tất cả trạng thái</option>
+                <option value="Mới đặt">Mới đặt</option>
+                <option value="Đang xử lý">Đang xử lý</option>
+                <option value="Đang vận chuyển">Đang vận chuyển</option>
+                <option value="Đã giao">Đã giao</option>
+                <option value="Đã hủy">Đã hủy</option>
+              </select>
+              <input type="number" id="invoiceFilterMinTotal" placeholder="Giá từ" min="0" style="padding:8px; border-radius:8px; border:1px solid #ddd; width:120px;" />
+              <input type="number" id="invoiceFilterMaxTotal" placeholder="Đến" min="0" style="padding:8px; border-radius:8px; border:1px solid #ddd; width:120px;" />
+              <button type="button" id="invoiceApplyFilterBtn" class="login-button" style="padding:8px 10px;">Lọc</button>
+              <button type="button" id="invoiceClearFilterBtn" class="btn-register" style="padding:8px 10px;">Xóa</button>
+            </form>
+          </div>
+
+          <div style="max-height: 400px; overflow-y: auto;">
+            <div id="invoiceList">
+            ${
+              userInvoices.length === 0
+                ? '<p style="text-align: center; color: #999; padding: 20px;">Chưa có hóa đơn nào.</p>'
+                : userInvoices
+                    .map(
+                      (inv) => `
                 <div class="invoice-card" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #667eea;">
                   <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                     <div>
@@ -2677,10 +2767,11 @@ document.addEventListener("DOMContentLoaded", () => {
                   </div>
                 </div>
               `
-                )
-                .join("")}
-            </div>`
-          }
+                    )
+                    .join("")
+            }
+            </div>
+          </div>
         </div>
         
         <!-- Tab: Thông tin mua hàng -->
@@ -2864,6 +2955,132 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
     });
+    
+    // ===== Invoice filter logic =====
+    (function setupInvoiceFilters() {
+      const invoiceListEl = popupContent.querySelector("#invoiceList");
+      const filterId = popupContent.querySelector("#invoiceFilterId");
+      const filterFrom = popupContent.querySelector("#invoiceFilterFrom");
+      const filterTo = popupContent.querySelector("#invoiceFilterTo");
+      const filterStatus = popupContent.querySelector("#invoiceFilterStatus");
+      const filterMin = popupContent.querySelector("#invoiceFilterMinTotal");
+      const filterMax = popupContent.querySelector("#invoiceFilterMaxTotal");
+      const btnApply = popupContent.querySelector("#invoiceApplyFilterBtn");
+      const btnClear = popupContent.querySelector("#invoiceClearFilterBtn");
+
+      function dateStrToYMD(dateStr) {
+        // Chuyển "dd/mm/yyyy, hh:mm:ss" hoặc "dd/mm/yyyy hh:mm:ss" → "yyyy-mm-dd" string
+        if (!dateStr) return "";
+        try {
+          // Try to extract a dd/mm/yyyy pattern robustly (handles comma or space separators)
+          const m = dateStr.match(/(\d{1,2}\/\d{1,2}\/\d{2,4})/);
+          const datePart = m ? m[1] : dateStr.split(",")[0].trim(); // fallback
+          const parts = datePart.split("/").map(s => s.trim());
+          if (parts.length < 3) return "";
+          const d = Number(parts[0]);
+          const mth = Number(parts[1]);
+          const y = Number(parts[2]);
+          if (!d || !mth || !y) return "";
+          const month = String(mth).padStart(2, "0");
+          const day = String(d).padStart(2, "0");
+          return `${y}-${month}-${day}`;
+        } catch (e) {
+          console.error('dateStrToYMD parse error for', dateStr, e);
+          return "";
+        }
+      }
+
+      function ymdToNumber(ymd) {
+        // "yyyy-mm-dd" -> number yyyymmdd for reliable numeric comparison
+        if (!ymd || typeof ymd !== "string") return NaN;
+        const parts = ymd.split("-");
+        if (parts.length !== 3) return NaN;
+        const y = Number(parts[0]);
+        const m = Number(parts[1]);
+        const d = Number(parts[2]);
+        if (!y || !m || !d) return NaN;
+        return y * 10000 + m * 100 + d;
+      }
+
+      function renderInvoiceList(list) {
+        if (!invoiceListEl) return;
+        if (!list || list.length === 0) {
+          invoiceListEl.innerHTML = '<p style="text-align:center; color:#999; padding:20px">Không tìm thấy hóa đơn.</p>';
+          return;
+        }
+
+        invoiceListEl.innerHTML = list
+          .map((inv) => `
+            <div class="invoice-card" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #667eea;">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                <div>
+                  <strong style="color: #667eea;">Mã HĐ: #${inv.id}</strong>
+                  <p style="margin: 5px 0; font-size: 0.9rem; color: #666;"><i class="fa-solid fa-calendar"></i> ${inv.date}</p>
+                </div>
+                <span class="profile-invoice-status ${getStatusClass(inv.status)}">${escapeHtml(inv.status)}</span>
+              </div>
+              <div style="border-top: 1px dashed #ddd; padding-top: 10px; margin-top: 10px;">
+                ${inv.items.map(item => `
+                  <div style="display:flex; justify-content:space-between; margin:5px 0;">
+                    <span>${escapeHtml(item.name)} x${item.quantity || 1}</span>
+                    <span style="font-weight:600;">${formatPrice(item.price)}đ</span>
+                  </div>`).join("")}
+              </div>
+              <div style="border-top: 2px solid #667eea; padding-top: 10px; margin-top: 10px; display:flex; justify-content:space-between; align-items:center;">
+                ${inv.status === "Mới đặt" || inv.status === "Đang xử lý" ? `<button class="cancel-order-btn" onclick="window.cancelOrder(${inv.id})"><i class="fa-solid fa-times"></i> Hủy đơn</button>` : "<div></div>"}
+                <strong style="color:#e91e63; font-size:1.1rem;">Tổng: ${formatPrice(inv.total)}đ</strong>
+              </div>
+            </div>
+          `).join("");
+      }
+
+      function applyInvoiceFilters() {
+        let filtered = userInvoices.slice();
+
+        const idTerm = filterId?.value?.trim();
+        if (idTerm) {
+          filtered = filtered.filter(inv => String(inv.id).includes(idTerm));
+        }
+
+        const status = filterStatus?.value || "";
+        if (status) filtered = filtered.filter(inv => inv.status === status);
+
+        // So sánh date dựa trên string "yyyy-mm-dd" (tránh timezone issue)
+        if (filterFrom?.value || filterTo?.value) {
+          const fromNum = filterFrom?.value ? ymdToNumber(filterFrom.value) : NaN;
+          const toNum = filterTo?.value ? ymdToNumber(filterTo.value) : NaN;
+
+          filtered = filtered.filter((inv) => {
+            const invYMD = dateStrToYMD(inv.date);
+            const invNum = ymdToNumber(invYMD);
+            if (isNaN(invNum)) return false; // skip invalid
+            if (!isNaN(fromNum) && invNum < fromNum) return false;
+            if (!isNaN(toNum) && invNum > toNum) return false;
+            return true;
+          });
+        }
+
+        // min/max total
+        const min = parseInt(filterMin?.value || "", 10);
+        const max = parseInt(filterMax?.value || "", 10);
+        if (!isNaN(min)) filtered = filtered.filter(inv => inv.total >= min);
+        if (!isNaN(max)) filtered = filtered.filter(inv => inv.total <= max);
+
+        renderInvoiceList(filtered);
+      }
+
+      if (btnApply) btnApply.addEventListener("click", applyInvoiceFilters);
+      if (btnClear)
+        btnClear.addEventListener("click", () => {
+          if (filterId) filterId.value = "";
+          if (filterFrom) filterFrom.value = "";
+          if (filterTo) filterTo.value = "";
+          if (filterStatus) filterStatus.value = "";
+          if (filterMin) filterMin.value = "";
+          if (filterMax) filterMax.value = "";
+          renderInvoiceList(userInvoices.slice());
+        });
+    })();
     
     // Add event listener for the 'Gửi OTP' button
     const sendOtpButton = document.getElementById("sendOtpButton");
