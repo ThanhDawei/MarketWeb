@@ -1487,15 +1487,11 @@ Tổng doanh thu: ${formatPrice(user.totalRevenue || 0)}đ
 
     if (popup) {
       // === MỞ KHÓA CÁC TRƯỜNG KHI THÊM MỚI ===
-      document.getElementById("value").disabled = false;
-      document.getElementById("quantity").disabled = false;
       document.getElementById("description").disabled = false;
       document.getElementById("specs").disabled = false;
       // ========================================
 
       // === DỌN DẸP FORM ===
-      document.getElementById("value").value = "";
-      document.getElementById("quantity").value = "";
       document.getElementById("description").value = "";
       document.getElementById("specs").value = "";
       // ====================
