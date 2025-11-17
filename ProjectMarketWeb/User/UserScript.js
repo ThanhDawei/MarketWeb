@@ -129,14 +129,54 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("isLoggedIn", "false");
 
   // ----- Users với dữ liệu mẫu -----
-  let users = [];
   const STORAGE_KEY = "userAccounts";
+  // Tải dữ liệu từ bộ nhớ. Nếu chưa có thì mới để mảng rỗng.
+  let users = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
   // ----- Products với dữ liệu mẫu -----
   let products = [];
   const PRODUCTS_KEY = "products";
   const storedProducts = localStorage.getItem(PRODUCTS_KEY);
-
+  function loadUsers() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      users = JSON.parse(stored);
+    } else {
+      // Tạo users mẫu
+      users = [
+        {
+          username: "user1",
+          password: "123456",
+          email: "user1@example.com",
+          phone: "0901234567",
+          address: "123 Nguyễn Huệ, Quận 1, TP.HCM",
+        },
+        {
+          username: "nguyenvana",
+          password: "password123",
+          email: "nguyenvana@gmail.com",
+          phone: "0912345678",
+          address: "456 Lê Lợi, Quận 3, TP.HCM",
+        },
+        {
+          username: "tranthib",
+          password: "123456",
+          email: "tranthib@yahoo.com",
+          phone: "0923456789",
+          address: "789 Hai Bà Trưng, Quận 1, TP.HCM",
+        },
+        {
+          username: "demo",
+          password: "demo",
+          email: "demo@dmarket.com",
+          phone: "0934567890",
+          address: "321 Trần Hưng Đạo, Quận 5, TP.HCM",
+        },
+      ];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+    }
+  }
+  loadUsers();
   if (storedProducts) {
     try {
       products = JSON.parse(storedProducts);
@@ -791,7 +831,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   `;
   document.head.appendChild(productStyles);
-
   // ----- Product Form -----
   let editingIndex = null;
 

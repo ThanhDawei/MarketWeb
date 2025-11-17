@@ -175,182 +175,184 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================================================
 
   // (KHỐI DỮ LIỆU MẪU - TỪ FILE CỦA BẠN)
-  localStorage.setItem(
-    "productDefinitions",
-    JSON.stringify([
-      {
-        name: "Laptop Dell XPS 13 9340",
-        category: "Laptop",
-        description:
-          "Laptop cao cấp siêu mỏng nhẹ với màn hình InfinityEdge, hiệu năng mạnh mẽ cho công việc và giải trí.",
-        specs:
-          "CPU: Intel Core Ultra 7, RAM: 32GB LPDDR5x, Ổ cứng: 1TB SSD NVMe, Màn hình: 13.4 inch 3K+",
-        image: "../image/DellXPS13.jpg",
-      },
-      {
-        name: "Apple Watch Series 9 45mm",
-        category: "Đồng hồ thông minh",
-        description:
-          "Đồng hồ thông minh thế hệ mới nhất từ Apple với chip S9 SiP, hỗ trợ Double Tap, màn hình sáng hơn và tích hợp Siri trên thiết bị.",
-        specs:
-          "Chip: S9 SiP, Kích thước: 45mm, Chống nước: 50m, Tính năng: Double Tap, Cảm biến: Oxy trong máu, ECG",
-        image: "../image/AppleWatchS9.jpg",
-      },
-      {
-        name: "RAM Corsair Vengeance RGB 32GB (2x16GB) DDR5",
-        category: "Linh kiện PC",
-        description:
-          "Kit RAM DDR5 hiệu năng cao với đèn LED RGB, tối ưu cho các hệ thống PC gaming và workstation hiện đại.",
-        specs:
-          "Dung lượng: 32GB (2x16GB), Loại: DDR5, Tốc độ: 6000MHz, LED: RGB",
-        image: "../image/CorsairVengeance32GB.jpg",
-      },
-      {
-        name: "iPad Pro 12.9 inch M2 256GB",
-        category: "Máy tính bảng",
-        description:
-          "Máy tính bảng mạnh mẽ nhất của Apple với chip M2, màn hình Liquid Retina XDR và hỗ trợ Apple Pencil 2.",
-        specs:
-          "Chip: Apple M2, Kích thước: 12.9 inch, Màn hình: Liquid Retina XDR, Dung lượng: 256GB, Màu: Xám không gian",
-        image: "../image/iPadProM2.jpg",
-      },
-      {
-        name: "Apple AirPods Pro 2 (USB-C)",
-        category: "Tai nghe",
-        description:
-          "Tai nghe không dây chống ồn chủ động (ANC) cao cấp, chất âm vượt trội và hộp sạc USB-C.",
-        specs:
-          "Chip: H2, Chống ồn: Chủ động (ANC), Hộp sạc: USB-C, Tính năng: Âm thanh không gian",
-        image: "../image/AirPodsPro2.jpg",
-      },
-      {
-        name: "Sạc dự phòng Anker 20000mAh",
-        category: "Phụ kiện",
-        description:
-          "Sạc dự phòng dung lượng cao 20.000mAh, tích hợp cáp USB-C và màn hình hiển thị phần trăm pin.",
-        specs:
-          "Dung lượng: 20000mAh, Công suất: 22.5W, Cổng ra: USB-C (tích hợp), USB-A",
-        image: "../image/Anker20000mAh.jpg",
-      },
-      {
-        name: "Cáp Belkin USB-C to Lightning",
-        category: "Phụ kiện",
-        description:
-          "Cáp sạc và truyền dữ liệu bện dù siêu bền, hỗ trợ sạc nhanh cho iPhone.",
-        specs:
-          "Đầu vào: USB-C, Đầu ra: Lightning, Chiều dài: 1m, Chất liệu: Bện dù, Màu: Đen",
-        image: "../image/CableUSBCtoLightning.jpg",
-      },
-      {
-        name: "Gimbal DJI Osmo Mobile 6",
-        category: "Phụ kiện",
-        description:
-          "Gimbal chống rung 3 trục cho điện thoại thông minh, thiết kế nhỏ gọn, dễ sử dụng với nhiều tính năng quay phim sáng tạo.",
-        specs:
-          "Chống rung: 3 trục, Kết nối: Bluetooth 5.1, Tính năng: ActiveTrack 6.0, Tải trọng: 170-290g",
-        image: "../image/DJIOM6.jpg",
-      },
-      {
-        name: "iPhone 15 Pro Max 256GB",
-        category: "Điện thoại",
-        description:
-          "iPhone cao cấp nhất với khung viền Titan, chip A17 Pro, hệ thống camera Pro mạnh mẽ và cổng sạc USB-C.",
-        specs:
-          "Chip: A17 Pro, Màn hình: 6.7 inch ProMotion, Camera: 48MP, Zoom quang: 5x, Chất liệu: Titan tự nhiên",
-        image: "../image/IP15PM.jpg",
-      },
-      {
-        name: "Ổ cứng WD My Passport 2TB",
-        category: "Phụ kiện lưu trữ",
-        description:
-          "Ổ cứng di động nhỏ gọn, độ bền cao, phù hợp sao lưu dữ liệu và mang theo khi di chuyển.",
-        specs:
-          "Dung lượng: 2TB, Chuẩn kết nối: USB 3.2 Gen 1, Tương thích: Windows/macOS",
-        image: "../image/WDMyPassport2TB.jpg",
-      },
-      {
-        name: "Router TP-Link Archer AX73",
-        category: "Thiết bị mạng",
-        description:
-          "Router WiFi 6 tốc độ cao, băng thông mạnh mẽ, phù hợp cho gia đình hoặc văn phòng.",
-        specs:
-          "WiFi: WiFi 6 AX5400, Băng tần: 2.4GHz & 5GHz, Cổng LAN: 4x Gigabit LAN, Anten: 6",
-        image: "../image/TPLinkArcherAX73.jpg",
-      },
-      {
-        name: "Tai nghe Sony WH-1000XM5",
-        category: "Tai nghe",
-        description:
-          "Tai nghe chống ồn chủ động hàng đầu, chất âm cao cấp và thời lượng pin ấn tượng.",
-        specs:
-          "Driver: 30mm, Chống ồn ANC, Pin: 30 giờ, Sạc nhanh: 3 phút cho 3 giờ dùng",
-        image: "../image/SonyWH1000XM5.jpg",
-      },
-      {
-        name: "Samsung Galaxy Tab S9",
-        category: "Máy tính bảng",
-        description:
-          "Tablet cao cấp màn hình AMOLED sắc nét, hỗ trợ S-Pen và hiệu năng mạnh mẽ.",
-        specs:
-          "Màn hình: 11 inch Dynamic AMOLED 2X, CPU: Snapdragon 8 Gen 2, RAM: 8GB, Bộ nhớ: 128GB",
-        image: "../image/SamsungTabS9.jpg",
-      },
-      {
-        name: "Samsung Galaxy Watch 6",
-        category: "Đồng hồ thông minh",
-        description:
-          "Smartwatch hiện đại với màn hình lớn, nhiều tính năng theo dõi sức khỏe và luyện tập.",
-        specs:
-          "Màn hình: Super AMOLED, Kích thước: 40/44mm, Tính năng: Theo dõi nhịp tim, SpO2, ECG",
-        image: "../image/SamsungGW6.jpg",
-      },
-      {
-        name: "SSD Samsung 990 PRO 1TB",
-        category: "Linh kiện máy tính",
-        description:
-          "SSD NVMe cao cấp với tốc độ đọc ghi cực nhanh, thích hợp cho game thủ và dân đồ họa.",
-        specs:
-          "Dung lượng: 1TB, Chuẩn: NVMe PCIe 4.0, Đọc: 7450 MB/s, Ghi: 6900 MB/s",
-        image: "../image/Samsung990PRO1TB.jpg",
-      },
-      {
-        name: "Ốp lưng iPhone 15 Pro",
-        category: "Phụ kiện điện thoại",
-        description:
-          "Ốp lưng bảo vệ thiết kế sang trọng, chống sốc tốt cho iPhone 15 Pro.",
-        specs:
-          "Dành cho: iPhone 15 Pro, Chất liệu: TPU/PC, Tính năng: Chống sốc, chống trượt",
-        image: "../image/OpLungIP15Pro.jpg",
-      },
-      {
-        name: "MacBook Air M3",
-        category: "Laptop",
-        description:
-          "Laptop siêu mỏng nhẹ với chip Apple M3 mạnh mẽ, thời lượng pin dài và màn hình Liquid Retina sắc nét.",
-        specs:
-          "CPU: Apple M3, RAM: 8GB, SSD: 256GB, Màn hình: 13.6 inch Liquid Retina",
-        image: "../image/MacM3.jpg",
-      },
-      {
-        name: "MacBook Pro 14 M3",
-        category: "Laptop",
-        description:
-          "Laptop hiệu năng cao với chip Apple M3, màn hình Liquid Retina XDR và thời lượng pin vượt trội.",
-        specs:
-          "CPU: Apple M3, RAM: 8GB, SSD: 512GB, Màn hình: 14.2 inch Liquid Retina XDR",
-        image: "../image/MBP14M3.jpg",
-      },
-      {
-        name: "Chuột Logitech MX Master 3S",
-        category: "Phụ kiện máy tính",
-        description:
-          "Chuột cao cấp cho dân văn phòng và sáng tạo nội dung, độ chính xác cao, cuộn siêu nhanh và hỗ trợ đa thiết bị.",
-        specs:
-          "Cảm biến: 8000 DPI, Kết nối: Bluetooth/Logi Bolt, Pin: 70 ngày, Tính năng: Silent Click, MagSpeed Scroll",
-        image: "../image/LogitechMXMaster3S.jpg",
-      },
-    ])
-  );
+  if (!localStorage.getItem("productDefinitions")) {
+    localStorage.setItem(
+      "productDefinitions",
+      JSON.stringify([
+        {
+          name: "Laptop Dell XPS 13 9340",
+          category: "Laptop",
+          description:
+            "Laptop cao cấp siêu mỏng nhẹ với màn hình InfinityEdge, hiệu năng mạnh mẽ cho công việc và giải trí.",
+          specs:
+            "CPU: Intel Core Ultra 7, RAM: 32GB LPDDR5x, Ổ cứng: 1TB SSD NVMe, Màn hình: 13.4 inch 3K+",
+          image: "../image/DellXPS13.jpg",
+        },
+        {
+          name: "Apple Watch Series 9 45mm",
+          category: "Đồng hồ thông minh",
+          description:
+            "Đồng hồ thông minh thế hệ mới nhất từ Apple với chip S9 SiP, hỗ trợ Double Tap, màn hình sáng hơn và tích hợp Siri trên thiết bị.",
+          specs:
+            "Chip: S9 SiP, Kích thước: 45mm, Chống nước: 50m, Tính năng: Double Tap, Cảm biến: Oxy trong máu, ECG",
+          image: "../image/AppleWatchS9.jpg",
+        },
+        {
+          name: "RAM Corsair Vengeance RGB 32GB (2x16GB) DDR5",
+          category: "Linh kiện PC",
+          description:
+            "Kit RAM DDR5 hiệu năng cao với đèn LED RGB, tối ưu cho các hệ thống PC gaming và workstation hiện đại.",
+          specs:
+            "Dung lượng: 32GB (2x16GB), Loại: DDR5, Tốc độ: 6000MHz, LED: RGB",
+          image: "../image/CorsairVengeance32GB.jpg",
+        },
+        {
+          name: "iPad Pro 12.9 inch M2 256GB",
+          category: "Máy tính bảng",
+          description:
+            "Máy tính bảng mạnh mẽ nhất của Apple với chip M2, màn hình Liquid Retina XDR và hỗ trợ Apple Pencil 2.",
+          specs:
+            "Chip: Apple M2, Kích thước: 12.9 inch, Màn hình: Liquid Retina XDR, Dung lượng: 256GB, Màu: Xám không gian",
+          image: "../image/iPadProM2.jpg",
+        },
+        {
+          name: "Apple AirPods Pro 2 (USB-C)",
+          category: "Tai nghe",
+          description:
+            "Tai nghe không dây chống ồn chủ động (ANC) cao cấp, chất âm vượt trội và hộp sạc USB-C.",
+          specs:
+            "Chip: H2, Chống ồn: Chủ động (ANC), Hộp sạc: USB-C, Tính năng: Âm thanh không gian",
+          image: "../image/AirPodsPro2.jpg",
+        },
+        {
+          name: "Sạc dự phòng Anker 20000mAh",
+          category: "Phụ kiện",
+          description:
+            "Sạc dự phòng dung lượng cao 20.000mAh, tích hợp cáp USB-C và màn hình hiển thị phần trăm pin.",
+          specs:
+            "Dung lượng: 20000mAh, Công suất: 22.5W, Cổng ra: USB-C (tích hợp), USB-A",
+          image: "../image/Anker20000mAh.jpg",
+        },
+        {
+          name: "Cáp Belkin USB-C to Lightning",
+          category: "Phụ kiện",
+          description:
+            "Cáp sạc và truyền dữ liệu bện dù siêu bền, hỗ trợ sạc nhanh cho iPhone.",
+          specs:
+            "Đầu vào: USB-C, Đầu ra: Lightning, Chiều dài: 1m, Chất liệu: Bện dù, Màu: Đen",
+          image: "../image/CableUSBCtoLightning.jpg",
+        },
+        {
+          name: "Gimbal DJI Osmo Mobile 6",
+          category: "Phụ kiện",
+          description:
+            "Gimbal chống rung 3 trục cho điện thoại thông minh, thiết kế nhỏ gọn, dễ sử dụng với nhiều tính năng quay phim sáng tạo.",
+          specs:
+            "Chống rung: 3 trục, Kết nối: Bluetooth 5.1, Tính năng: ActiveTrack 6.0, Tải trọng: 170-290g",
+          image: "../image/DJIOM6.jpg",
+        },
+        {
+          name: "iPhone 15 Pro Max 256GB",
+          category: "Điện thoại",
+          description:
+            "iPhone cao cấp nhất với khung viền Titan, chip A17 Pro, hệ thống camera Pro mạnh mẽ và cổng sạc USB-C.",
+          specs:
+            "Chip: A17 Pro, Màn hình: 6.7 inch ProMotion, Camera: 48MP, Zoom quang: 5x, Chất liệu: Titan tự nhiên",
+          image: "../image/IP15PM.jpg",
+        },
+        {
+          name: "Ổ cứng WD My Passport 2TB",
+          category: "Phụ kiện lưu trữ",
+          description:
+            "Ổ cứng di động nhỏ gọn, độ bền cao, phù hợp sao lưu dữ liệu và mang theo khi di chuyển.",
+          specs:
+            "Dung lượng: 2TB, Chuẩn kết nối: USB 3.2 Gen 1, Tương thích: Windows/macOS",
+          image: "../image/WDMyPassport2TB.jpg",
+        },
+        {
+          name: "Router TP-Link Archer AX73",
+          category: "Thiết bị mạng",
+          description:
+            "Router WiFi 6 tốc độ cao, băng thông mạnh mẽ, phù hợp cho gia đình hoặc văn phòng.",
+          specs:
+            "WiFi: WiFi 6 AX5400, Băng tần: 2.4GHz & 5GHz, Cổng LAN: 4x Gigabit LAN, Anten: 6",
+          image: "../image/TPLinkArcherAX73.jpg",
+        },
+        {
+          name: "Tai nghe Sony WH-1000XM5",
+          category: "Tai nghe",
+          description:
+            "Tai nghe chống ồn chủ động hàng đầu, chất âm cao cấp và thời lượng pin ấn tượng.",
+          specs:
+            "Driver: 30mm, Chống ồn ANC, Pin: 30 giờ, Sạc nhanh: 3 phút cho 3 giờ dùng",
+          image: "../image/SonyWH1000XM5.jpg",
+        },
+        {
+          name: "Samsung Galaxy Tab S9",
+          category: "Máy tính bảng",
+          description:
+            "Tablet cao cấp màn hình AMOLED sắc nét, hỗ trợ S-Pen và hiệu năng mạnh mẽ.",
+          specs:
+            "Màn hình: 11 inch Dynamic AMOLED 2X, CPU: Snapdragon 8 Gen 2, RAM: 8GB, Bộ nhớ: 128GB",
+          image: "../image/SamsungTabS9.jpg",
+        },
+        {
+          name: "Samsung Galaxy Watch 6",
+          category: "Đồng hồ thông minh",
+          description:
+            "Smartwatch hiện đại với màn hình lớn, nhiều tính năng theo dõi sức khỏe và luyện tập.",
+          specs:
+            "Màn hình: Super AMOLED, Kích thước: 40/44mm, Tính năng: Theo dõi nhịp tim, SpO2, ECG",
+          image: "../image/SamsungGW6.jpg",
+        },
+        {
+          name: "SSD Samsung 990 PRO 1TB",
+          category: "Linh kiện máy tính",
+          description:
+            "SSD NVMe cao cấp với tốc độ đọc ghi cực nhanh, thích hợp cho game thủ và dân đồ họa.",
+          specs:
+            "Dung lượng: 1TB, Chuẩn: NVMe PCIe 4.0, Đọc: 7450 MB/s, Ghi: 6900 MB/s",
+          image: "../image/Samsung990PRO1TB.jpg",
+        },
+        {
+          name: "Ốp lưng iPhone 15 Pro",
+          category: "Phụ kiện điện thoại",
+          description:
+            "Ốp lưng bảo vệ thiết kế sang trọng, chống sốc tốt cho iPhone 15 Pro.",
+          specs:
+            "Dành cho: iPhone 15 Pro, Chất liệu: TPU/PC, Tính năng: Chống sốc, chống trượt",
+          image: "../image/OpLungIP15Pro.jpg",
+        },
+        {
+          name: "MacBook Air M3",
+          category: "Laptop",
+          description:
+            "Laptop siêu mỏng nhẹ với chip Apple M3 mạnh mẽ, thời lượng pin dài và màn hình Liquid Retina sắc nét.",
+          specs:
+            "CPU: Apple M3, RAM: 8GB, SSD: 256GB, Màn hình: 13.6 inch Liquid Retina",
+          image: "../image/MacM3.jpg",
+        },
+        {
+          name: "MacBook Pro 14 M3",
+          category: "Laptop",
+          description:
+            "Laptop hiệu năng cao với chip Apple M3, màn hình Liquid Retina XDR và thời lượng pin vượt trội.",
+          specs:
+            "CPU: Apple M3, RAM: 8GB, SSD: 512GB, Màn hình: 14.2 inch Liquid Retina XDR",
+          image: "../image/MBP14M3.jpg",
+        },
+        {
+          name: "Chuột Logitech MX Master 3S",
+          category: "Phụ kiện máy tính",
+          description:
+            "Chuột cao cấp cho dân văn phòng và sáng tạo nội dung, độ chính xác cao, cuộn siêu nhanh và hỗ trợ đa thiết bị.",
+          specs:
+            "Cảm biến: 8000 DPI, Kết nối: Bluetooth/Logi Bolt, Pin: 70 ngày, Tính năng: Silent Click, MagSpeed Scroll",
+          image: "../image/LogitechMXMaster3S.jpg",
+        },
+      ])
+    );
+  }
   // ========================================================
 
   // === (HÀM MỚI) TÍNH TOÁN TỒN KHO THỰC TẾ (ĐÃ SỬA LỖI) ===
@@ -2056,17 +2058,15 @@ ${
               <button onclick="editImportReceipt('${receipt.id}')" class="btn-edit">
                 <i class="fa-solid fa-pen"></i> Sửa
               </button>
+              <button onclick="deleteImportReceipt('${receipt.id}')" class="btn-delete">
+                <i class="fa-solid fa-trash"></i> Xóa
+              </button>
               <button onclick="finalizeReceiptStatus('${receipt.id}')" class="btn-done">
                 <i class="fa-solid fa-check"></i> Hoàn thành
               </button>
               `
                   : ""
               }
-              <button onclick="deleteImportReceipt('${
-                receipt.id
-              }')" class="btn-delete">
-                <i class="fa-solid fa-trash"></i> Xóa
-              </button>
             </td>
           </tr>
         `;
@@ -2209,10 +2209,10 @@ ${
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
                     <div>
                         <label style="display: block; margin-bottom: 5px; font-weight: 600;">Tên sản phẩm:</label>
-                        <select id="importProductName" required 
-                            style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;">
-                            ${productOptions}
-                        </select>
+                        <select id="importProductName" required onchange="window.updateImportPriceInput()"
+    style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; outline: none;">
+    ${productOptions}
+</select>
                     </div>
                     <div>
                         <label style="display: block; margin-bottom: 5px; font-weight: 600;">Số lượng:</label>
@@ -2366,7 +2366,6 @@ ${
     currentReceipt.items.push(newItem);
     localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(importReceipts));
     showImportProductForm(receiptId);
-    alert("✅ Đã thêm mặt hàng thành công!");
   };
   window.deleteItemInReceipt = function (receiptId, itemIndex) {
     const confirmDelete = confirm(
@@ -2479,6 +2478,330 @@ ${
       if (modal) modal.remove();
     }
   };
+  (function () {
+    // === KHÓA LOCALSTORAGE ===
+    const INVOICES_KEY = "invoices";
+    const IMPORT_RECEIPTS_KEY = "importReceipts";
+    const PRODUCTS_KEY = "products"; // Dùng để xóa dữ liệu cũ
+
+    // === DỮ LIỆU PHIẾU NHẬP MẪU (GIỮ NGUYÊN) ===
+    const mockReceipts = [
+      {
+        id: "1700000001",
+        date: "15/11/2025, 09:00:00", // (Ngày này không quan trọng)
+        importedBy: "Admin",
+        status: "Hoàn thành",
+        items: [
+          // (Chứa tất cả 19 sản phẩm...)
+          {
+            productName: "Laptop Dell XPS 13 9340",
+            quantity: 30,
+            price: 30000000,
+            category: "Laptop",
+          },
+          {
+            productName: "Apple Watch Series 9 45mm",
+            quantity: 50,
+            price: 9000000,
+            category: "Đồng hồ thông minh",
+          },
+          {
+            productName: "RAM Corsair Vengeance RGB 32GB (2x16GB) DDR5",
+            quantity: 40,
+            price: 4000000,
+            category: "Linh kiện PC",
+          },
+          {
+            productName: "iPad Pro 12.9 inch M2 256GB",
+            quantity: 20,
+            price: 25000000,
+            category: "Máy tính bảng",
+          },
+          {
+            productName: "Apple AirPods Pro 2 (USB-C)",
+            quantity: 60,
+            price: 5000000,
+            category: "Tai nghe",
+          },
+          {
+            productName: "Sạc dự phòng Anker 20000mAh",
+            quantity: 100,
+            price: 800000,
+            category: "Phụ kiện",
+          },
+          {
+            productName: "Cáp Belkin USB-C to Lightning",
+            quantity: 150,
+            price: 300000,
+            category: "Phụ kiện",
+          },
+          {
+            productName: "Gimbal DJI Osmo Mobile 6",
+            quantity: 30,
+            price: 3000000,
+            category: "Phụ kiện",
+          },
+          {
+            productName: "iPhone 15 Pro Max 256GB",
+            quantity: 40,
+            price: 28000000,
+            category: "Điện thoại",
+          },
+          {
+            productName: "Ổ cứng WD My Passport 2TB",
+            quantity: 50,
+            price: 1500000,
+            category: "Phụ kiện lưu trữ",
+          },
+          {
+            productName: "Router TP-Link Archer AX73",
+            quantity: 30,
+            price: 2000000,
+            category: "Thiết bị mạng",
+          },
+          {
+            productName: "Tai nghe Sony WH-1000XM5",
+            quantity: 25,
+            price: 7000000,
+            category: "Tai nghe",
+          },
+          {
+            productName: "Samsung Galaxy Tab S9",
+            quantity: 20,
+            price: 18000000,
+            category: "Máy tính bảng",
+          },
+          {
+            productName: "Samsung Galaxy Watch 6",
+            quantity: 50,
+            price: 5500000,
+            category: "Đồng hồ thông minh",
+          },
+          {
+            productName: "SSD Samsung 990 PRO 1TB",
+            quantity: 30,
+            price: 3500000,
+            category: "Linh kiện máy tính",
+          },
+          {
+            productName: "Ốp lưng iPhone 15 Pro",
+            quantity: 200,
+            price: 250000,
+            category: "Phụ kiện điện thoại",
+          },
+          {
+            productName: "MacBook Air M3",
+            quantity: 25,
+            price: 27000000,
+            category: "Laptop",
+          },
+          {
+            productName: "MacBook Pro 14 M3",
+            quantity: 15,
+            price: 38000000,
+            category: "Laptop",
+          },
+          {
+            productName: "Chuột Logitech MX Master 3S",
+            quantity: 70,
+            price: 2000000,
+            category: "Phụ kiện máy tính",
+          },
+        ],
+      },
+      {
+        id: "1700000002",
+        date: "15/11/2025, 09:00:00", // (Ngày này không quan trọng)
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
+        items: [
+          {
+            productName: "MacBook Pro 14 M3",
+            quantity: 15,
+            price: 38000000,
+            category: "Laptop",
+          },
+          {
+            productName: "Chuột Logitech MX Master 3S",
+            quantity: 70,
+            price: 2000000,
+            category: "Phụ kiện máy tính",
+          },
+        ],
+      },
+      {
+        id: "1700000003",
+        date: "15/11/2025, 09:00:00", // (Ngày này không quan trọng)
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
+        items: [
+          {
+            productName: "MacBook Air M3",
+            quantity: 25,
+            price: 27000000,
+            category: "Laptop",
+          },
+          {
+            productName: "MacBook Pro 14 M3",
+            quantity: 15,
+            price: 38000000,
+            category: "Laptop",
+          },
+        ],
+      },
+      {
+        id: "1700000003",
+        date: "15/11/2025, 09:00:00", // (Ngày này không quan trọng)
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
+        items: [
+          {
+            productName: "iPhone 15 Pro Max 256GB",
+            quantity: 40,
+            price: 28000000,
+            category: "Điện thoại",
+          },
+          {
+            productName: "Ổ cứng WD My Passport 2TB",
+            quantity: 50,
+            price: 1500000,
+            category: "Phụ kiện lưu trữ",
+          },
+        ],
+      },
+      {
+        id: "1700000003",
+        date: "15/11/2025, 09:00:00", // (Ngày này không quan trọng)
+        importedBy: "Admin",
+        status: "Chưa hoàn thành",
+        items: [
+          {
+            productName: "SSD Samsung 990 PRO 1TB",
+            quantity: 30,
+            price: 3500000,
+            category: "Linh kiện máy tính",
+          },
+          {
+            productName: "Ốp lưng iPhone 15 Pro",
+            quantity: 200,
+            price: 250000,
+            category: "Phụ kiện điện thoại",
+          },
+        ],
+      },
+    ];
+
+    // === DỮ LIỆU HÓA ĐƠN MỚI (2020 - 2024) ===
+    const mockInvoices = [
+      {
+        id: 1584246600, // 2020
+        date: "15/03/2020, 10:30:00",
+        user: "khachhangA",
+        items: [
+          {
+            name: "Cáp Belkin USB-C to Lightning",
+            quantity: 2,
+            price: 360000,
+          },
+          {
+            name: "Sạc dự phòng Anker 20000mAh",
+            quantity: 1,
+            price: 960000,
+          },
+        ],
+        total: 1680000,
+        status: "Đã giao",
+      },
+      {
+        id: 1621519200, // 2021
+        date: "20/05/2021, 14:00:00",
+        user: "khachhangB",
+        items: [
+          { name: "Gimbal DJI Osmo Mobile 6", quantity: 1, price: 3600000 },
+        ],
+        total: 3600000,
+        status: "Đã giao",
+      },
+      {
+        id: 1640970000, // 2022
+        date: "01/01/2022, 12:00:00",
+        user: "khachhangA",
+        items: [
+          {
+            name: "RAM Corsair Vengeance RGB 32GB (2x16GB) DDR5",
+            quantity: 1,
+            price: 4800000,
+          },
+          { name: "SSD Samsung 990 PRO 1TB", quantity: 1, price: 4200000 },
+        ],
+        total: 9000000,
+        status: "Đã giao",
+      },
+      {
+        id: 1694308500, // 2023
+        date: "10/09/2023, 09:15:00",
+        user: "nguoidungC",
+        items: [
+          { name: "Laptop Dell XPS 13 9340", quantity: 1, price: 36000000 },
+        ],
+        total: 36000000,
+        status: "Đã giao",
+      },
+      {
+        id: 1703533500, // 2023
+        date: "25/12/2023, 19:45:00",
+        user: "khachhangB",
+        items: [
+          {
+            name: "Apple Watch Series 9 45mm",
+            quantity: 1,
+            price: 10800000,
+          },
+          {
+            name: "Apple AirPods Pro 2 (USB-C)",
+            quantity: 1,
+            price: 6000000,
+          },
+        ],
+        total: 16800000,
+        status: "Đã giao",
+      },
+      {
+        id: 1707107400, // 2024
+        date: "05/02/2024, 11:30:00",
+        user: "khachhangA",
+        items: [
+          { name: "iPhone 15 Pro Max 256GB", quantity: 1, price: 33600000 },
+          { name: "Ốp lưng iPhone 15 Pro", quantity: 2, price: 300000 },
+        ],
+        total: 34200000,
+        status: "Đang vận chuyển",
+      },
+      {
+        id: 1721206800, // 2024
+        date: "17/07/2024, 16:00:00",
+        user: "nguoidungC",
+        items: [
+          { name: "MacBook Air M3", quantity: 1, price: 32400000 },
+          {
+            name: "Chuột Logitech MX Master 3S",
+            quantity: 1,
+            price: 2400000,
+          },
+        ],
+        total: 34800000,
+        status: "Đã hủy",
+      },
+    ];
+
+    // === NẠP DỮ LIỆU VÀO LOCALSTORAGE ===
+    localStorage.setItem(IMPORT_RECEIPTS_KEY, JSON.stringify(mockReceipts));
+    localStorage.setItem(INVOICES_KEY, JSON.stringify(mockInvoices));
+
+    console.log(
+      "Đã nạp dữ liệu mẫu MỚI (Users, Receipts, Invoices 2020-2024)."
+    );
+  })();
   window.deleteImportReceipt = function (id) {
     const receipt = importReceipts.find((r) => r.id === id);
     if (!receipt) return;
@@ -2498,9 +2821,11 @@ ${
   // ========================================================
 
   // === (CỤM HÀM MỚI) BỘ LỌC QUẢN LÝ HÓA ĐƠN ===
+  // === (CỤM HÀM MỚI) BỘ LỌC QUẢN LÝ HÓA ĐƠN ===
   function renderInvoiceTable(filteredInvoices) {
     const tableBody = document.getElementById("invoicesTableBody");
     if (!tableBody) return;
+
     let html = "";
     filteredInvoices
       .sort((a, b) => b.id - a.id)
@@ -2508,21 +2833,16 @@ ${
         const itemsStr = invoice.items.map((it) => it.name).join(", ");
         const status = invoice.status || "Mới đặt";
         const statusClass = getStatusClass(status);
-        const allStatuses = [
-          "Mới đặt",
-          "Đang xử lý",
-          "Đang vận chuyển",
-          "Đã giao",
-          "Đã hủy",
-        ];
-        const statusOptions = allStatuses
-          .map(
-            (s) =>
-              `<option value="${s}" ${
-                s === status ? "selected" : ""
-              }>${s}</option>`
-          )
-          .join("");
+
+        // Kiểm tra điều kiện để Disable nút Xóa
+        const isCanceled = status === "Đã hủy";
+        // Nếu chưa hủy thì nút bị mờ (opacity 0.5) và không bấm được (cursor: not-allowed)
+        const deleteBtnStyle = isCanceled
+          ? ""
+          : "opacity: 0.5; cursor: not-allowed; background-color: #718096;";
+        const deleteTitle = isCanceled
+          ? "Xóa vĩnh viễn hóa đơn này"
+          : "Chỉ có thể xóa khi trạng thái là 'Đã hủy'";
 
         html += `
           <tr>
@@ -2534,31 +2854,74 @@ ${
         )}</td>
             <td>${formatPrice(invoice.total)}đ</td>
             <td>
-              <select 
-                class="invoice-status-select ${statusClass}" 
-                onchange="window.updateInvoiceStatus(${
-                  invoice.id
-                }, this.value, this)"
-              >
-                ${statusOptions}
-              </select>
+              <span class="invoice-status-select ${statusClass}" style="border: none;">
+                ${status}
+              </span>
             </td>
             <td>
-              <button onclick="viewInvoice(${invoice.id})" class="btn-view">
-                <i class="fa-solid fa-eye"></i> Xem
+              <button onclick="showViewInvoiceModal(${
+                invoice.id
+              })" class="btn-view" style="margin-right: 5px;">
+                <i class="fa-solid fa-eye"></i> Xem / Cập nhật
               </button>
-              <button onclick="deleteInvoice(${invoice.id})" class="btn-delete">
-                <i class="fa-solid fa-trash"></i> Xóa
+              
+              <button 
+                onclick="${isCanceled ? `deleteInvoice(${invoice.id})` : ""}" 
+                class="btn-delete" 
+                style="${deleteBtnStyle}"
+                title="${deleteTitle}"
+                ${!isCanceled ? "disabled" : ""}
+              >
+                <i class="fa-solid fa-trash"></i> Hủy HĐ
               </button>
             </td>
           </tr>
         `;
       });
+
     if (!html) {
       html = `<tr><td colspan="7" class="empty-state">Không tìm thấy hóa đơn phù hợp.</td></tr>`;
     }
     tableBody.innerHTML = html;
   }
+  window.deleteInvoice = function (id) {
+    const index = invoices.findIndex((inv) => inv.id === id);
+    if (index === -1) return;
+
+    const invoice = invoices[index];
+
+    // === RÀNG BUỘC: CHỈ ĐƯỢC XÓA KHI TRẠNG THÁI LÀ "ĐÃ HỦY" ===
+    if (invoice.status !== "Đã hủy") {
+      alert(
+        "⚠️ CẢNH BÁO: Bạn chỉ có thể xóa vĩnh viễn hóa đơn khi trạng thái là 'Đã hủy'.\n\nVui lòng chuyển trạng thái sang 'Đã hủy' trước!"
+      );
+      return;
+    }
+
+    if (
+      !confirm(
+        `Bạn có chắc chắn muốn XÓA VĨNH VIỄN hóa đơn #${id} không?\n\nHành động này không thể hoàn tác!`
+      )
+    ) {
+      return;
+    }
+
+    // Thực hiện xóa
+    invoices.splice(index, 1);
+    localStorage.setItem(INVOICES_KEY, JSON.stringify(invoices));
+
+    // Đồng bộ lại tồn kho (Dù hóa đơn đã hủy không ảnh hưởng tồn kho, nhưng cần chạy để đảm bảo nhất quán)
+    syncInventoryToShelf();
+
+    // Render lại bảng
+    renderInvoiceManagement();
+
+    // Nếu đang mở modal xem chi tiết của chính hóa đơn này thì đóng lại
+    const modal = document.getElementById("viewInvoiceModal");
+    if (modal) modal.remove();
+
+    alert("✅ Đã xóa vĩnh viễn hóa đơn khỏi hệ thống!");
+  };
   window.filterInvoices = function () {
     const customerQuery = document
       .getElementById("customerSearchInput")
@@ -2670,41 +3033,253 @@ ${
     reloadDataAndSync();
     renderInvoiceManagement();
   };
-  window.viewInvoice = function (id) {
+  window.showViewInvoiceModal = function (id) {
     const invoice = invoices.find((inv) => inv.id === id);
-    if (!invoice) return;
-    const itemsStr = invoice.items
-      .map(
-        (it) =>
-          `- ${it.name} x${it.quantity}: ${formatPrice(
-            it.price * it.quantity
-          )}đ`
-      )
-      .join("\n");
-    const message = `
-┌────────────────────────────
-   HÓA ĐƠN BÁN HÀNG
-└────────────────────────────┘
-Mã HĐ: #${id}
-Ngày: ${invoice.date}
-Khách hàng: ${invoice.user}
-┌────────────────────────────
-CHI TIẾT SẢN PHẨM
-└────────────────────────────┘
-${itemsStr}
-────────────────────────────
-Tổng tiền: ${formatPrice(invoice.total)}đ
-────────────────────────────
+    if (!invoice) return alert("Không tìm thấy hóa đơn!");
+
+    window.closeViewInvoiceModal();
+
+    const currentStatus = invoice.status || "Mới đặt";
+
+    // Định nghĩa cấp độ trạng thái
+    const statusLevels = {
+      "Mới đặt": 0,
+      "Đang xử lý": 1,
+      "Đang vận chuyển": 2,
+      "Đã giao": 3,
+      "Đã hủy": 4, // Đặt là 4 để không thể chuyển từ Hủy về các trạng thái trước
+    };
+
+    const currentLevel = statusLevels[currentStatus];
+    const isTerminalState =
+      currentStatus === "Đã giao" || currentStatus === "Đã hủy";
+
+    const allStatuses = [
+      "Mới đặt",
+      "Đang xử lý",
+      "Đang vận chuyển",
+      "Đã giao",
+      "Đã hủy",
+    ];
+
+    // Tạo options và vô hiệu hóa các trạng thái ngược chiều
+    const statusOptions = allStatuses
+      .map((s) => {
+        const level = statusLevels[s];
+        let isDisabled = false;
+        let note = "";
+
+        // LOGIC RÀNG BUỘC:
+        if (s === currentStatus) {
+          // Trạng thái hiện tại: Luôn active
+          isDisabled = false;
+        } else if (isTerminalState) {
+          // Nếu đơn đã xong/hủy -> Khóa tất cả các lựa chọn khác
+          isDisabled = true;
+        } else {
+          // Nếu chưa xong:
+          if (s === "Đã hủy") {
+            // Luôn cho phép hủy nếu chưa giao xong
+            isDisabled = false;
+          } else if (level < currentLevel) {
+            // Cấm quay đầu (Level đích nhỏ hơn Level hiện tại)
+            isDisabled = true;
+            note = " (Không thể quay lại)";
+          }
+        }
+
+        return `<option value="${s}" ${s === currentStatus ? "selected" : ""} ${
+          isDisabled ? "disabled" : ""
+        }>
+                        ${s}${note}
+                    </option>`;
+      })
+      .join("");
+
+    // --- (Phần dưới giữ nguyên như code trước) ---
+    let itemsHtml = "";
+    invoice.items.forEach((item) => {
+      const itemPrice = item.quantity * item.price;
+      itemsHtml += `
+            <tr>
+                <td>${escapeHtml(item.name)}</td>
+                <td>${item.quantity}</td>
+                <td>${formatPrice(item.price)}đ</td>
+                <td><strong>${formatPrice(itemPrice)}đ</strong></td>
+            </tr>
+        `;
+    });
+
+    const modalHtml = `
+      <div class="invoice-detail-modal-overlay" id="viewInvoiceModal" onclick="closeViewInvoiceModal(event)">
+        <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 700px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+             <h2 style="color: #667eea; margin: 0;"><i class="fa-solid fa-file-invoice"></i> Chi tiết Hóa đơn #${
+               invoice.id
+             }</h2>
+             <span onclick="closeViewInvoiceModal()" style="cursor: pointer; font-size: 24px; color: #999;">&times;</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+             <div>
+                <p><strong>Ngày đặt:</strong> ${invoice.date}</p>
+                <p><strong>Khách hàng:</strong> ${escapeHtml(invoice.user)}</p>
+             </div>
+             <div style="text-align: right;">
+                <p><strong>Tổng tiền:</strong> <span style="font-size: 18px; color: #e53e3e; font-weight: bold;">${formatPrice(
+                  invoice.total
+                )}đ</span></p>
+             </div>
+          </div>
+
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e0e0e0;">
+             <label style="font-weight: 600; display: block; margin-bottom: 8px;">Cập nhật Trạng thái (Chỉ chuyển tiếp):</label>
+             <div style="display: flex; gap: 10px;">
+                 <select id="modalInvoiceStatus" class="invoice-status-select ${getStatusClass(
+                   currentStatus
+                 )}" 
+                    style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                    ${statusOptions}
+                 </select>
+                 <button onclick="updateInvoiceStatusFromModal(${
+                   invoice.id
+                 })" class="btn-edit" ${
+      isTerminalState
+        ? 'disabled style="opacity: 0.5; cursor: not-allowed;"'
+        : ""
+    }>
+                    <i class="fa-solid fa-save"></i> Lưu trạng thái
+                 </button>
+             </div>
+             ${
+               isTerminalState
+                 ? '<p style="font-size: 12px; color: #e53e3e; margin-top: 5px;">* Đơn hàng đã hoàn tất/hủy, không thể thay đổi trạng thái.</p>'
+                 : ""
+             }
+          </div>
+
+          <h3 style="font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px;">Danh sách sản phẩm</h3>
+          <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>SL</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${itemsHtml}
+                </tbody>
+            </table>
+          </div>
+
+          <div style="margin-top: 20px; text-align: right;">
+             <button onclick="closeViewInvoiceModal()" class="btn-delete" style="background-color: #718096;">Đóng</button>
+          </div>
+        </div>
+      </div>
     `;
-    alert(message);
+
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+
+    // (Thêm CSS nếu chưa có - giữ nguyên như cũ)
+    const styleCheck = document.getElementById("invoice-modal-style");
+    if (!styleCheck) {
+      const style = document.createElement("style");
+      style.id = "invoice-modal-style";
+      style.innerHTML = `
+            .invoice-detail-modal-overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0, 0, 0, 0.5); z-index: 1000;
+                display: flex; justify-content: center; align-items: center;
+            }
+        `;
+      document.head.appendChild(style);
+    }
   };
-  window.deleteInvoice = function (id) {
-    if (!confirm("Bạn có chắc muốn xóa vĩnh viễn hóa đơn này?")) return;
-    invoices = invoices.filter((inv) => inv.id !== id);
+  // 2. Hàm xử lý cập nhật trạng thái từ Modal
+  window.updateInvoiceStatusFromModal = function (id) {
+    const selectEl = document.getElementById("modalInvoiceStatus");
+    if (!selectEl) return;
+
+    const newStatus = selectEl.value;
+    const invoice = invoices.find((inv) => inv.id === id);
+
+    if (!invoice) return;
+
+    const oldStatus = invoice.status || "Mới đặt";
+
+    // Logic chặn thay đổi nếu đã "Đã giao" hoặc "Đã hủy" (nếu muốn)
+    if (
+      (oldStatus === "Đã giao" || oldStatus === "Đã hủy") &&
+      oldStatus !== newStatus
+    ) {
+      if (
+        !confirm(
+          "Đơn hàng này đã kết thúc (" +
+            oldStatus +
+            "). Bạn có chắc chắn muốn thay đổi lại trạng thái không? Việc này sẽ ảnh hưởng đến thống kê tồn kho."
+        )
+      ) {
+        selectEl.value = oldStatus; // Reset lại select
+        return;
+      }
+    }
+
+    // Cập nhật dữ liệu
+    invoice.status = newStatus;
     localStorage.setItem(INVOICES_KEY, JSON.stringify(invoices));
+
+    // Đồng bộ tồn kho (quan trọng vì trạng thái hủy/giao ảnh hưởng số lượng bán)
     syncInventoryToShelf();
+
+    // Render lại bảng ở dưới nền
     renderInvoiceManagement();
-    alert("Đã xóa hóa đơn!");
+
+    // Cập nhật màu sắc của select box ngay trong popup để phản hồi trực quan
+    selectEl.className = `invoice-status-select ${getStatusClass(newStatus)}`;
+
+    alert(`✅ Đã cập nhật trạng thái đơn hàng #${id} thành: ${newStatus}`);
+  };
+  window.updateImportPriceInput = function () {
+    const productNameSelect = document.getElementById("importProductName");
+    const priceInput = document.getElementById("importPrice");
+
+    if (!productNameSelect || !priceInput) return;
+
+    const productName = productNameSelect.value;
+
+    // Sử dụng hàm findLatestImportPrice đã có sẵn trong code của bạn
+    const latestPrice = findLatestImportPrice(productName);
+
+    if (latestPrice && latestPrice !== "") {
+      priceInput.value = latestPrice;
+
+      // (Tùy chọn) Hiệu ứng nháy màu để báo hiệu giá đã được tự động điền
+      priceInput.style.transition = "background-color 0.3s";
+      priceInput.style.backgroundColor = "#d1fae5"; // Màu xanh nhạt
+      setTimeout(() => {
+        priceInput.style.backgroundColor = "white"; // Trả về màu trắng
+      }, 800);
+    } else {
+      // Nếu sản phẩm mới tinh chưa từng nhập, để trống hoặc đặt về 0
+      priceInput.value = "";
+    }
+  };
+
+  // 3. Hàm đóng Modal
+  window.closeViewInvoiceModal = function (event) {
+    // Nếu click vào overlay (vùng tối) hoặc nút đóng
+    if (
+      !event ||
+      event.target.id === "viewInvoiceModal" ||
+      !event.target.closest(".modal-box")
+    ) {
+      const modal = document.getElementById("viewInvoiceModal");
+      if (modal) modal.remove();
+    }
   };
   // ========================================================
 
